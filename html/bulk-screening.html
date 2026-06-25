@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Screening | X-Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#001741',
+            'navy-dark': '#000b21',
+            teal: '#00dc8d',
+            'teal-hover': '#00c47e',
+            'teal-light': '#ebfbf5',
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '0px',
+            'xs': '0px',
+            'sm': '0px',
+            'md': '0px',
+            'lg': '0px',
+            'xl': '0px',
+            '2xl': '0px',
+            '3xl': '0px',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Tab Selection Header Context -->
+      <div class="px-8 pt-6 bg-white border-b border-gray-200 flex items-center justify-between shrink-0 select-none text-xs font-semibold">
+        <div class="flex gap-4">
+          <button onclick="switchMainTab('upload')" id="tab-btn-upload" class="py-3 border-b-2 border-teal text-navy font-bold flex items-center gap-2">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+            Upload Batch File
+          </button>
+          <button onclick="switchMainTab('details')" id="tab-btn-details" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-900 font-medium flex items-center gap-2">
+            <i data-lucide="list-collapse" class="w-4 h-4"></i>
+            Batch Details
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable workspace content -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+        
+        <!-- ==================== TAB 1: UPLOAD BATCH FILE ==================== -->
+        <div id="tab-upload-container" class="space-y-6">
+          
+          <!-- Dropzone and settings split -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Section 1: Drag & Drop Dropzone (2/3 width) -->
+            <div class="bg-white border border-[#e5e5e5] rounded-xl p-6 lg:col-span-2 flex flex-col justify-between">
+              <div>
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a] mb-3">Roster Dropzone</h3>
+                <!-- Dropzone matching dashed border #001741 -->
+                <div id="drop-zone" onclick="triggerBrowse()" ondragover="event.preventDefault(); this.classList.add('bg-gray-50')" ondragleave="this.classList.remove('bg-gray-50')" ondrop="handleDrop(event)"
+                  class="border-2 border-dashed border-[#001741] hover:bg-gray-50 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[160px] text-center select-none">
+                  
+                  <input type="file" id="batch-file-input" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleFileSelected(this)">
+                  
+                  <div id="dropzone-idle" class="flex flex-col items-center">
+                    <i data-lucide="upload-cloud" class="w-8 h-8 text-[#001741] mb-3"></i>
+                    <p class="text-xs font-semibold text-gray-700">Drag and drop your Excel file here or <span class="text-teal underline">Browse</span></p>
+                    <p class="text-[10px] text-gray-400 font-mono mt-1">Accepts: .xlsx, .xls, .csv files (max 50MB)</p>
+                  </div>
+
+                  <!-- Uploading progress -->
+                  <div id="dropzone-loading" class="hidden w-full max-w-xs flex flex-col items-center">
+                    <i data-lucide="loader" class="w-6 h-6 text-teal animate-spin mb-3"></i>
+                    <p class="text-xs font-semibold text-gray-700 font-mono" id="dropzone-filename">Uploading...</p>
+                    <div class="w-full bg-gray-200 h-1.5 rounded overflow-hidden mt-2">
+                      <div class="h-full bg-teal w-0" id="dropzone-progress-bar"></div>
+                    </div>
+                  </div>
+
+                  <!-- Upload Success state -->
+                  <div id="dropzone-success" class="hidden flex flex-col items-center">
+                    <div class="w-7 h-7 rounded-full bg-green-100 border border-green-300 text-green-600 flex items-center justify-center mb-2">
+                      <i data-lucide="check" class="w-4 h-4"></i>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-800" id="dropzone-success-msg">Roster verified.</p>
+                    <button onclick="clearDropzone(event)" class="text-[10px] text-gray-400 hover:text-gray-900 mt-2 font-mono underline">Upload Different File</button>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Collapsible reference templates selection -->
+              <div class="mt-6 border-t border-gray-100 pt-4 select-none">
+                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-3">Download Batch templates</span>
+                <div class="flex flex-wrap gap-2.5">
+                  <button onclick="alert('Downloading Individual Template...')" class="h-8 px-3 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-900 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Individual Template</span>
+                  </button>
+                  <button onclick="alert('Downloading Company Template...')" class="h-8 px-3 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-900 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Company Template</span>
+                  </button>
+                  <button onclick="alert('Downloading Vessel Template...')" class="h-8 px-3 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-900 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Vessel Template</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sections 2 - 5: Batch Configurations (1/3 width) -->
+            <div class="bg-white border border-[#e5e5e5] rounded-xl p-6 flex flex-col justify-between">
+              <div class="space-y-4 text-xs font-medium">
+                
+                <!-- Section 2: Batch Options -->
+                <div>
+                  <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2 block">Batch Configuration Options</span>
+                  <div class="flex items-center gap-4 text-gray-700 font-semibold mb-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="batch-opt" checked onchange="toggleBatchNameInput('new')" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                      <span>New Upload</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="batch-opt" onchange="toggleBatchNameInput('existing')" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                      <span>Add to Existing</span>
+                    </label>
+                  </div>
+                  <!-- Dynamic Input toggles -->
+                  <div id="batch-name-container">
+                    <input type="text" id="target-batch-name" placeholder="Enter batch name" class="w-full h-8 px-2.5 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  </div>
+                  <div id="batch-select-container" class="hidden">
+                    <select id="target-batch-select" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer">
+                      <option value="">Choose target batch</option>
+                      <option value="Asia">Client NBFI [IND-ASIA]</option>
+                      <option value="EU">Key Personnel [IND-KP]</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Section 3: Screening Type -->
+                <div>
+                  <label for="upload-screen-type" class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Screening Type</label>
+                  <select id="upload-screen-type" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer">
+                    <option value="Individual">Individual</option>
+                    <option value="Organisation">Organisation</option>
+                    <option value="Vessel">Vessel</option>
+                  </select>
+                </div>
+
+                <!-- Section 4: Frequency -->
+                <div>
+                  <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Screening Frequency</span>
+                  <div class="flex items-center gap-4 text-gray-700 font-semibold mb-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="freq-opt" checked onchange="toggleFreqInput('one')" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                      <span>One Time</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="freq-opt" onchange="toggleFreqInput('ongoing')" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                      <span>Ongoing</span>
+                    </label>
+                  </div>
+                  <div id="freq-select-container" class="hidden">
+                    <select id="freq-ongoing-select" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer">
+                      <option value="Daily">Daily</option>
+                      <option value="Fortnightly">Fortnightly</option>
+                      <option value="Monthly">Monthly</option>
+                      <option value="Quarterly">Quarterly</option>
+                      <option value="Half Yearly">Half Yearly</option>
+                      <option value="Annually">Annually</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Section 5: Database Screen Against -->
+                <div>
+                  <label for="db-multiselect" class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Database Screen Against</label>
+                  <select id="db-multiselect" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer">
+                    <option value="Default">Default watchlist bundle</option>
+                    <option value="Sanctions">Sanctions Only</option>
+                    <option value="PEP">PEP Only</option>
+                    <option value="Adverse">Adverse News Only</option>
+                  </select>
+                </div>
+
+              </div>
+
+              <!-- Action button: Upload and Screen (#001741 filled) -->
+              <button onclick="executeUploadAndScreen()" id="btn-upload-run" disabled class="w-full mt-4 h-10 bg-gray-300 text-gray-500 font-semibold text-xs rounded transition-all cursor-not-allowed flex items-center justify-center gap-2">
+                <i data-lucide="play" class="w-4 h-4"></i>
+                <span>Upload and Screen</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Batch Format Reference (Collapsible Accordion matching CLAUDE.md specs) -->
+          <div class="bg-white border border-[#e5e5e5] rounded-xl p-5 select-none">
+            <button onclick="toggleAccordion('schema-ref')" class="w-full flex justify-between items-center text-xs font-semibold text-gray-700">
+              <span class="uppercase tracking-wider">Batch file format schema Reference</span>
+              <i data-lucide="chevron-down" id="schema-ref-icon" class="w-4 h-4 text-gray-500"></i>
+            </button>
+            
+            <div id="schema-ref-body" class="hidden mt-4 pt-4 border-t border-gray-150 space-y-4 text-xs">
+              <p class="text-gray-500 leading-relaxed">Please configure the columns in your uploaded files according to the definitions below. Mandatory fields are marked in <span class="text-[#ef4444] font-bold">Red</span>, optional fields in <span class="text-green-600 font-bold">Green</span>.</p>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-[11px] leading-relaxed">
+                <!-- Ind template schema -->
+                <div class="bg-gray-50 border border-gray-200 p-3 rounded">
+                  <span class="block text-xs font-semibold font-sans text-gray-700 uppercase mb-2">Individual Format</span>
+                  <ul class="space-y-1">
+                    <li>- <span class="text-[#ef4444] font-bold">First Name</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Middle Name</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Last Name</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Gender</span> <span class="text-[9px] text-gray-400">(M/F)</span></li>
+                    <li>- <span class="text-green-600 font-semibold">DOB</span> <span class="text-[9px] text-gray-400">(DD/MM/YYYY)</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Country</span></li>
+                    <li>- <span class="text-green-600 font-semibold">ID Number</span></li>
+                    <li>- <span class="text-green-600 font-semibold">ID Type</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Issuing Country</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Case ID</span></li>
+                  </ul>
+                </div>
+
+                <!-- Corp template schema -->
+                <div class="bg-gray-50 border border-gray-200 p-3 rounded">
+                  <span class="block text-xs font-semibold font-sans text-gray-700 uppercase mb-2">Organisation Format</span>
+                  <ul class="space-y-1">
+                    <li>- <span class="text-[#ef4444] font-bold">Name</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Registered Country</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Registered Number</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Registration Date</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Case ID</span></li>
+                  </ul>
+                </div>
+
+                <!-- Vessel template schema -->
+                <div class="bg-gray-50 border border-gray-200 p-3 rounded">
+                  <span class="block text-xs font-semibold font-sans text-gray-700 uppercase mb-2">Vessel Format</span>
+                  <ul class="space-y-1">
+                    <li>- <span class="text-[#ef4444] font-bold">Name</span></li>
+                    <li>- <span class="text-green-600 font-semibold">IMO</span></li>
+                    <li>- <span class="text-green-600 font-semibold">Case ID</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== TAB 2: BATCH DETAILS (Ledger table) ==================== -->
+        <div id="tab-details-container" class="hidden bg-white rounded-xl border border-[#e5e5e5] p-6">
+          <div class="flex justify-between items-center mb-4 select-none">
+            <div>
+              <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Roster Registry Details</h3>
+              <p class="text-xs text-gray-500 mt-0.5">Audit log listing active batch operations.</p>
+            </div>
+            
+            <button onclick="alert('Exporting grid data...')" class="h-8 px-2.5 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-950 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-green-600"></i>
+              <span>Export Roster Registry</span>
+            </button>
+          </div>
+
+          <!-- Roster table (52px minimum height, hover) -->
+          <div class="overflow-x-auto border border-[#e5e5e5] rounded-md text-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-[#e5e5e5] text-gray-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <th class="py-3 px-3">Batch Name</th>
+                  <th class="py-3 px-3 w-28">Created</th>
+                  <th class="py-3 px-3 w-28">Modified</th>
+                  <th class="py-3 px-3 w-20 text-center">Type</th>
+                  <th class="py-3 px-3 w-28">Last Run</th>
+                  <th class="py-3 px-3">List Targets</th>
+                  <th class="py-3 px-3 w-24">Frequency</th>
+                  <th class="py-3 px-3">File Name</th>
+                  <th class="py-3 px-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#e5e5e5] text-gray-700 font-medium" id="batch-registry-body">
+                
+                <!-- Row 1 -->
+                <tr class="hover:bg-[#fafafa] h-[52px]">
+                  <td class="px-3 font-semibold text-gray-900">Client NBFI</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-12</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-15</td>
+                  <td class="px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-mono">Entity</span></td>
+                  <td class="px-3 font-mono text-[10px] text-gray-500">06-15 14:00</td>
+                  <td class="px-3 text-gray-500 truncate max-w-[120px]">Default watchlist</td>
+                  <td class="px-3 text-gray-500">Daily</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-500">Client Screening.xlsx</td>
+                  <td class="px-3 text-right">
+                    <div class="flex justify-end gap-1.5 font-semibold text-teal select-none">
+                      <button onclick="openEditModal('Client NBFI')" class="hover:underline" title="Edit File"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                      <button onclick="runBatchRow(this, 'Client NBFI')" class="hover:underline" title="Run Screening"><i data-lucide="play" class="w-4 h-4"></i></button>
+                      <button onclick="openAuditModal('Client NBFI')" class="hover:underline text-[#8ba2b1] hover:text-navy transition-colors" title="Audit Trail"><i data-lucide="history" class="w-4 h-4"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Row 2 -->
+                <tr class="hover:bg-[#fafafa] h-[52px]">
+                  <td class="px-3 font-semibold text-gray-900">Key Personnel</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-08</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-14</td>
+                  <td class="px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">Individual</span></td>
+                  <td class="px-3 font-mono text-[10px] text-gray-500">06-14 09:30</td>
+                  <td class="px-3 text-gray-500 truncate max-w-[120px]">PEP, Adverse News</td>
+                  <td class="px-3 text-gray-500">Daily</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-500">KP.xlsx</td>
+                  <td class="px-3 text-right">
+                    <div class="flex justify-end gap-1.5 font-semibold text-teal select-none">
+                      <button onclick="openEditModal('Key Personnel')" class="hover:underline" title="Edit File"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                      <button onclick="runBatchRow(this, 'Key Personnel')" class="hover:underline" title="Run Screening"><i data-lucide="play" class="w-4 h-4"></i></button>
+                      <button onclick="openAuditModal('Key Personnel')" class="hover:underline text-[#8ba2b1] hover:text-navy transition-colors" title="Audit Trail"><i data-lucide="history" class="w-4 h-4"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Row 3 -->
+                <tr class="hover:bg-[#fafafa] h-[52px]">
+                  <td class="px-3 font-semibold text-gray-900">One Time Screening</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-11</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">-</td>
+                  <td class="px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-mono">Entity</span></td>
+                  <td class="px-3 font-mono text-[10px] text-gray-500">06-11 11:24</td>
+                  <td class="px-3 text-gray-500 truncate max-w-[120px]">Sanctions</td>
+                  <td class="px-3 text-gray-500">One Time</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-500">OTS.xlsx</td>
+                  <td class="px-3 text-right">
+                    <div class="flex justify-end gap-1.5 font-semibold text-teal select-none">
+                      <button onclick="openEditModal('One Time Screening')" class="hover:underline" title="Edit File"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                      <button onclick="runBatchRow(this, 'One Time Screening')" class="hover:underline" title="Run Screening"><i data-lucide="play" class="w-4 h-4"></i></button>
+                      <button onclick="openAuditModal('One Time Screening')" class="hover:underline text-[#8ba2b1] hover:text-navy transition-colors" title="Audit Trail"><i data-lucide="history" class="w-4 h-4"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination details -->
+          <div class="p-4 border-t border-[#e5e5e5] bg-gray-50 flex items-center justify-between text-xs text-gray-500 shrink-0 mt-4">
+            <span>Showing 1 to 3 of 3 matching results</span>
+            <div class="flex items-center gap-1 font-semibold select-none">
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-400 cursor-not-allowed" disabled>
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <button class="w-8 h-8 flex items-center justify-center border border-teal rounded bg-teal-light text-navy font-semibold">1</button>
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-700">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Interactive Modal Dialog: Edit File -->
+  <div id="edit-file-modal" class="hidden fixed inset-0 bg-navy/20 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-white border border-[#e5e5e5] rounded-xl max-w-lg w-full shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
+      <div class="h-12 border-b border-[#e5e5e5] bg-gray-50 px-4 flex items-center justify-between shrink-0 select-none">
+        <span class="text-xs font-bold text-[#001741] uppercase tracking-wider">Edit Roster Targets</span>
+        <button onclick="closeModal('edit-file-modal')" class="text-gray-400 hover:text-gray-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-4">
+        <div class="text-xs text-gray-500">Edit active entities in the batch roster: <span id="edit-modal-batch-name" class="font-bold text-navy"></span></div>
+        <div class="overflow-x-auto border border-[#e5e5e5] rounded">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="bg-gray-50 border-b border-[#e5e5e5] text-gray-500 font-semibold uppercase text-[10px]">
+                <th class="p-2.5">Target Name</th>
+                <th class="p-2.5 w-32">Country</th>
+                <th class="p-2.5 w-32" id="edit-modal-extra-col">DOB / Info</th>
+                <th class="p-2.5 w-12 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="edit-modal-tbody" class="divide-y divide-[#e5e5e5] font-medium text-gray-750">
+              <!-- Dynamic rows generated in script -->
+            </tbody>
+          </table>
+        </div>
+        <button onclick="addModalRow()" class="h-8 border border-dashed border-teal text-teal hover:bg-teal-light text-xs font-semibold rounded flex items-center justify-center gap-1.5 w-full transition-colors select-none">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Add New Target Row</span>
+        </button>
+      </div>
+      <div class="p-4 border-t border-[#e5e5e5] bg-gray-50 flex justify-end gap-2 shrink-0 select-none">
+        <button onclick="closeModal('edit-file-modal')" class="h-9 px-4 hover:bg-gray-150 text-gray-600 text-xs font-semibold rounded transition-colors">Cancel</button>
+        <button onclick="saveModalChanges()" class="h-9 px-5 bg-teal hover:bg-teal-hover text-white text-xs font-semibold rounded transition-colors">Save & Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Modal Dialog: Audit Trail -->
+  <div id="audit-trail-modal" class="hidden fixed inset-0 bg-navy/20 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-white border border-[#e5e5e5] rounded-xl max-w-lg w-full shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
+      <div class="h-12 border-b border-[#e5e5e5] bg-gray-50 px-4 flex items-center justify-between shrink-0 select-none">
+        <span class="text-xs font-bold text-[#001741] uppercase tracking-wider">Batch Audit History Trail</span>
+        <button onclick="closeModal('audit-trail-modal')" class="text-gray-400 hover:text-gray-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-4">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-gray-500">Compliance history logs for batch: <span id="audit-modal-batch-name" class="font-bold text-navy"></span></span>
+        </div>
+        
+        <!-- Timeline vertical track -->
+        <div class="relative pl-6 border-l border-teal/30 ml-3 space-y-6 text-xs text-gray-600 font-medium" id="audit-modal-timeline">
+          <!-- Timeline points injected here -->
+        </div>
+      </div>
+      <div class="p-4 border-t border-[#e5e5e5] bg-gray-50 flex justify-between items-center shrink-0 select-none">
+        <button onclick="alert('Exporting audit log registry...')" class="h-9 px-3 border border-gray-300 hover:bg-gray-100 text-gray-600 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+          <i data-lucide="download" class="w-4 h-4 text-red-500"></i>
+          <span>Export Trail PDF</span>
+        </button>
+        <button onclick="closeModal('audit-trail-modal')" class="h-9 px-4 bg-[#001741] hover:bg-[#00143a] text-white text-xs font-semibold rounded transition-colors">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Run Batch Progress Simulation Modal -->
+  <div id="run-batch-modal" class="hidden fixed inset-0 bg-navy/20 backdrop-blur-sm z-50 flex items-center justify-center select-none">
+    <div class="bg-white border border-[#e5e5e5] p-8 rounded-lg max-w-[400px] w-full text-center shadow-2xl">
+      <svg class="animate-spin h-10 w-10 text-teal mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <h3 class="text-sm font-semibold tracking-[-0.3px] text-gray-900 uppercase">Screening Batch Roster...</h3>
+      <p class="text-xs text-gray-500 mt-2">Checking roster records in <span id="run-modal-batch-name" class="font-bold text-navy"></span> against live watchlists. Please wait.</p>
+      
+      <div class="mt-4 w-full bg-gray-100 h-1.5 rounded overflow-hidden">
+        <div class="h-full bg-teal w-0 transition-all duration-150" id="run-modal-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide
+    lucide.createIcons();
+
+    // Mock dataset storage for roster edits and trails
+    const mockRosters = {
+      "Client NBFI": [
+        { name: "Severstal PAO Holding", country: "Russia", extra: "Reg: RU9283" },
+        { name: "VTB Bank PJSC", country: "Russia", extra: "Reg: RU1102" },
+        { name: "Rosneft Oil Company", country: "Russia", extra: "Reg: RU5523" }
+      ],
+      "Key Personnel": [
+        { name: "Alexey Mordashov", country: "Russia", extra: "1965-09-26" },
+        { name: "Vladimir Putin", country: "Russia", extra: "1952-10-07" },
+        { name: "Roman Abramovich", country: "Russia", extra: "1966-10-24" }
+      ],
+      "One Time Screening": [
+        { name: "Njord Shipping Ltd", country: "United Arab Emirates", extra: "Reg: AE192" }
+      ]
+    };
+
+    const mockTrails = {
+      "Client NBFI": [
+        { time: "2026-06-15 14:00", user: "Audit Automator", detail: "Automatic daily screening executed. 12 hits identified." },
+        { time: "2026-06-15 14:10", user: "Vilas Limbu", detail: "10 false matches disposed and approved." },
+        { time: "2026-06-12 11:45", user: "Alok Desai", detail: "Batch created and initial roster uploaded via Client Screening.xlsx." }
+      ],
+      "Key Personnel": [
+        { time: "2026-06-14 09:30", user: "Vilas Limbu", detail: "Daily screening run completed. 3 matches found." },
+        { time: "2026-06-08 10:15", user: "Alok Desai", detail: "Batch created with 45 individual records." }
+      ],
+      "One Time Screening": [
+        { time: "2026-06-11 11:24", user: "Alok Desai", detail: "One-time batch run executed. 2 matches identified." },
+        { time: "2026-06-11 11:00", user: "Alok Desai", detail: "Batch uploaded via OTS.xlsx." }
+      ]
+    };
+
+    let activeBatch = "";
+
+    // Open/Close Modal Utilities
+    function openModal(id) {
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add("hidden");
+    }
+
+    // Modal Actions: Edit Roster File
+    function openEditModal(batchName) {
+      activeBatch = batchName;
+      document.getElementById("edit-modal-batch-name").innerText = batchName;
+      
+      const isEntity = batchName !== "Key Personnel";
+      document.getElementById("edit-modal-extra-col").innerText = isEntity ? "Reg. Code" : "DOB";
+
+      const tbody = document.getElementById("edit-modal-tbody");
+      tbody.innerHTML = "";
+      
+      const records = mockRosters[batchName] || [];
+      records.forEach((rec, index) => {
+        tbody.innerHTML += `
+          <tr class="h-10">
+            <td class="p-2"><input type="text" value="${rec.name}" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-teal focus:outline-none text-xs"></td>
+            <td class="p-2"><input type="text" value="${rec.country}" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-teal focus:outline-none text-xs"></td>
+            <td class="p-2"><input type="text" value="${rec.extra}" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-teal focus:outline-none text-xs"></td>
+            <td class="p-2 text-center">
+              <button onclick="removeModalRow(this)" class="text-red-500 hover:text-red-700">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      openModal("edit-file-modal");
+      lucide.createIcons();
+    }
+
+    function addModalRow() {
+      const tbody = document.getElementById("edit-modal-tbody");
+      tbody.innerHTML += `
+        <tr class="h-10">
+          <td class="p-2"><input type="text" placeholder="Enter target name" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-teal focus:outline-none text-xs"></td>
+          <td class="p-2"><input type="text" placeholder="Country" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-teal focus:outline-none text-xs"></td>
+          <td class="p-2"><input type="text" placeholder="Info" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-1 focus:ring-teal focus:outline-none text-xs"></td>
+          <td class="p-2 text-center">
+            <button onclick="removeModalRow(this)" class="text-red-500 hover:text-red-700">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+      lucide.createIcons();
+    }
+
+    function removeModalRow(btn) {
+      btn.closest("tr").remove();
+    }
+
+    function saveModalChanges() {
+      const tbody = document.getElementById("edit-modal-tbody");
+      const rows = tbody.querySelectorAll("tr");
+      const newRecords = [];
+
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll("input");
+        if (inputs[0] && inputs[0].value.trim()) {
+          newRecords.push({
+            name: inputs[0].value.trim(),
+            country: inputs[1].value.trim(),
+            extra: inputs[2].value.trim()
+          });
+        }
+      });
+
+      mockRosters[activeBatch] = newRecords;
+      
+      // Update modification timestamp in matching table row
+      const tableRows = document.querySelectorAll("#batch-registry-body tr");
+      tableRows.forEach(tr => {
+        if (tr.cells[0].innerText === activeBatch) {
+          const now = new Date();
+          const timestampStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+          tr.cells[2].innerText = timestampStr;
+        }
+      });
+
+      closeModal("edit-file-modal");
+      
+      // Show confirmation toast
+      alert(`Success: Roster schema verification passed. Saved ${newRecords.length} targets for ${activeBatch}.`);
+    }
+
+    // Modal Actions: Audit Trails
+    function openAuditModal(batchName) {
+      document.getElementById("audit-modal-batch-name").innerText = batchName;
+      const timeline = document.getElementById("audit-modal-timeline");
+      timeline.innerHTML = "";
+
+      const logs = mockTrails[batchName] || [];
+      logs.forEach(log => {
+        timeline.innerHTML += `
+          <div class="relative">
+            <!-- Bullet marker -->
+            <span class="absolute -left-8 top-1 w-3.5 h-3.5 bg-white border-2 border-teal rounded-full"></span>
+            <div>
+              <span class="font-mono text-[10px] text-gray-400 block">${log.time} &middot; Analyst: ${log.user}</span>
+              <p class="text-gray-700 mt-0.5 leading-relaxed font-semibold">${log.detail}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      openModal("audit-trail-modal");
+    }
+
+    // Tab swapper logic Upload vs Details
+    function switchMainTab(tab) {
+      const btnUpload = document.getElementById("tab-btn-upload");
+      const btnDetails = document.getElementById("tab-btn-details");
+
+      const uploadContainer = document.getElementById("tab-upload-container");
+      const detailsContainer = document.getElementById("tab-details-container");
+
+      // Reset triggers
+      btnUpload.className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-900 font-medium flex items-center gap-2";
+      btnDetails.className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-900 font-medium flex items-center gap-2";
+
+      if (tab === 'upload') {
+        btnUpload.className = "py-3 border-b-2 border-teal text-navy font-bold flex items-center gap-2";
+        uploadContainer.classList.remove("hidden");
+        detailsContainer.classList.add("hidden");
+      } else {
+        btnDetails.className = "py-3 border-b-2 border-teal text-navy font-bold flex items-center gap-2";
+        uploadContainer.classList.add("hidden");
+        detailsContainer.classList.remove("hidden");
+      }
+    }
+
+    // Dropzone logic
+    function triggerBrowse() {
+      const loading = document.getElementById("dropzone-loading");
+      const success = document.getElementById("dropzone-success");
+      
+      // If not already loading or uploaded
+      if (loading.classList.contains("hidden") && success.classList.contains("hidden")) {
+        document.getElementById("batch-file-input").click();
+      }
+    }
+
+    function handleFileSelected(input) {
+      if (input.files && input.files[0]) {
+        uploadFileSimulation(input.files[0].name);
+      }
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        uploadFileSimulation(e.dataTransfer.files[0].name);
+      }
+    }
+
+    let loadedFilename = "";
+    
+    function uploadFileSimulation(filename) {
+      loadedFilename = filename;
+      const idle = document.getElementById("dropzone-idle");
+      const loading = document.getElementById("dropzone-loading");
+      const filenameLbl = document.getElementById("dropzone-filename");
+      const progressBar = document.getElementById("dropzone-progress-bar");
+
+      idle.classList.add("hidden");
+      loading.classList.remove("hidden");
+      filenameLbl.innerText = `Uploading: ${filename}`;
+
+      let progress = 0;
+      const timer = setInterval(() => {
+        progress += 25;
+        progressBar.style.width = `${progress}%`;
+        if (progress >= 100) {
+          clearInterval(timer);
+          
+          // Complete
+          loading.classList.add("hidden");
+          const success = document.getElementById("dropzone-success");
+          success.classList.remove("hidden");
+          
+          const recordCount = Math.floor(Math.random() * 800) + 50;
+          document.getElementById("dropzone-success-msg").innerHTML = `Verification Passed: File <span class="font-mono bg-gray-100 px-1 py-0.5 rounded text-gray-700 font-semibold">${filename}</span> parsed. <span class="font-bold text-teal font-mono">${recordCount}</span> records identified.`;
+          
+          // Enable run button
+          const btn = document.getElementById("btn-upload-run");
+          btn.disabled = false;
+          btn.className = "w-full mt-4 h-10 bg-[#001741] hover:bg-[#00143a] text-white font-semibold text-xs rounded transition-all flex items-center justify-center gap-2 cursor-pointer";
+        }
+      }, 150);
+    }
+
+    function clearDropzone(e) {
+      e.stopPropagation();
+      document.getElementById("dropzone-success").classList.add("hidden");
+      document.getElementById("dropzone-idle").classList.remove("hidden");
+      document.getElementById("batch-file-input").value = "";
+
+      const btn = document.getElementById("btn-upload-run");
+      btn.disabled = true;
+      btn.className = "w-full mt-4 h-10 bg-gray-300 text-gray-500 font-semibold text-xs rounded transition-all cursor-not-allowed flex items-center justify-center gap-2";
+    }
+
+    // Toggle options
+    function toggleBatchNameInput(opt) {
+      const name = document.getElementById("batch-name-container");
+      const sel = document.getElementById("batch-select-container");
+      if (opt === 'new') {
+        name.classList.remove("hidden");
+        sel.classList.add("hidden");
+      } else {
+        name.classList.add("hidden");
+        sel.classList.remove("hidden");
+      }
+    }
+
+    function toggleFreqInput(opt) {
+      const sel = document.getElementById("freq-select-container");
+      if (opt === 'one') {
+        sel.classList.add("hidden");
+      } else {
+        sel.classList.remove("hidden");
+      }
+    }
+
+    function toggleAccordion(id) {
+      const body = document.getElementById(`${id}-body`);
+      const icon = document.getElementById(`${id}-icon`);
+      if (body.classList.contains("hidden")) {
+        body.classList.remove("hidden");
+        icon.classList.add("rotate-180");
+      } else {
+        body.classList.add("hidden");
+        icon.classList.remove("rotate-180");
+      }
+    }
+
+    // Upload & Run Batch triggers
+    function executeUploadAndScreen() {
+      // Append row to registry
+      const tbody = document.getElementById("batch-registry-body");
+      const nameInput = document.getElementById("target-batch-name").value.trim() || "Batch Roster Run";
+      const type = document.getElementById("upload-screen-type").value;
+      const db = document.getElementById("db-multiselect").value;
+      const ongoing = document.getElementsByName("freq-opt")[1].checked;
+      const freq = ongoing ? document.getElementById("freq-ongoing-select").value : "One Time";
+
+      const today = new Date().toISOString().split('T')[0];
+
+      // Seed mock details for the new batch
+      mockRosters[nameInput] = [
+        { name: "Test Target A", country: "United Kingdom", extra: type === "Individual" ? "1980-01-01" : "Reg: GB9928" },
+        { name: "Test Target B", country: "United States", extra: type === "Individual" ? "1972-04-12" : "Reg: US8810" }
+      ];
+
+      mockTrails[nameInput] = [
+        { time: `${today} 12:00`, user: "Alok Desai", detail: "Roster batch uploaded and verified." }
+      ];
+
+      const newRowHtml = `
+        <tr class="hover:bg-[#fafafa] h-[52px]">
+          <td class="px-3 font-semibold text-gray-900">${nameInput}</td>
+          <td class="px-3 font-mono text-[10px] text-gray-400">${today}</td>
+          <td class="px-3 font-mono text-[10px] text-gray-400">-</td>
+          <td class="px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">${type}</span></td>
+          <td class="px-3 font-mono text-[10px] text-gray-500">Executing...</td>
+          <td class="px-3 text-gray-500 truncate max-w-[120px]">${db}</td>
+          <td class="px-3 text-gray-500">${freq}</td>
+          <td class="px-3 font-mono text-[10px] text-gray-500">${loadedFilename}</td>
+          <td class="px-3 text-right">
+            <div class="flex justify-end gap-1.5 font-semibold text-teal select-none">
+              <button onclick="openEditModal('${nameInput}')" class="text-gray-300 cursor-not-allowed" disabled title="Edit"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+              <button class="text-gray-300 cursor-not-allowed" disabled title="Run"><i data-lucide="play" class="w-4 h-4"></i></button>
+              <button onclick="openAuditModal('${nameInput}')" class="hover:underline text-[#8ba2b1] hover:text-navy transition-colors" title="Audit Trail"><i data-lucide="history" class="w-4 h-4"></i></button>
+            </div>
+          </td>
+        </tr>
+      `;
+
+      tbody.insertAdjacentHTML("afterbegin", newRowHtml);
+      lucide.createIcons();
+
+      // Clear dropzone
+      clearDropzone({ stopPropagation: () => {} });
+      
+      // Swap to details tab
+      switchMainTab('details');
+
+      // Trigger automatic simulation of row 1 run
+      const row = tbody.rows[0];
+      setTimeout(() => {
+        row.cells[4].innerText = "Resolved (0 Hits)";
+        // Restore buttons
+        row.cells[8].innerHTML = `
+          <div class="flex justify-end gap-1.5 font-semibold text-teal select-none">
+            <button onclick="openEditModal('${nameInput}')" class="hover:underline" title="Edit File"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+            <button onclick="runBatchRow(this, '${nameInput}')" class="hover:underline" title="Run Screening"><i data-lucide="play" class="w-4 h-4"></i></button>
+            <button onclick="openAuditModal('${nameInput}')" class="hover:underline text-[#8ba2b1] hover:text-navy transition-colors" title="Audit Trail"><i data-lucide="history" class="w-4 h-4"></i></button>
+          </div>
+        `;
+        lucide.createIcons();
+      }, 2000);
+    }
+
+    // Run active row batch (Visual progress modal overlay)
+    function runBatchRow(button, batchName) {
+      const row = button.closest("tr");
+      const progressTd = row.cells[4];
+      
+      // Open Run Progress Modal
+      document.getElementById("run-modal-batch-name").innerText = batchName;
+      const progressFill = document.getElementById("run-modal-progress");
+      progressFill.style.width = "0%";
+      openModal("run-batch-modal");
+
+      let width = 0;
+      const timer = setInterval(() => {
+        width += 20;
+        progressFill.style.width = `${width}%`;
+        if (width >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            closeModal("run-batch-modal");
+            progressTd.innerHTML = `Completed (0 Hits)`;
+            
+            // Add run event to audit log
+            const now = new Date();
+            const timestampStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            if (!mockTrails[batchName]) {
+              mockTrails[batchName] = [];
+            }
+            mockTrails[batchName].unshift({
+              time: timestampStr,
+              user: "Compliance Analyst",
+              detail: "Manual batch screening execution completed. 0 targets hit."
+            });
+            
+            // Update modified timestamp
+            row.cells[2].innerText = timestampStr.split(' ')[0];
+          }, 200);
+        }
+      }, 150);
+    }
+
+    // Database Template Loader
+    function loadSavedTemplatesForBatch() {
+      const select = document.getElementById("db-multiselect");
+      if (!select) return;
+
+      let templates = {};
+      try {
+        templates = JSON.parse(localStorage.getItem("database_templates")) || {};
+      } catch (e) {
+        templates = {};
+      }
+
+      Object.keys(templates).forEach(key => {
+        // Avoid duplicate options if already appended
+        if (![...select.options].some(opt => opt.value === key)) {
+          const opt = document.createElement("option");
+          opt.value = key;
+          opt.textContent = `${key} (Custom)`;
+          select.appendChild(opt);
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedTemplatesForBatch();
+    });
+  </script>
+</body>
+</html>

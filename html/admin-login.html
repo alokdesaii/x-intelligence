@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console Secure Login | X-Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#001741',
+            'navy-dark': '#000b21',
+            teal: '#00dc8d',
+            'teal-hover': '#00c47e',
+            'teal-light': '#ebfbf5',
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '0px',
+            'xs': '0px',
+            'sm': '0px',
+            'md': '0px',
+            'lg': '0px',
+            'xl': '0px',
+            '2xl': '0px',
+            '3xl': '0px',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Custom ease-out transitions matching DESIGN.md */
+    .transition-step {
+      transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Faint grid overlay (lightened to 6% opacity for subtle checks effect) */
+    .grid-overlay {
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at top left, black 25%, transparent 75%);
+      -webkit-mask-image: radial-gradient(circle at top left, black 25%, transparent 75%);
+    }
+
+    /* shadow-panel class for floating overlays from DESIGN.md Section 2.1 */
+    .shadow-panel {
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.04), 0 0 1px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    /* Keyframes for glowing teal travelers moving along the 48px grid lines */
+    @keyframes gridTraveler1 {
+      0% { left: 48px; top: 48px; }
+      9% { left: 288px; top: 48px; }
+      14.5% { left: 288px; top: 192px; }
+      21.5% { left: 96px; top: 192px; }
+      30.5% { left: 96px; top: 432px; }
+      43% { left: 432px; top: 432px; }
+      48.5% { left: 432px; top: 576px; }
+      57.5% { left: 192px; top: 576px; }
+      66.5% { left: 192px; top: 816px; }
+      72% { left: 48px; top: 816px; }
+      100% { left: 48px; top: 48px; }
+    }
+    @keyframes gridTraveler2 {
+      0% { left: 432px; top: 96px; }
+      9.2% { left: 192px; top: 96px; }
+      18.4% { left: 192px; top: 336px; }
+      25.8% { left: 384px; top: 336px; }
+      38.8% { left: 384px; top: 672px; }
+      49.9% { left: 96px; top: 672px; }
+      57.3% { left: 96px; top: 864px; }
+      64.7% { left: 288px; top: 864px; }
+      70.3% { left: 288px; top: 720px; }
+      75.9% { left: 432px; top: 720px; }
+      100% { left: 432px; top: 96px; }
+    }
+    .grid-traveler-1 {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px 4px #00dc8d, 0 0 4px 1px #ffffff;
+      pointer-events: none;
+      z-index: 10;
+      animation: gridTraveler1 16s infinite linear;
+    }
+    .grid-traveler-2 {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px 4px #00dc8d, 0 0 4px 1px #ffffff;
+      pointer-events: none;
+      z-index: 10;
+      animation: gridTraveler2 18s infinite linear;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex font-sans bg-navy-dark overflow-hidden">
+
+  <!-- LEFT PANEL (50% width, hidden below 1280px/xl) -->
+  <section
+    class="hidden xl:flex xl:w-1/2 bg-gradient-to-br from-[#001741] via-[#000f33] to-[#000b21] relative flex-col justify-between p-12 text-[#b3c5d0] overflow-hidden select-none">
+    
+    <!-- Grid travelers (glowing dots traveling along the grid lines) -->
+    <div class="grid-traveler-1"></div>
+    <div class="grid-traveler-2"></div>
+
+    <!-- Grid Overlay -->
+    <div class="absolute inset-0 grid-overlay pointer-events-none z-0"></div>
+
+    <!-- Top Left Branding & Pill -->
+    <div class="relative z-10 space-y-4">
+      <img src="logo/hh-logo-white.svg" alt="X-Intelligence" style="height:96px;width:auto">
+
+      <!-- Administrative Pill -->
+      <div
+        class="inline-flex items-center gap-1.5 border border-[rgba(0,191,179,0.4)] bg-[rgba(0,191,179,0.1)] text-[#6eeab2] rounded-full text-xs px-3 py-1 font-medium">
+        <span class="w-1.5 h-1.5 bg-teal rounded-full animate-pulse"></span>
+        <span>Internal Administration System</span>
+      </div>
+    </div>
+
+    <!-- H1 Headline & Subtitle -->
+    <div class="relative z-10 max-w-lg mt-8">
+      <h1 class="text-3xl font-semibold text-white tracking-tight leading-tight">
+        X-Intelligence Admin Console
+      </h1>
+      <p class="text-[#b3c5d0] text-sm leading-relaxed mt-3">
+        Manage products and directories, risk score metrics, customer subscriptions, modular access configuration, and system-wide settings.
+      </p>
+
+      <!-- Feature List (4 rows with teal admin tiles) -->
+      <ul class="space-y-4 mt-8">
+        <li class="flex items-center gap-3">
+          <div
+            class="bg-[rgba(0,191,179,0.12)] text-[#00dc8d] rounded-lg p-2 flex items-center justify-center shrink-0">
+            <i data-lucide="database" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[#b3c5d0] text-sm font-medium">Global watchlist synchronization &amp; database scheduler management</span>
+        </li>
+        <li class="flex items-center gap-3">
+          <div
+            class="bg-[rgba(0,191,179,0.12)] text-[#00dc8d] rounded-lg p-2 flex items-center justify-center shrink-0">
+            <i data-lucide="credit-card" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[#b3c5d0] text-sm font-medium">Client subscription setup &amp; volume scanning caps control</span>
+        </li>
+        <li class="flex items-center gap-3">
+          <div
+            class="bg-[rgba(0,191,179,0.12)] text-[#00dc8d] rounded-lg p-2 flex items-center justify-center shrink-0">
+            <i data-lucide="package-plus" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[#b3c5d0] text-sm font-medium">Modular pricing models, packages &amp; API configurations builder</span>
+        </li>
+        <li class="flex items-center gap-3">
+          <div
+            class="bg-[rgba(0,191,179,0.12)] text-[#00dc8d] rounded-lg p-2 flex items-center justify-center shrink-0">
+            <i data-lucide="activity" class="w-5 h-5"></i>
+          </div>
+          <span class="text-[#b3c5d0] text-sm font-medium">Full audit logging of admin activities &amp; platform metrics</span>
+        </li>
+      </ul>
+
+      <!-- Stats Strip (Translucent card) -->
+      <div
+        class="border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] rounded-xl p-4 grid grid-cols-3 gap-4 text-center mt-10">
+        <div>
+          <p class="text-base font-semibold text-[#00dc8d]">24.8M+</p>
+          <p class="text-[10px] text-[#b3c5d0] uppercase tracking-wider font-semibold mt-0.5">Scans Run</p>
+        </div>
+        <div class="border-x border-[rgba(255,255,255,0.12)] px-2">
+          <p class="text-base font-semibold text-[#00dc8d]">512</p>
+          <p class="text-[10px] text-[#b3c5d0] uppercase tracking-wider font-semibold mt-0.5">Active Orgs</p>
+        </div>
+        <div>
+          <p class="text-base font-semibold text-[#00dc8d]">100%</p>
+          <p class="text-[10px] text-[#b3c5d0] uppercase tracking-wider font-semibold mt-0.5">Sync Success</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust bottom line -->
+    <div
+      class="relative z-10 border-t border-[rgba(255,255,255,0.1)] pt-6 flex justify-between items-center text-xs text-[#b3c5d0]">
+      <span>Internal Administrative Domain</span>
+      <span class="font-mono text-[10px]">HARBOUR &amp; HILLS FSL © 2026</span>
+    </div>
+  </section>
+
+  <!-- RIGHT PANEL (50% width, light-gray bg on all screen sizes) -->
+  <section
+    class="w-full xl:w-1/2 bg-gray-50 flex items-center justify-center p-8 overflow-y-auto min-h-screen">
+
+    <!-- Floating login form card (Flat borders + shadow-panel elevation overlay) -->
+    <div
+      class="w-full max-w-[420px] bg-white border border-[#e5e5e5] rounded-lg px-8 py-10 relative overflow-hidden shadow-panel">
+
+      <!-- Brand Header (visible on mobile / below xl breakpoint) -->
+      <div class="mb-6 flex flex-col items-center xl:hidden">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-3.5 h-3.5 bg-teal rounded-full animate-pulse"></span>
+          <span class="text-navy font-semibold text-xl tracking-[-0.5px]">X-INTELLIGENCE</span>
+        </div>
+        <p class="text-xs text-gray-500 font-mono">ADMIN SYSTEM CONSOLE</p>
+        <div class="h-px bg-[#e5e5e5] w-full mt-4"></div>
+      </div>
+
+      <!-- Alert Message Area (Dynamic verification notifications) -->
+      <div id="login-alert"
+        class="hidden mb-4 p-3 rounded bg-[#fef2f2] border border-[#ef4444]/30 text-xs text-[#ef4444] font-medium flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+        <span id="alert-text"></span>
+      </div>
+
+      <!-- Multi-Step Container -->
+      <div class="relative w-full h-[390px]">
+
+        <!-- STEP 1: Credentials (Email & Password) -->
+        <div id="step-credentials" class="transition-step absolute inset-0 opacity-100 transform translate-x-0 z-10">
+          <h2 class="text-sm font-semibold tracking-[-0.3px] text-gray-900 uppercase mb-4">Admin Security Credentials</h2>
+
+          <form id="credentials-form" class="space-y-4" onsubmit="event.preventDefault(); goToMfa();">
+            <!-- Email Field -->
+            <div>
+              <label for="email" class="block text-xs font-semibold text-gray-700 mb-1">
+                Administrator Email <span class="text-[#ef4444]">*</span>
+              </label>
+              <div class="relative">
+                <input type="email" id="email" required autofocus placeholder="admin@hh.com"
+                  class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm placeholder-gray-400">
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-[#737373] pointer-events-none">
+                  <i data-lucide="mail" class="w-4 h-4"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+              <label for="password" class="block text-xs font-semibold text-gray-700 mb-1">
+                Password <span class="text-[#ef4444]">*</span>
+              </label>
+              <div class="relative">
+                <input type="password" id="password" required placeholder="••••••••"
+                  class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm placeholder-gray-400">
+                <!-- Masked Eye Icon Toggle -->
+                <button type="button" onclick="togglePasswordVisibility()"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-[#737373] hover:text-gray-900 transition-colors"
+                  title="Toggle visibility">
+                  <i data-lucide="eye" id="password-eye-icon" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- CTA Button (Brand/Navy) -->
+            <button type="submit" id="credentials-submit-btn"
+              class="w-full h-11 bg-navy hover:bg-navy-dark active:bg-navy text-white font-medium text-sm rounded transition-colors flex items-center justify-center gap-2">
+              <span>Continue to Admin MFA</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </form>
+
+          <!-- Hairline Divider -->
+          <div class="relative my-5 flex items-center justify-center">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <span class="relative bg-white px-3 text-[10px] text-[#737373] uppercase tracking-wider font-semibold">
+              Authorized personnel only
+            </span>
+          </div>
+
+          <!-- Notice Alert Box -->
+          <div class="p-3 border border-amber-200 bg-amber-50 rounded text-[11px] text-amber-800 leading-normal font-medium">
+            Unauthorized access attempts are logged and reported automatically to the security operations center.
+          </div>
+        </div>
+
+        <!-- STEP 2: MFA / OTP (6-Digit Code) -->
+        <div id="step-mfa"
+          class="transition-step absolute inset-0 opacity-0 transform translate-x-12 pointer-events-none z-0">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-semibold tracking-[-0.3px] text-gray-900 uppercase">MFA Code</h2>
+            <button type="button" onclick="goToCredentials()"
+              class="text-xs text-gray-600 hover:text-navy font-semibold flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              Back
+            </button>
+          </div>
+          <p class="text-xs text-gray-600 mb-6 leading-relaxed">Enter the 6-digit verification code generated by your admin security token.</p>
+
+          <form id="mfa-form" class="space-y-6" onsubmit="event.preventDefault(); verifyOtp();">
+            <!-- 6-digit Input Block Row -->
+            <div class="flex justify-between gap-2" id="otp-container">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required
+                class="w-12 h-12 text-center text-lg font-bold font-mono border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal bg-white transition-all duration-150">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required
+                class="w-12 h-12 text-center text-lg font-bold font-mono border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal bg-white transition-all duration-150">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required
+                class="w-12 h-12 text-center text-lg font-bold font-mono border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal bg-white transition-all duration-150">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required
+                class="w-12 h-12 text-center text-lg font-bold font-mono border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal bg-white transition-all duration-150">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required
+                class="w-12 h-12 text-center text-lg font-bold font-mono border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal bg-white transition-all duration-150">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required
+                class="w-12 h-12 text-center text-lg font-bold font-mono border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal bg-white transition-all duration-150">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="mfa-submit-btn" disabled
+              class="w-full h-11 bg-navy hover:bg-navy-dark text-white font-medium text-sm rounded transition-colors flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+              <span>Verify & Access Console</span>
+            </button>
+          </form>
+
+          <!-- Resend Code options -->
+          <div class="text-center mt-6">
+            <span class="text-xs text-gray-600">Didn't receive a code?</span>
+            <button type="button" onclick="resendMfaCode()"
+              class="text-xs text-teal font-semibold hover:text-teal-hover underline ml-1 cursor-pointer">
+              Resend code
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Security Information Footer -->
+      <div class="mt-4 text-[10px] text-[#737373] text-center flex items-center justify-center gap-1.5 font-mono">
+        <i data-lucide="lock" class="w-3.5 h-3.5 text-[#737373]"></i>
+        SECURE ADMIN GATEWAY (TLS 1.3)
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Dynamic Toast Container -->
+  <div id="toast"
+    class="fixed bottom-6 right-6 bg-navy text-white text-xs px-4 py-3 rounded border border-[#00276e] flex items-center gap-2 transform translate-y-12 opacity-0 transition-all duration-300 z-50">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal"></i>
+    <span id="toast-message">MFA verification token dispatched.</span>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Toggle Password Masking/Unmasking
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById("password");
+      const icon = document.getElementById("password-eye-icon");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.setAttribute("data-lucide", "eye-off");
+      } else {
+        passwordInput.type = "password";
+        icon.setAttribute("data-lucide", "eye");
+      }
+      lucide.createIcons();
+    }
+
+    // Navigation and OTP Focus behaviors
+    const stepCredentials = document.getElementById("step-credentials");
+    const stepMfa = document.getElementById("step-mfa");
+    const otpInputs = document.querySelectorAll("#otp-container input");
+    const alertDiv = document.getElementById("login-alert");
+    const alertText = document.getElementById("alert-text");
+
+    function showAlert(msg) {
+      alertText.textContent = msg;
+      alertDiv.classList.remove("hidden");
+    }
+
+    function hideAlert() {
+      alertDiv.classList.add("hidden");
+    }
+
+    function goToMfa() {
+      const email = document.getElementById("email").value;
+      if (!email.endsWith("@hh.com") && !email.endsWith("@harbourandhills.com")) {
+        showAlert("Access Denied: Please use a valid Xirni administrator corporate email address.");
+        return;
+      }
+      hideAlert();
+
+      // Disable credentials input
+      document.getElementById("email").disabled = true;
+      document.getElementById("password").disabled = true;
+
+      const submitBtn = document.getElementById("credentials-submit-btn");
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Checking Admin Credentials...</span>
+      `;
+
+      setTimeout(() => {
+        // Step transition animation
+        stepCredentials.classList.replace("opacity-100", "opacity-0");
+        stepCredentials.classList.add("-translate-x-12", "pointer-events-none");
+        stepCredentials.classList.remove("z-10");
+
+        stepMfa.classList.replace("opacity-0", "opacity-100");
+        stepMfa.classList.remove("translate-x-12", "pointer-events-none");
+        stepMfa.classList.add("z-10");
+
+        // Focus first OTP input
+        otpInputs[0].focus();
+      }, 800);
+    }
+
+    function goToCredentials() {
+      hideAlert();
+      // Re-enable credentials input
+      document.getElementById("email").disabled = false;
+      document.getElementById("password").disabled = false;
+
+      const submitBtn = document.getElementById("credentials-submit-btn");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `
+        <span>Continue to Admin MFA</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      `;
+      lucide.createIcons();
+
+      stepMfa.classList.replace("opacity-100", "opacity-0");
+      stepMfa.classList.add("translate-x-12", "pointer-events-none");
+      stepMfa.classList.remove("z-10");
+
+      stepCredentials.classList.replace("opacity-0", "opacity-100");
+      stepCredentials.classList.remove("-translate-x-12", "pointer-events-none");
+      stepCredentials.classList.add("z-10");
+    }
+
+    // Helper to check OTP completion and update verify button state
+    function checkOtpCompletion() {
+      let otpCode = "";
+      otpInputs.forEach(i => otpCode += i.value);
+      const mfaBtn = document.getElementById("mfa-submit-btn");
+      if (otpCode.length === 6) {
+        mfaBtn.disabled = false;
+        mfaBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      } else {
+        mfaBtn.disabled = true;
+        mfaBtn.classList.add("opacity-50", "cursor-not-allowed");
+      }
+    }
+
+    // Auto-focus move in OTP block
+    otpInputs.forEach((input, index) => {
+      // Focus navigation
+      input.addEventListener("input", (e) => {
+        const val = e.target.value;
+        if (val.length === 1) {
+          input.classList.add("border-teal", "bg-teal-light");
+          if (index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+          }
+        } else if (val.length === 0) {
+          input.classList.remove("border-teal", "bg-teal-light");
+        }
+        checkOtpCompletion();
+      });
+
+      // Backspace handling
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace") {
+          input.value = "";
+          input.classList.remove("border-teal", "bg-teal-light");
+          if (index > 0) {
+            otpInputs[index - 1].focus();
+          }
+        }
+        checkOtpCompletion();
+      });
+    });
+
+    // Verification Mocking
+    function verifyOtp() {
+      hideAlert();
+      const mfaBtn = document.getElementById("mfa-submit-btn");
+      mfaBtn.disabled = true;
+      mfaBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Verifying Security Code...</span>
+      `;
+
+      // Read OTP Code
+      let otpCode = "";
+      otpInputs.forEach(i => otpCode += i.value);
+
+      setTimeout(() => {
+        if (otpCode === "123456" || otpCode.length === 6) {
+          window.location.href = "admin-dashboard.html";
+        } else {
+          showAlert("Invalid verification code. Please check your admin token device.");
+          mfaBtn.disabled = false;
+          mfaBtn.innerHTML = `
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <span>Verify & Access Console</span>
+          `;
+          lucide.createIcons();
+          otpInputs.forEach(i => {
+            i.value = "";
+            i.classList.remove("border-teal", "bg-teal-light");
+          });
+          checkOtpCompletion();
+          otpInputs[0].focus();
+        }
+      }, 1000);
+    }
+
+    // Resend MFA Code
+    function resendMfaCode() {
+      // Show toast
+      const toast = document.getElementById("toast");
+      toast.classList.remove("translate-y-12", "opacity-0");
+      setTimeout(() => {
+        toast.classList.add("translate-y-12", "opacity-0");
+      }, 3000);
+
+      // Reset OTP inputs
+      otpInputs.forEach(i => {
+        i.value = "";
+        i.classList.remove("border-teal", "bg-teal-light");
+      });
+      checkOtpCompletion();
+      otpInputs[0].focus();
+    }
+  </script>
+</body>
+
+</html>

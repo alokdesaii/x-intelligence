@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Manager | X-Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#001741',
+            'navy-dark': '#000b21',
+            teal: '#00dc8d',
+            'teal-hover': '#00c47e',
+            'teal-light': '#ebfbf5',
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '0px',
+            'xs': '0px',
+            'sm': '0px',
+            'md': '0px',
+            'lg': '0px',
+            'xl': '0px',
+            '2xl': '0px',
+            '3xl': '0px',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Workspace Container (32px padding per CLAUDE.md) -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+        
+        <!-- Header Info -->
+        <div>
+          <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">User Settings &amp; Engine Preferences</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Customize your compliance profile, MFA credentials, database targets, and thresholds</p>
+        </div>
+
+        <!-- Settings Split Layout -->
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+          
+          <!-- Left Settings Sub-Nav (180px, white card, border only) -->
+          <div class="w-full md:w-48 bg-white border border-[#e5e5e5] rounded-xl overflow-hidden shrink-0 select-none">
+            <nav class="flex md:flex-col p-2 gap-1 text-xs font-semibold">
+              
+              <!-- Profile -->
+              <button onclick="switchSettingsTab('profile')" id="subnav-profile" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 bg-teal-light text-navy transition-colors">
+                <i data-lucide="user" class="w-4 h-4"></i>
+                <span>Profile Settings</span>
+              </button>
+              
+              <!-- Security -->
+              <button onclick="switchSettingsTab('security')" id="subnav-security" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Security &amp; 2FA</span>
+              </button>
+              
+              <!-- Preferences -->
+              <button onclick="switchSettingsTab('preferences')" id="subnav-preferences" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors">
+                <i data-lucide="sliders" class="w-4 h-4"></i>
+                <span>Screening Preferences</span>
+              </button>
+              
+              <!-- Notifications -->
+              <button onclick="switchSettingsTab('notifications')" id="subnav-notifications" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+                <span>Alert Notifications</span>
+              </button>
+              
+            </nav>
+          </div>
+
+          <!-- Right Content Renders Forms (flex-1) -->
+          <div class="flex-1 w-full bg-white border border-[#e5e5e5] rounded-xl p-6 min-h-[420px] relative">
+            
+            <!-- SECTION 1: PROFILE SETTINGS -->
+            <div id="section-profile" class="space-y-6">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Analyst Profile Settings</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Manage your personal identification, avatar, and workplace directory fields</p>
+              </div>
+
+              <!-- Profile Form -->
+              <form onsubmit="saveProfile(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+                
+                <!-- Avatar block -->
+                <div class="flex items-center gap-4">
+                  <div class="w-16 h-16 rounded-full bg-[#002b7a] border-2 border-teal flex items-center justify-center text-white font-semibold text-xl" id="profile-avatar">
+                    AD
+                  </div>
+                  <div>
+                    <h4 class="text-xs text-gray-900 font-bold mb-1">Avatar Profile Photo</h4>
+                    <button type="button" onclick="uploadMockPhoto()" class="px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-gray-650 text-[10px] rounded transition-all font-semibold uppercase flex items-center gap-1.5">
+                      <i data-lucide="upload" class="w-3.5 h-3.5 text-gray-400"></i>
+                      <span>Upload Photo</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- First Name -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">First Name <span class="text-red-500">*</span></label>
+                    <input type="text" required value="Alok" id="prof-firstname" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  </div>
+                  <!-- Last Name -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Last Name <span class="text-red-500">*</span></label>
+                    <input type="text" required value="Desai" id="prof-lastname" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Email (Read-Only) -->
+                  <div>
+                    <label class="block mb-1 text-gray-400">Corporate Email Address (Read-only)</label>
+                    <input type="email" readonly value="alok.desai@xirni.com" class="w-full h-10 px-3 border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed rounded focus:outline-none font-mono">
+                  </div>
+                  <!-- Phone -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Work Phone Number</label>
+                    <input type="text" value="+852 9012 3456" id="prof-phone" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Job Title -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Job Title</label>
+                    <input type="text" value="Compliance Analyst" id="prof-title" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  </div>
+                  <!-- Department -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Department</label>
+                    <input type="text" value="AML Compliance &amp; Operations" id="prof-dept" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex justify-end">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-profile">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Save Profile</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- SECTION 2: SECURITY & MFA -->
+            <div id="section-security" class="space-y-6 hidden">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Security &amp; Authorization</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Configure authentication parameters, passwords, MFA, and inactivity locks</p>
+              </div>
+
+              <!-- Two-Factor Auth Toggle -->
+              <div class="border rounded-xl p-4 bg-gray-50 flex items-center justify-between">
+                <div class="space-y-1">
+                  <h4 class="text-xs text-gray-900 font-bold flex items-center gap-1">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-[#00dc8d]"></i>
+                    Two-Factor Authentication (MFA)
+                  </h4>
+                  <p class="text-[11px] text-gray-500 font-normal">Enforce authenticator app verification code on every login cycle</p>
+                </div>
+                <div>
+                  <button onclick="toggleMfa()" id="mfa-toggle-btn" class="h-9 px-4 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e]">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>Enabled</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Security Form -->
+              <form onsubmit="saveSecurity(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+                <!-- Session timeout settings -->
+                <div>
+                  <label class="block mb-1 text-gray-500">Automatic Inactivity Timeout</label>
+                  <div class="relative max-w-xs">
+                    <select id="sec-timeout" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                      <option value="15">15 Minutes (Default)</option>
+                      <option value="30">30 Minutes</option>
+                      <option value="60">60 Minutes</option>
+                      <option value="none">Never Lock Session (Not Recommended)</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                  </div>
+                </div>
+
+                <!-- Password settings -->
+                <div class="border-t border-gray-100 pt-4 space-y-4">
+                  <h4 class="text-xs text-gray-900 font-bold uppercase tracking-wider mb-2">Change Password</h4>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label class="block mb-1 text-gray-500">Current Password</label>
+                      <input type="password" placeholder="••••••••" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                    </div>
+                    <div>
+                      <label class="block mb-1 text-gray-500">New Password</label>
+                      <input type="password" placeholder="••••••••" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                    </div>
+                    <div>
+                      <label class="block mb-1 text-gray-500">Confirm New Password</label>
+                      <input type="password" placeholder="••••••••" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex justify-end">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-security">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Update Credentials</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- SECTION 3: SCREENING PREFERENCES -->
+            <div id="section-preferences" class="space-y-6 hidden">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Global Engine Search Defaults</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Customize thresholds and screening options applied to manual screening queries</p>
+              </div>
+
+              <!-- Preferences Form -->
+              <form onsubmit="savePreferences(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+                <!-- Default Entity Type -->
+                <div class="max-w-xs">
+                  <label class="block mb-1 text-gray-500">Default Target Type</label>
+                  <div class="relative">
+                    <select id="pref-type" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                      <option value="Individual">Individual (Natural Person)</option>
+                      <option value="Entity">Organisation (Legal Entity)</option>
+                      <option value="Vessel">Vessel (Maritime)</option>
+                      <option value="Unspecified">Auto-Detect / Unspecified</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                  </div>
+                </div>
+
+                <!-- Default Threshold % (with slider logic) -->
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <label class="text-gray-500">Fuzzy Match Sensitivity Threshold</label>
+                    <span class="font-mono text-teal text-sm" id="threshold-val">85% Match</span>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="text-[10px] text-gray-400">70% (Broad)</span>
+                    <input type="range" min="70" max="100" value="85" id="pref-threshold" oninput="updateThresholdSlider(this.value)" class="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal">
+                    <span class="text-[10px] text-gray-400">100% (Precise)</span>
+                  </div>
+                </div>
+
+                <!-- Default Databases Checkboxes -->
+                <div>
+                  <label class="block mb-1 text-gray-500">Default Watchlist Routing</label>
+                  <div class="space-y-2 border rounded p-3 bg-gray-50">
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-750">
+                      <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
+                      <span>World-Check Global Database (Refinitiv)</span>
+                    </label>
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-650">
+                      <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
+                      <span>Politically Exposed Persons (PEP) News &amp; Lists</span>
+                    </label>
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-650">
+                      <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
+                      <span>US OFAC Consolidated Sanctions</span>
+                    </label>
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-650">
+                      <input type="checkbox" class="rounded text-teal focus:ring-teal accent-teal">
+                      <span>EU Financial Freezes &amp; UN Watchlists</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex justify-end">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-pref">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Apply Defaults</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- SECTION 4: ALERT NOTIFICATIONS -->
+            <div id="section-notifications" class="space-y-6 hidden">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Email Notification Presets</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Control email notifications and logs dispatched by the compliance engine</p>
+              </div>
+
+              <!-- Notifications Preferences -->
+              <form onsubmit="saveNotifications(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+                <div class="space-y-4">
+                  
+                  <!-- Option 1: Email notification toggle -->
+                  <div class="flex items-center justify-between pb-3 border-b border-gray-50">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">System Activity Briefs</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Receive weekly summaries of case volumes, success rates, and audit reviews</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-ntf-1')" id="btn-ntf-1" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e] flex items-center gap-1">
+                      <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                    </button>
+                  </div>
+
+                  <!-- Option 2: New hits notification toggle -->
+                  <div class="flex items-center justify-between pb-3 border-b border-gray-50">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">New Watchlist Matches detected</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Instant dispatch whenever background ongoing monitoring schedules locate a hit</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-ntf-2')" id="btn-ntf-2" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e] flex items-center gap-1">
+                      <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                    </button>
+                  </div>
+
+                  <!-- Option 3: Database update notification toggle -->
+                  <div class="flex items-center justify-between pb-3">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">Database Refresh Logs</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Receive notices when EU/OFAC/UN sanctions watchlists sync in our repositories</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-ntf-3')" id="btn-ntf-3" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-gray-300 bg-white text-gray-500 flex items-center gap-1">
+                      <i data-lucide="x" class="w-4 h-4"></i> Disabled
+                    </button>
+                  </div>
+
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex justify-end">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-ntf">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Apply Notification Rules</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-gray-900 text-white text-xs font-semibold px-4 py-3 rounded-lg border border-gray-800 flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 shadow-xl">
+    <i data-lucide="check-circle" class="w-4 h-4 text-[#00dc8d]" id="toast-icon"></i>
+    <span id="toast-message">Settings stored successfully...</span>
+  </div>
+
+  <script>
+    // Tab switching engine
+    function switchSettingsTab(tabId) {
+      const tabs = ['profile', 'security', 'preferences', 'notifications'];
+      
+      tabs.forEach(t => {
+        const btn = document.getElementById(`subnav-${t}`);
+        const sect = document.getElementById(`section-${t}`);
+        
+        if (t === tabId) {
+          btn.className = "w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 bg-teal-light text-navy transition-colors";
+          sect.classList.remove("hidden");
+        } else {
+          btn.className = "w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors";
+          sect.classList.add("hidden");
+        }
+      });
+    }
+
+    // Dynamic slider indicator
+    function updateThresholdSlider(val) {
+      document.getElementById("threshold-val").innerText = `${val}% Match`;
+    }
+
+    // Dynamic button state toggling
+    function toggleBtn(btnId) {
+      const btn = document.getElementById(btnId);
+      const isEnabled = btn.textContent.trim().includes("Enabled");
+      
+      if (isEnabled) {
+        btn.className = "h-9 px-4 rounded-lg font-semibold border transition-colors border-gray-300 bg-white text-gray-500 flex items-center gap-1";
+        btn.innerHTML = `<i data-lucide="x" class="w-4 h-4"></i> Disabled`;
+      } else {
+        btn.className = "h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e] flex items-center gap-1";
+        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Enabled`;
+      }
+      
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // MFA specific toggle logic
+    let mfaEnabled = true;
+    function toggleMfa() {
+      mfaEnabled = !mfaEnabled;
+      const btn = document.getElementById("mfa-toggle-btn");
+      if (mfaEnabled) {
+        btn.className = "h-9 px-4 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e]";
+        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> <span>Enabled</span>`;
+        showToast("MFA enrollment active. A validation code will be requested on login.");
+      } else {
+        btn.className = "h-9 px-4 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-gray-300 bg-white text-gray-500";
+        btn.innerHTML = `<i data-lucide="x" class="w-4 h-4"></i> <span>Disabled</span>`;
+        showToast("MFA enrollment deactivated. Security rating lowered.", false);
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // Upload Mock Photo
+    function uploadMockPhoto() {
+      showToast("Triggering local browser photo library selector...");
+      setTimeout(() => {
+        // Change initials AD to initials Xirni or simulated file upload
+        const avatar = document.getElementById("profile-avatar");
+        avatar.className = "w-16 h-16 rounded-full bg-teal flex items-center justify-center text-white font-semibold text-xl border-2 border-navy";
+        avatar.innerText = "AD";
+        showToast("Simulated photo upload complete.", true);
+      }, 1200);
+    }
+
+    // Saving Forms with feedback spinners
+    function saveProfile(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-save-profile");
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> <span>Save Profile</span>`;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons();
+        showToast("Profile details updated successfully.", true);
+      }, 1000);
+    }
+
+    function saveSecurity(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-save-security");
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Updating...`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> <span>Update Credentials</span>`;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons();
+        showToast("Credentials and session preferences locked.", true);
+      }, 1000);
+    }
+
+    function savePreferences(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-save-pref");
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Appending...`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> <span>Apply Defaults</span>`;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons();
+        showToast("Global engine defaults applied for all future screens.", true);
+      }, 1000);
+    }
+
+    function saveNotifications(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-save-ntf");
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Applying...`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> <span>Apply Notification Rules</span>`;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons();
+        showToast("Email notification configuration synced.", true);
+      }, 1000);
+    }
+
+    // Toast Control
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toast-message");
+      const toastIcon = document.getElementById("toast-icon");
+      
+      toastMsg.innerText = message;
+      if (window.lucide) {
+        toastIcon.setAttribute("data-lucide", isSuccess ? "check-circle" : "alert-triangle");
+        toastIcon.className = `w-4 h-4 ${isSuccess ? 'text-teal' : 'text-amber-500'}`;
+        window.lucide.createIcons();
+      }
+      
+      toast.classList.remove("translate-y-20", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
+      
+      setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-20", "opacity-0");
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

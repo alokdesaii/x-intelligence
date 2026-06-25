@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Manager | X-Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#001741',
+            'navy-dark': '#000b21',
+            teal: '#00dc8d',
+            'teal-hover': '#00c47e',
+            'teal-light': '#ebfbf5',
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '0px',
+            'xs': '0px',
+            'sm': '0px',
+            'md': '0px',
+            'lg': '0px',
+            'xl': '0px',
+            '2xl': '0px',
+            '3xl': '0px',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Workspace Container (32px padding per CLAUDE.md) -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+        
+        <!-- Filter Bar (White card, Shadow/sm, radius/lg, 24px padding) -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] p-6">
+          <form id="ledger-filter-form" onsubmit="executeSearch(event)" class="space-y-4 text-xs font-semibold">
+            
+            <!-- Row 1: Search Name (only mandatory filter), Search Type, Date From, Date To, User, Batch File -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
+              
+              <!-- Search Name -->
+              <div>
+                <label for="filter-name" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Search Name <span class="text-[#ef4444]">*</span></label>
+                <div class="relative">
+                  <input type="text" id="filter-name" required placeholder="Enter target name" 
+                    class="w-full h-9 pl-3 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5"></i>
+                </div>
+              </div>
+
+              <!-- Search Type -->
+              <div>
+                <label for="filter-type" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Search Type</label>
+                <div class="relative">
+                  <select id="filter-type" class="w-full h-9 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                    <option value="ALL">All Types</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Entity">Entity</option>
+                    <option value="Vessel">Vessel</option>
+                  </select>
+                  <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+                </div>
+              </div>
+
+              <!-- Date From -->
+              <div>
+                <label for="filter-date-from" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Date From</label>
+                <input type="date" id="filter-date-from" class="w-full h-9 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+              </div>
+
+              <!-- Date To -->
+              <div>
+                <label for="filter-date-to" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Date To</label>
+                <input type="date" id="filter-date-to" class="w-full h-9 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+              </div>
+
+              <!-- User Select -->
+              <div>
+                <label for="filter-user" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Analyst Assigned</label>
+                <div class="relative">
+                  <select id="filter-user" class="w-full h-9 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                    <option value="ALL">All Analysts</option>
+                    <option value="Vilas Limbu">Vilas Limbu</option>
+                    <option value="Alok Desai">Alok Desai</option>
+                    <option value="Audit Automator">Audit Automator</option>
+                  </select>
+                  <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+                </div>
+              </div>
+
+              <!-- Batch File Select -->
+              <div>
+                <label for="filter-batch" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Batch Roster</label>
+                <div class="relative">
+                  <select id="filter-batch" class="w-full h-9 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                    <option value="ALL">All Batches</option>
+                    <option value="Client NBFI">Client NBFI</option>
+                    <option value="Key Personnel">Key Personnel</option>
+                    <option value="One Time Screening">One Time Screening</option>
+                  </select>
+                  <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Row 2: Ongoing Screening, Country, Reset, Search -->
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-end gap-4 border-t border-gray-100 pt-3">
+              <div class="grid grid-cols-2 gap-4 flex-1 max-w-md">
+                <!-- Ongoing Screening -->
+                <div>
+                  <label for="filter-ongoing" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Ongoing Screening</label>
+                  <div class="relative">
+                    <select id="filter-ongoing" class="w-full h-9 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                      <option value="ALL">All States</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+                  </div>
+                </div>
+
+                <!-- Country Select -->
+                <div>
+                  <label for="filter-country" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Country</label>
+                  <div class="relative">
+                    <select id="filter-country" class="w-full h-9 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                      <option value="ALL">All Countries</option>
+                      <option value="Pakistan">Pakistan</option>
+                      <option value="Russia">Russia</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                      <option value="United Arab Emirates">United Arab Emirates</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="flex gap-2 justify-end shrink-0 select-none">
+                <button type="button" onclick="clearFilters()" class="h-9 px-4 hover:bg-gray-100 text-gray-500 hover:text-gray-900 font-semibold rounded transition-all">
+                  Reset
+                </button>
+                <button type="submit" class="h-9 px-5 bg-[#001741] hover:bg-[#00143a] text-white font-semibold rounded flex items-center gap-1.5 transition-colors">
+                  <i data-lucide="search" class="w-4 h-4"></i>
+                  <span>Search Case Database</span>
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Ledger Table Results Card -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] overflow-hidden">
+          
+          <!-- Table Toolbar -->
+          <div class="p-4 border-b border-[#e5e5e5] bg-gray-50 flex items-center justify-between shrink-0 select-none">
+            <span class="text-xs font-semibold text-gray-900 uppercase" id="ledger-count">Showing 3 case portfolios of 124 records</span>
+            
+            <button onclick="alert('Exporting Excel compliance data...')" class="h-8 px-2.5 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-950 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-green-600"></i>
+              <span>Export Excel</span>
+            </button>
+          </div>
+
+          <!-- Roster Table (52px minimum height, hover, chevrons for sort, click targets results) -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="ledger-table">
+              <thead>
+                <tr class="bg-gray-50 border-b border-[#e5e5e5] text-xs font-semibold text-gray-500 uppercase tracking-wider select-none">
+                  <th class="py-3 px-3">Searched Name</th>
+                  <th class="py-3 px-3 font-mono">Search Profile ID</th>
+                  <th class="py-3 px-3 w-20 text-center">Type</th>
+                  <th class="py-3 px-3 w-28 text-center flex items-center gap-1 cursor-pointer" onclick="sortTable()">
+                    Total Matches
+                    <i data-lucide="chevrons-up-down" class="w-3 h-3 text-gray-400"></i>
+                  </th>
+                  <th class="py-3 px-3 w-28 text-center">Unresolved</th>
+                  <th class="py-3 px-3 w-28 text-center">Disposed</th>
+                  <th class="py-3 px-3 w-28 text-center">Ongoing Check</th>
+                  <th class="py-3 px-3 font-mono">Last Run</th>
+                  <th class="py-3 px-3">Last Analyst</th>
+                  <th class="py-3 px-3 font-mono">Created Run</th>
+                  <th class="py-3 px-3">Initial Analyst</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#e5e5e5] text-xs text-gray-700 font-medium" id="ledger-tbody">
+                
+                <!-- Case Row 1 -->
+                <tr onclick="location.href='search-results.html'" class="hover:bg-gray-50 h-[52px] cursor-pointer">
+                  <td class="px-3 font-semibold text-gray-900">Bakar Hasnain</td>
+                  <td class="px-3 font-mono text-[10px] text-[#001741] font-bold">HHFSL2026M1</td>
+                  <td class="px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">Individual</span></td>
+                  <td class="px-3 text-center font-mono font-bold">4</td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20">4</span>
+                  </td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200">0</span>
+                  </td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/30">Yes</span>
+                  </td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-16 19:12</td>
+                  <td class="px-3">Vilas Limbu</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-16 19:12</td>
+                  <td class="px-3">Vilas Limbu</td>
+                </tr>
+
+                <!-- Case Row 2 -->
+                <tr onclick="location.href='search-results.html'" class="hover:bg-gray-50 h-[52px] cursor-pointer">
+                  <td class="px-3 font-semibold text-gray-900">Severstal PAO Holding</td>
+                  <td class="px-3 font-mono text-[10px] text-[#001741] font-bold">HHFSL2026M2</td>
+                  <td class="px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-mono">Entity</span></td>
+                  <td class="px-3 text-center font-mono font-bold">12</td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20">2</span>
+                  </td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/20">10</span>
+                  </td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/30">Yes</span>
+                  </td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-15 14:21</td>
+                  <td class="px-3">Audit Automator</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-12 11:45</td>
+                  <td class="px-3">Alok Desai</td>
+                </tr>
+
+                <!-- Case Row 3 -->
+                <tr onclick="location.href='search-results.html'" class="hover:bg-gray-50 h-[52px] cursor-pointer">
+                  <td class="px-3 font-semibold text-gray-900">Njord Shipping Ltd</td>
+                  <td class="px-3 font-mono text-[10px] text-[#001741] font-bold">HHFSL2026M3</td>
+                  <td class="px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-mono">Vessel</span></td>
+                  <td class="px-3 text-center font-mono font-bold">2</td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20">2</span>
+                  </td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200">0</span>
+                  </td>
+                  <td class="px-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-150 text-gray-500 border border-gray-300/30">No</span>
+                  </td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-12 09:33</td>
+                  <td class="px-3">Alok Desai</td>
+                  <td class="px-3 font-mono text-[10px] text-gray-400">2026-06-12 09:33</td>
+                  <td class="px-3">Alok Desai</td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State Container -->
+          <div id="ledger-empty-state" class="hidden py-16 text-center border-t border-gray-150">
+            <i data-lucide="folder-search" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+            <h3 class="text-sm font-semibold text-gray-900 uppercase">No matching cases found</h3>
+            <p class="text-xs text-gray-500 mt-1">Adjust your filter parameters or verify your "Search Name Target" spelling.</p>
+            <button onclick="clearFilters()" class="mt-4 px-4 py-2 bg-teal hover:bg-teal-hover text-white text-xs font-semibold rounded transition-colors">
+              Reset Filters
+            </button>
+          </div>
+
+          <!-- Pagination (limit counts) -->
+          <div class="p-4 border-t border-[#e5e5e5] bg-gray-50 flex items-center justify-between text-xs text-gray-500 shrink-0">
+            <span>Showing 1 to 3 of 124 records</span>
+            <div class="flex items-center gap-1 font-semibold select-none">
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-400 cursor-not-allowed" disabled>
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <button class="w-8 h-8 flex items-center justify-center border border-teal rounded bg-teal-light text-navy font-semibold">1</button>
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-700">2</button>
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-700">3</button>
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-700">4</button>
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-700">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide
+    lucide.createIcons();
+
+    // Data definition for live checks
+    const casesData = [
+      { name: "Bakar Hasnain", id: "HHFSL2026M1", type: "Individual", matches: 4, unresolved: 4, disposed: 0, ongoing: "Yes", lastRun: "2026-06-16 19:12", lastUser: "Vilas Limbu", initRun: "2026-06-16 19:12", initUser: "Vilas Limbu", country: "Pakistan", batch: "ALL" },
+      { name: "Severstal PAO Holding", id: "HHFSL2026M2", type: "Entity", matches: 12, unresolved: 2, disposed: 10, ongoing: "Yes", lastRun: "2026-06-15 14:21", lastUser: "Audit Automator", initRun: "2026-06-12 11:45", initUser: "Alok Desai", country: "Russia", batch: "Client NBFI" },
+      { name: "Njord Shipping Ltd", id: "HHFSL2026M3", type: "Vessel", matches: 2, unresolved: 2, disposed: 0, ongoing: "No", lastRun: "2026-06-12 09:33", lastUser: "Alok Desai", initRun: "2026-06-12 09:33", initUser: "Alok Desai", country: "United Arab Emirates", batch: "One Time Screening" }
+    ];
+
+    let urlFilters = {};
+
+    function parseUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const filter = params.get('filter');
+      const status = params.get('status');
+      
+      if (filter) {
+        urlFilters.filter = filter;
+        // If there's a URL parameter, search name target is not required to view initial drilldown results
+        document.getElementById("filter-name").required = false;
+      }
+      if (status) {
+        urlFilters.status = status;
+      }
+
+      // Pre-fill form inputs matching URL parameters if appropriate
+      if (filter === 'ongoing') {
+        document.getElementById("filter-ongoing").value = "Yes";
+      }
+    }
+
+    // Clear filters
+    function clearFilters() {
+      document.getElementById("filter-name").value = "";
+      document.getElementById("filter-type").value = "ALL";
+      document.getElementById("filter-date-from").value = "";
+      document.getElementById("filter-date-to").value = "";
+      document.getElementById("filter-user").value = "ALL";
+      document.getElementById("filter-batch").value = "ALL";
+      document.getElementById("filter-ongoing").value = "ALL";
+      document.getElementById("filter-country").value = "ALL";
+      
+      // Reset validation and URL filters
+      document.getElementById("filter-name").required = true;
+      urlFilters = {};
+      
+      executeSearch();
+    }
+
+    // Execute active client search/filter
+    function executeSearch(e) {
+      if (e) {
+        e.preventDefault();
+        // User manually submitted search: clear query string overrides and enforce name input validation
+        urlFilters = {};
+        document.getElementById("filter-name").required = true;
+      }
+      
+      const nameVal = document.getElementById("filter-name").value.toLowerCase().trim();
+      const typeVal = document.getElementById("filter-type").value;
+      const userVal = document.getElementById("filter-user").value;
+      const batchVal = document.getElementById("filter-batch").value;
+      const ongoingVal = document.getElementById("filter-ongoing").value;
+      const countryVal = document.getElementById("filter-country").value;
+
+      const tbody = document.getElementById("ledger-tbody");
+      const emptyState = document.getElementById("ledger-empty-state");
+      const rows = tbody.querySelectorAll("tr");
+      let matchesCount = 0;
+
+      rows.forEach((row, i) => {
+        const item = casesData[i];
+        if (!item) return;
+
+        // Validation relaxed check
+        const nameRequired = document.getElementById("filter-name").required;
+        const mName = (!nameRequired && !nameVal) || item.name.toLowerCase().includes(nameVal) || item.id.toLowerCase().includes(nameVal);
+        
+        const mType = (typeVal === 'ALL') || item.type === typeVal;
+        const mUser = (userVal === 'ALL') || item.lastUser === userVal || item.initUser === userVal;
+        const mBatch = (batchVal === 'ALL') || item.batch === batchVal;
+        const mOngoing = (ongoingVal === 'ALL') || item.ongoing === ongoingVal;
+        const mCountry = (countryVal === 'ALL') || item.country === countryVal;
+
+        // Apply URL Drilldown criteria
+        let mUrl = true;
+        if (urlFilters.filter) {
+          if (urlFilters.filter === 'unresolved') {
+            mUrl = item.unresolved > 0;
+          } else if (urlFilters.filter === 'disposed') {
+            mUrl = item.disposed > 0;
+          } else if (urlFilters.filter === 'ongoing') {
+            mUrl = item.ongoing === 'Yes';
+            if (urlFilters.status === 'unresolved') {
+              mUrl = mUrl && item.unresolved > 0;
+            } else if (urlFilters.status === 'disposed') {
+              mUrl = mUrl && item.disposed > 0;
+            }
+          }
+        }
+
+        if (mName && mType && mUser && mBatch && mOngoing && mCountry && mUrl) {
+          row.classList.remove("hidden");
+          matchesCount++;
+        } else {
+          row.classList.add("hidden");
+        }
+      });
+
+      // Update counter
+      document.getElementById("ledger-count").innerText = `Showing ${matchesCount} case portfolios of 124 records`;
+
+      if (matchesCount === 0) {
+        tbody.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+      } else {
+        tbody.classList.remove("hidden");
+        emptyState.classList.add("hidden");
+      }
+    }
+
+    // Sort table rows dynamically
+    let sortOrderAsc = true;
+    function sortTable() {
+      sortOrderAsc = !sortOrderAsc;
+      const tbody = document.getElementById("ledger-tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      
+      rows.sort((a, b) => {
+        const matchesA = parseInt(a.cells[3].textContent);
+        const matchesB = parseInt(b.cells[3].textContent);
+        return sortOrderAsc ? matchesA - matchesB : matchesB - matchesA;
+      });
+
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    // Run query checks on load
+    window.addEventListener('DOMContentLoaded', () => {
+      parseUrlParams();
+      executeSearch();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Results | X-Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#001741',
+            'navy-dark': '#000b21',
+            teal: '#00dc8d',
+            'teal-hover': '#00c47e',
+            'teal-light': '#ebfbf5',
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '0px',
+            'xs': '0px',
+            'sm': '0px',
+            'md': '0px',
+            'lg': '0px',
+            'xl': '0px',
+            '2xl': '0px',
+            '3xl': '0px',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Workspace Container (32px padding per CLAUDE.md) -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+        
+        <!-- Result Header Card (CLAUDE.md FRAME: 09-search-result-individual) -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] p-6">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-6 border-b border-gray-100 pb-4 mb-4 text-xs select-none">
+            
+            <!-- Target Details -->
+            <div class="md:col-span-2 space-y-1.5">
+              <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block">Searched Name &amp; Profile ID</span>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-semibold text-gray-900">Bakar Hasnain</span>
+                <span class="font-mono text-xs text-[#001741] bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded font-bold">HHFSL2026M1</span>
+              </div>
+              <p class="text-[10px] text-gray-500 leading-relaxed font-semibold">
+                Details: DOB: 1974-05-12 | Country: Pakistan | Type: Individual
+              </p>
+            </div>
+
+            <!-- Query Audit Meta -->
+            <div class="space-y-1">
+              <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block">Assigned Analyst</span>
+              <span class="text-gray-700 font-semibold block">Vilas Limbu</span>
+              <span class="text-[10px] text-gray-400 font-mono block leading-none">Date: 16/06/2026 19:12</span>
+              <span class="text-[10px] text-teal font-mono hidden mt-1 leading-none font-semibold block" id="modified-time-container">
+                Mod: <span id="modified-time-val">-</span>
+              </span>
+            </div>
+
+            <!-- Risk Status Pill -->
+            <div class="space-y-1.5">
+              <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block">Screening Status</span>
+              <span id="status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#fef3c7] text-[#d97706] border border-[#f59e0b]/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                Unresolved
+              </span>
+            </div>
+
+            <!-- Match stats counter -->
+            <div class="grid grid-cols-2 gap-2 text-center text-[10px] bg-gray-50 border border-gray-200 p-2 rounded">
+              <div>
+                <span class="text-gray-400 block font-semibold">Total Match</span>
+                <span class="text-sm font-bold text-gray-900 font-mono">4</span>
+              </div>
+              <div>
+                <span class="text-gray-400 block font-semibold">Unresolved</span>
+                <span class="text-sm font-bold text-amber-500 font-mono" id="unresolved-count">4</span>
+              </div>
+              <div class="border-t border-gray-200 pt-1">
+                <span class="text-gray-400 block font-semibold">True Match</span>
+                <span class="text-xs font-bold text-green-600 font-mono" id="true-count">0</span>
+              </div>
+              <div class="border-t border-gray-200 pt-1">
+                <span class="text-gray-400 block font-semibold">False Match</span>
+                <span class="text-xs font-bold text-gray-500 font-mono" id="false-count">0</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Action Row (Disposal control panel) -->
+          <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch">
+            <div class="flex-1 flex flex-col md:flex-row gap-4 items-center">
+              
+              <!-- Checkboxes: API & Batch Sync -->
+              <div class="flex flex-col gap-1 shrink-0 text-xs text-gray-600 font-semibold w-full md:w-auto">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="action-api" class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+                  <span>Action API (Sync System)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="action-batch" class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+                  <span>Update Comments in Batch File</span>
+                </label>
+              </div>
+
+              <!-- Comments text area -->
+              <div class="flex-1 w-full">
+                <label for="disposal-comment" class="sr-only">Comments</label>
+                <textarea id="disposal-comment" rows="2" placeholder="Mandatory disposal comments and rationale justification..." 
+                  class="w-full p-2.5 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-xs placeholder-gray-400"></textarea>
+              </div>
+
+            </div>
+
+            <!-- Disposal Action Dropdown & Approve button -->
+            <div class="flex gap-2 items-center shrink-0 justify-end w-full md:w-auto">
+              <div class="relative w-40 shrink-0">
+                <select id="disposal-action" class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-xs font-semibold text-gray-700 appearance-none cursor-pointer">
+                  <option value="">Alert Disposal Action</option>
+                  <option value="TRUE">True Match</option>
+                  <option value="FALSE">False Match</option>
+                </select>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+              </div>
+              <button onclick="approveDisposal()" class="h-10 px-5 bg-[#001741] hover:bg-[#00143a] text-white text-xs font-semibold rounded transition-colors">
+                Approve
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Match Results Data Table -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] overflow-hidden">
+          
+          <!-- Table Controls Toolbar -->
+          <div class="p-4 border-b border-[#e5e5e5] bg-gray-50 flex items-center justify-between shrink-0 select-none">
+            <div class="flex bg-gray-100 p-0.5 rounded border border-gray-200 text-xs font-semibold">
+              <button onclick="switchCategory('individual')" id="cat-ind" class="px-3 py-1 rounded bg-white text-navy shadow-sm border border-gray-200">Individual Matches</button>
+              <button onclick="switchCategory('entity')" id="cat-ent" class="px-3 py-1 rounded text-gray-500 hover:text-gray-900 transition-colors">Entity Matches</button>
+            </div>
+            
+            <!-- Export buttons (Lucide React top right) -->
+            <div class="flex items-center gap-2">
+              <button onclick="alert('Exporting Excel sheets...')" class="h-8 px-2.5 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-950 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4 text-green-600"></i>
+                <span>Export Excel</span>
+              </button>
+              <button onclick="alert('Generating PDF Report...')" class="h-8 px-2.5 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-950 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+                <i data-lucide="file-text" class="w-4 h-4 text-red-500"></i>
+                <span>Export PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="matches-table">
+              <thead>
+                <tr class="bg-gray-50 border-b border-[#e5e5e5] text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3 px-4 w-12 text-center">
+                    <input type="checkbox" id="header-checkbox" onchange="toggleSelectAll(this)" class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal cursor-pointer">
+                  </th>
+                  <th class="py-3 px-4 w-12 text-center">#</th>
+                  <th class="py-3 px-4">Name</th>
+                  <th class="py-3 px-4 w-36">Match Found %</th>
+                  <th class="py-3 px-4 w-36">Hit Type</th>
+                  <th class="py-3 px-4 w-32" id="header-dob">Date of Birth</th>
+                  <th class="py-3 px-4">Country</th>
+                  <th class="py-3 px-4 w-32 font-mono">Added Date</th>
+                  <th class="py-3 px-4 w-32 font-mono">Modified Date</th>
+                </tr>
+              </thead>
+              <!-- Alternate row colors (white / #fafafa) -->
+              <tbody class="divide-y divide-[#e5e5e5] text-xs text-gray-700 font-medium" id="matches-tbody">
+                
+                <!-- Match 1 -->
+                <tr class="hover:bg-gray-50 bg-white h-[52px] cursor-pointer" onclick="location.href='match-profiler.html'">
+                  <td class="px-4 text-center animate-fade-in" onclick="event.stopPropagation()">
+                    <input type="checkbox" onchange="onCheckboxChange()" class="row-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal cursor-pointer">
+                  </td>
+                  <td class="px-4 text-center font-mono text-gray-400">1</td>
+                  <td class="px-4 font-semibold text-gray-900 text-teal hover:underline">Bakar Hasnain</td>
+                  <td class="px-4">
+                    <!-- Progress bar: Green if >90% -->
+                    <div class="flex items-center gap-2 max-w-[120px]">
+                      <div class="w-full h-1.5 bg-gray-200 rounded overflow-hidden">
+                        <div class="h-full bg-green-500" style="width: 95%"></div>
+                      </div>
+                      <span class="font-semibold text-green-600 font-mono">95%</span>
+                    </div>
+                  </td>
+                  <td class="px-4">
+                    <!-- Status badging mapping specifications -->
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-[#b91c1c] border border-red-200">
+                      Sanctions
+                    </span>
+                  </td>
+                  <td class="px-4 font-mono text-gray-600" id="dob-col-1">1974-05-12</td>
+                  <td class="px-4">Pakistan</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">2022-03-14</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">-</td>
+                </tr>
+
+                <!-- Match 2 -->
+                <tr class="hover:bg-gray-50 bg-[#fafafa] h-[52px] cursor-pointer" onclick="location.href='match-profiler.html'">
+                  <td class="px-4 text-center" onclick="event.stopPropagation()">
+                    <input type="checkbox" onchange="onCheckboxChange()" class="row-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal cursor-pointer">
+                  </td>
+                  <td class="px-4 text-center font-mono text-gray-400">2</td>
+                  <td class="px-4 font-semibold text-gray-900 text-teal hover:underline">Abu Bakar Hasnain</td>
+                  <td class="px-4">
+                    <div class="flex items-center gap-2 max-w-[120px]">
+                      <div class="w-full h-1.5 bg-gray-200 rounded overflow-hidden">
+                        <div class="h-full bg-teal" style="width: 86%"></div>
+                      </div>
+                      <span class="font-semibold text-[#00dc8d] font-mono">86%</span>
+                    </div>
+                  </td>
+                  <td class="px-4">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-[#001741] border border-blue-200">
+                      PEP
+                    </span>
+                  </td>
+                  <td class="px-4 font-mono text-gray-600" id="dob-col-2">1974-05-12</td>
+                  <td class="px-4">Pakistan</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">2023-11-20</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">2026-02-14</td>
+                </tr>
+
+                <!-- Match 3 -->
+                <tr class="hover:bg-gray-50 bg-white h-[52px] cursor-pointer" onclick="location.href='match-profiler.html'">
+                  <td class="px-4 text-center" onclick="event.stopPropagation()">
+                    <input type="checkbox" onchange="onCheckboxChange()" class="row-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal cursor-pointer">
+                  </td>
+                  <td class="px-4 text-center font-mono text-gray-400">3</td>
+                  <td class="px-4 font-semibold text-gray-900 text-teal hover:underline">Syed Bakar Hasnain</td>
+                  <td class="px-4">
+                    <div class="flex items-center gap-2 max-w-[120px]">
+                      <div class="w-full h-1.5 bg-gray-200 rounded overflow-hidden">
+                        <div class="h-full bg-teal" style="width: 74%"></div>
+                      </div>
+                      <span class="font-semibold text-[#00dc8d] font-mono">74%</span>
+                    </div>
+                  </td>
+                  <td class="px-4">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-[#f59e0b] border border-amber-200">
+                      Adverse News
+                    </span>
+                  </td>
+                  <td class="px-4 font-mono text-gray-600" id="dob-col-3">1976-11-04</td>
+                  <td class="px-4">Pakistan</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">2024-05-02</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">-</td>
+                </tr>
+
+                <!-- Match 4 -->
+                <tr class="hover:bg-gray-50 bg-[#fafafa] h-[52px] cursor-pointer" onclick="location.href='match-profiler.html'">
+                  <td class="px-4 text-center" onclick="event.stopPropagation()">
+                    <input type="checkbox" onchange="onCheckboxChange()" class="row-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal cursor-pointer">
+                  </td>
+                  <td class="px-4 text-center font-mono text-gray-400">4</td>
+                  <td class="px-4 font-semibold text-gray-900 text-teal hover:underline">Bakar Al-Hasnain</td>
+                  <td class="px-4">
+                    <div class="flex items-center gap-2 max-w-[120px]">
+                      <div class="w-full h-1.5 bg-gray-200 rounded overflow-hidden">
+                        <div class="h-full bg-gray-400" style="width: 61%"></div>
+                      </div>
+                      <span class="font-semibold text-gray-500 font-mono">61%</span>
+                    </div>
+                  </td>
+                  <td class="px-4">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-[#737373] border border-gray-200">
+                      SOE
+                    </span>
+                  </td>
+                  <td class="px-4 font-mono text-gray-600" id="dob-col-4">1974-05-12</td>
+                  <td class="px-4">United Arab Emirates</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">2025-01-10</td>
+                  <td class="px-4 text-gray-400 font-mono text-[10px]">-</td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div class="p-4 border-t border-[#e5e5e5] bg-gray-50 flex items-center justify-between text-xs text-gray-500 shrink-0">
+            <span>Showing 1 to 4 of 4 matching results</span>
+            <div class="flex items-center gap-1 font-semibold select-none">
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-400 cursor-not-allowed" disabled>
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <button class="w-8 h-8 flex items-center justify-center border border-teal rounded bg-teal-light text-navy font-semibold">1</button>
+              <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white text-gray-700">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Dynamic Toast Feedback -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-navy text-white text-xs px-4 py-3 rounded border border-[#00276e] flex items-center gap-2 transform translate-y-12 opacity-0 transition-all duration-300 z-50">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal" id="toast-icon"></i>
+    <span id="toast-message">Success feedback details.</span>
+  </div>
+
+  <script>
+    // Initialize Lucide
+    lucide.createIcons();
+
+    // Data structures for Matches
+    let currentCategory = 'individual';
+
+    const individualMatches = [
+      { id: 1, name: "Bakar Hasnain", score: 95, color: "green", type: "Sanctions", badgeClass: "bg-red-100 text-[#b91c1c] border border-red-200", dob: "1974-05-12", country: "Pakistan", added: "2022-03-14", modified: "-", resolved: null },
+      { id: 2, name: "Abu Bakar Hasnain", score: 86, color: "teal", type: "PEP", badgeClass: "bg-blue-100 text-[#001741] border border-blue-200", dob: "1974-05-12", country: "Pakistan", added: "2023-11-20", modified: "2026-02-14", resolved: null },
+      { id: 3, name: "Syed Bakar Hasnain", score: 74, color: "teal", type: "Adverse News", badgeClass: "bg-amber-100 text-[#f59e0b] border border-amber-200", dob: "1976-11-04", country: "Pakistan", added: "2024-05-02", modified: "-", resolved: null },
+      { id: 4, name: "Bakar Al-Hasnain", score: 61, color: "gray", type: "SOE", badgeClass: "bg-gray-100 text-gray-500 border border-gray-200", dob: "1974-05-12", country: "United Arab Emirates", added: "2025-01-10", modified: "-", resolved: null }
+    ];
+
+    const entityMatches = [
+      { id: 1, name: "Severstal PAO Holding", score: 92, color: "green", type: "Sanctions", badgeClass: "bg-red-100 text-[#b91c1c] border border-red-200", country: "Russia", added: "2021-06-12", modified: "-", resolved: null },
+      { id: 2, name: "VTB Bank PJSC", score: 85, color: "teal", type: "Sanctions", badgeClass: "bg-red-100 text-[#b91c1c] border border-red-200", country: "Russia", added: "2022-02-24", modified: "2026-03-10", resolved: null },
+      { id: 3, name: "Rosneft Oil Company", score: 78, color: "teal", type: "Adverse News", badgeClass: "bg-amber-100 text-[#f59e0b] border border-amber-200", country: "Russia", added: "2022-03-15", modified: "-", resolved: null }
+    ];
+
+    // Initial render
+    renderMatchesTable();
+
+    function renderMatchesTable() {
+      const tbody = document.getElementById("matches-tbody");
+      const dobHeader = document.getElementById("header-dob");
+      const data = currentCategory === 'individual' ? individualMatches : entityMatches;
+
+      if (currentCategory === 'individual') {
+        dobHeader.classList.remove("hidden");
+      } else {
+        dobHeader.classList.add("hidden");
+      }
+
+      tbody.innerHTML = data.map((item, idx) => {
+        const isResolved = item.resolved !== null;
+        let badgeHtml = "";
+        
+        if (isResolved) {
+          if (item.resolved === 'TRUE') {
+            badgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-600 border border-red-200">True Match</span>`;
+          } else {
+            badgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-50 text-gray-400 border border-gray-200">False Match</span>`;
+          }
+        } else {
+          badgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${item.badgeClass}">${item.type}</span>`;
+        }
+
+        const scoreColor = item.score > 90 ? "bg-green-500 text-green-600" : (item.score > 70 ? "bg-teal text-[#00dc8d]" : "bg-gray-400 text-gray-500");
+        const rowClass = isResolved 
+          ? "bg-gray-50 opacity-75 hover:bg-gray-50 h-[52px]" 
+          : (idx % 2 === 0 ? "hover:bg-gray-50 bg-white h-[52px]" : "hover:bg-gray-50 bg-[#fafafa] h-[52px]");
+
+        return `
+          <tr class="${rowClass} cursor-pointer" onclick="location.href='match-profiler.html?id=${item.id}&cat=${currentCategory}'">
+            <td class="px-4 text-center" onclick="event.stopPropagation()">
+              <input type="checkbox" data-id="${item.id}" class="row-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal cursor-pointer" ${isResolved ? 'disabled' : ''}>
+            </td>
+            <td class="px-4 text-center font-mono text-gray-400">${idx + 1}</td>
+            <td class="px-4 font-semibold text-gray-900 text-teal hover:underline">${item.name}</td>
+            <td class="px-4">
+              <div class="flex items-center gap-2 max-w-[120px]">
+                <div class="w-full h-1.5 bg-gray-200 rounded overflow-hidden">
+                  <div class="h-full ${scoreColor.split(' ')[0]}" style="width: ${item.score}%"></div>
+                </div>
+                <span class="font-semibold ${scoreColor.split(' ')[1]} font-mono">${item.score}%</span>
+              </div>
+            </td>
+            <td class="px-4">${badgeHtml}</td>
+            ${currentCategory === 'individual' ? `<td class="px-4 font-mono text-gray-600">${item.dob}</td>` : ''}
+            <td class="px-4">${item.country}</td>
+            <td class="px-4 text-gray-400 font-mono text-[10px]">${item.added}</td>
+            <td class="px-4 text-gray-450 font-mono text-[10px]">${item.modified}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Refresh checkboxes listeners or totals
+      updateSummaryCounters();
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+
+    function updateSummaryCounters() {
+      const data = currentCategory === 'individual' ? individualMatches : entityMatches;
+      const total = data.length;
+      const unresolved = data.filter(i => i.resolved === null).length;
+      const trues = data.filter(i => i.resolved === 'TRUE').length;
+      const falses = data.filter(i => i.resolved === 'FALSE').length;
+
+      document.getElementById("unresolved-count").innerText = unresolved;
+      document.getElementById("true-count").innerText = trues;
+      document.getElementById("false-count").innerText = falses;
+      
+      const badge = document.getElementById("status-badge");
+      if (unresolved === 0) {
+        badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/30";
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Resolved`;
+      } else {
+        badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#fef3c7] text-[#d97706] border border-[#f59e0b]/30";
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Unresolved`;
+      }
+    }
+
+    // Toggle Select All checkboxes
+    function toggleSelectAll(master) {
+      const cbs = document.querySelectorAll(".row-checkbox:not(:disabled)");
+      cbs.forEach(cb => cb.checked = master.checked);
+    }
+
+    // Toggle Individual / Entity Categories
+    function switchCategory(cat) {
+      currentCategory = cat;
+      const btnInd = document.getElementById("cat-ind");
+      const btnEnt = document.getElementById("cat-ent");
+
+      btnInd.className = "px-3 py-1 rounded text-gray-500 hover:text-gray-900 transition-colors";
+      btnEnt.className = "px-3 py-1 rounded text-gray-500 hover:text-gray-900 transition-colors";
+
+      if (cat === 'individual') {
+        btnInd.className = "px-3 py-1 rounded bg-white text-navy shadow-sm border border-gray-200";
+      } else {
+        btnEnt.className = "px-3 py-1 rounded bg-white text-navy shadow-sm border border-gray-200";
+      }
+
+      document.getElementById("header-checkbox").checked = false;
+      renderMatchesTable();
+    }
+
+    // Approve alert decision
+    function approveDisposal() {
+      const action = document.getElementById("disposal-action").value;
+      const comment = document.getElementById("disposal-comment").value.trim();
+
+      if (!action) {
+        alert("Compliance error: Please select an Alert Disposal Action.");
+        return;
+      }
+      if (!comment) {
+        alert("Compliance error: A comment is required before approving matches.");
+        return;
+      }
+
+      const checkedCbs = document.querySelectorAll(".row-checkbox:checked");
+      if (checkedCbs.length === 0) {
+        alert("Please select one or more unresolved matches in the table to dispose.");
+        return;
+      }
+
+      // Update data source
+      const data = currentCategory === 'individual' ? individualMatches : entityMatches;
+      const now = new Date();
+      const timestampStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      checkedCbs.forEach(cb => {
+        const id = parseInt(cb.getAttribute("data-id"));
+        const item = data.find(i => i.id === id);
+        if (item) {
+          item.resolved = action;
+          item.modified = timestampStr;
+        }
+      });
+
+      // Update Modified header timestamp
+      document.getElementById("modified-time-val").innerText = timestampStr;
+      document.getElementById("modified-time-container").classList.remove("hidden");
+
+      // Rerender
+      renderMatchesTable();
+
+      // Show toast
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toast-message");
+      const toastIcon = document.getElementById("toast-icon");
+      
+      if (action === 'TRUE') {
+        toastMsg.textContent = `Disposal Approved: Mark ${checkedCbs.length} matches as TRUE matches.`;
+        toastIcon.setAttribute("data-lucide", "alert-triangle");
+      } else {
+        toastMsg.textContent = `Disposal Approved: Mark ${checkedCbs.length} matches as FALSE matches.`;
+        toastIcon.setAttribute("data-lucide", "check-circle");
+      }
+      
+      toast.classList.remove("translate-y-12", "opacity-0");
+      setTimeout(() => {
+        toast.classList.add("translate-y-12", "opacity-0");
+      }, 3000);
+
+      // Clear fields and headers
+      document.getElementById("disposal-comment").value = "";
+      document.getElementById("disposal-action").value = "";
+      document.getElementById("header-checkbox").checked = false;
+    }
+  </script>
+</body>
+</html>

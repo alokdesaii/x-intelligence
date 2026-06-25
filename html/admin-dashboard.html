@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | X-Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#001741',
+            'navy-dark': '#000b21',
+            teal: '#00dc8d',
+            'teal-hover': '#00c47e',
+            'teal-light': '#ebfbf5',
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '0px',
+            'xs': '0px',
+            'sm': '0px',
+            'md': '0px',
+            'lg': '0px',
+            'xl': '0px',
+            '2xl': '0px',
+            '3xl': '0px',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="admin-shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Page Content Area -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+        
+        <!-- Top Metrics Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- Card 1: Active Organizations -->
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#ebfbf5] text-[#00dc8d]">
+              <i data-lucide="building" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block">Active Clients</span>
+              <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5">342 Companies</span>
+            </div>
+          </div>
+
+          <!-- Card 2: MRR Tracker -->
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-green-50 text-green-600">
+              <i data-lucide="banknote" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block">Monthly Recurring Revenue</span>
+              <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5">$189,450</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Scans 24h -->
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-blue-50 text-[#001741]">
+              <i data-lucide="activity" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block">Scans (Last 24h)</span>
+              <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5">14,890 Scans</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Registry Synced -->
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-teal-light text-teal">
+              <i data-lucide="database-backup" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block">Watchlists Synced</span>
+              <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5">12 / 12 Feeds</span>
+            </div>
+          </div>
+
+          <!-- Card 5: System Health -->
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-green-50 text-green-500">
+              <i data-lucide="server" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block">API Gateway Health</span>
+              <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5">99.99% Online</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Split Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          
+          <!-- Column 1-3: Watchlist Sync Tracker (Left 60%) -->
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 lg:col-span-3">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <i data-lucide="database" class="w-4 h-4 text-teal"></i>
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Watchlist Sync Tracker</h3>
+              </div>
+              <button onclick="syncAllFeeds()" class="h-8 px-3 bg-teal hover:bg-teal-hover text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="sync-all-icon"></i>
+                <span>Force Global Sync</span>
+              </button>
+            </div>
+
+            <div class="overflow-x-auto border border-[#e5e5e5] rounded-md">
+              <table class="w-full text-left border-collapse" id="sync-table">
+                <thead>
+                  <tr class="bg-gray-50 border-b border-[#e5e5e5] text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Watchlist Feeds</th>
+                    <th class="py-2.5 px-4 w-28 text-center">Frequency</th>
+                    <th class="py-2.5 px-4 w-36 text-center">Last Synced (GMT)</th>
+                    <th class="py-2.5 px-4 w-28 text-center">Total Records</th>
+                    <th class="py-2.5 px-4 w-24 text-center">Status</th>
+                    <th class="py-2.5 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#e5e5e5] text-xs text-gray-700 font-mono" id="sync-tbody">
+                  <!-- OFAC -->
+                  <tr class="hover:bg-[#fafafa] h-12">
+                    <td class="px-4 font-sans font-semibold text-gray-900">OFAC SDN Watchlist</td>
+                    <td class="px-4 text-center font-sans">Every 6 Hours</td>
+                    <td class="px-4 text-center text-gray-500">2026-06-19 06:00</td>
+                    <td class="px-4 text-center text-gray-800 font-bold">184,912</td>
+                    <td class="px-4 text-center">
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/20">Synced</span>
+                    </td>
+                    <td class="px-4 text-right font-sans">
+                      <button onclick="syncFeed(this, 'OFAC SDN Watchlist', 184912)" class="text-teal hover:underline font-semibold flex items-center gap-1 ml-auto">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- UN -->
+                  <tr class="hover:bg-[#fafafa] h-12">
+                    <td class="px-4 font-sans font-semibold text-gray-900">UN Security watchlists</td>
+                    <td class="px-4 text-center font-sans">Every 12 Hours</td>
+                    <td class="px-4 text-center text-gray-500">2026-06-18 20:30</td>
+                    <td class="px-4 text-center text-gray-800 font-bold">48,102</td>
+                    <td class="px-4 text-center">
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/20">Synced</span>
+                    </td>
+                    <td class="px-4 text-right font-sans">
+                      <button onclick="syncFeed(this, 'UN Security watchlists', 48102)" class="text-teal hover:underline font-semibold flex items-center gap-1 ml-auto">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- EU -->
+                  <tr class="hover:bg-[#fafafa] h-12">
+                    <td class="px-4 font-sans font-semibold text-gray-900">EU Asset Freeze List</td>
+                    <td class="px-4 text-center font-sans">Every 6 Hours</td>
+                    <td class="px-4 text-center text-gray-500">2026-06-19 08:15</td>
+                    <td class="px-4 text-center text-gray-800 font-bold">112,409</td>
+                    <td class="px-4 text-center">
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/20">Synced</span>
+                    </td>
+                    <td class="px-4 text-right font-sans">
+                      <button onclick="syncFeed(this, 'EU Asset Freeze List', 112409)" class="text-teal hover:underline font-semibold flex items-center gap-1 ml-auto">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- HMT UK -->
+                  <tr class="hover:bg-[#fafafa] h-12">
+                    <td class="px-4 font-sans font-semibold text-gray-900">HMT Sanctions (UK)</td>
+                    <td class="px-4 text-center font-sans">Every 6 Hours</td>
+                    <td class="px-4 text-center text-gray-500">2026-06-19 09:22</td>
+                    <td class="px-4 text-center text-gray-800 font-bold">64,912</td>
+                    <td class="px-4 text-center">
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/20">Synced</span>
+                    </td>
+                    <td class="px-4 text-right font-sans">
+                      <button onclick="syncFeed(this, 'HMT Sanctions (UK)', 64912)" class="text-teal hover:underline font-semibold flex items-center gap-1 ml-auto">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- LexisNexis -->
+                  <tr class="hover:bg-[#fafafa] h-12">
+                    <td class="px-4 font-sans font-semibold text-gray-900">LexisNexis World-Check</td>
+                    <td class="px-4 text-center font-sans">Daily</td>
+                    <td class="px-4 text-center text-gray-500">2026-06-18 01:00</td>
+                    <td class="px-4 text-center text-gray-800 font-bold">4,120,490</td>
+                    <td class="px-4 text-center">
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-[#fef3c7] text-[#d97706] border border-[#f59e0b]/20">Update Ready</span>
+                    </td>
+                    <td class="px-4 text-right font-sans">
+                      <button onclick="syncFeed(this, 'LexisNexis World-Check', 4120490)" class="text-teal hover:underline font-semibold flex items-center gap-1 ml-auto">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Update
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Column 4-5: Customer Usage Leaderboard (Right 40%) -->
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 lg:col-span-2 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4 text-teal"></i>
+                  <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Active Clients Ledger</h3>
+                </div>
+                <span class="text-[10px] text-gray-400 font-mono font-semibold uppercase tracking-wider">Scans vs limit</span>
+              </div>
+
+              <!-- Leaderboard rows -->
+              <div class="space-y-4">
+                
+                <!-- Client 1 -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-navy hover:underline cursor-pointer">Xirni Financial Services</span>
+                    <span class="text-gray-500 font-mono">18,240 / 20,000 scans</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-red-500 rounded-full" style="width: 91.2%"></div>
+                  </div>
+                </div>
+
+                <!-- Client 2 -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-navy hover:underline cursor-pointer">Apex Global Partners</span>
+                    <span class="text-gray-500 font-mono">8,412 / 25,000 scans</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-teal rounded-full" style="width: 33.6%"></div>
+                  </div>
+                </div>
+
+                <!-- Client 3 -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-navy hover:underline cursor-pointer">Zenith Commercial Bank</span>
+                    <span class="text-gray-500 font-mono">11,920 / 12,000 scans</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-red-500 rounded-full" style="width: 99.3%"></div>
+                  </div>
+                </div>
+
+                <!-- Client 4 -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-navy hover:underline cursor-pointer">Falcon Trust Corp</span>
+                    <span class="text-gray-500 font-mono">2,340 / 15,000 scans</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-teal rounded-full" style="width: 15.6%"></div>
+                  </div>
+                </div>
+
+                <!-- Client 5 -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-navy hover:underline cursor-pointer">Lighthouse Capital</span>
+                    <span class="text-gray-500 font-mono">512 / 5,000 scans</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-teal rounded-full" style="width: 10.2%"></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Footer links -->
+            <div class="mt-6 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400 font-mono select-none">
+              <span>USAGE CYCLE RESETS: 1st OF MONTH</span>
+              <a href="admin-subscriptions.html" class="text-teal font-semibold hover:underline flex items-center gap-0.5 font-sans">
+                <span>Manage Subscriptions</span> <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Dynamic Toast Container -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-navy text-white text-xs px-4 py-3 rounded border border-[#00276e] flex items-center gap-2 transform translate-y-12 opacity-0 transition-all duration-300 z-50 select-none">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal"></i>
+    <span id="toast-message">Database synchronized successfully.</span>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Trigger individual feed synchronization
+    function syncFeed(button, feedName, baseRecords) {
+      button.disabled = true;
+      const originalContent = button.innerHTML;
+      button.innerHTML = `<i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin"></i> Syncing...`;
+      lucide.createIcons();
+
+      const row = button.closest("tr");
+      const statusSpan = row.cells[4].querySelector("span");
+      const recordsTd = row.cells[3];
+      
+      statusSpan.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-blue-50 text-blue-700 border border-blue-200 animate-pulse";
+      statusSpan.innerText = "Syncing...";
+
+      setTimeout(() => {
+        // Complete Sync
+        button.disabled = false;
+        button.innerHTML = originalContent;
+        lucide.createIcons();
+
+        // Increment record count slightly for visualization
+        const newRecords = baseRecords + Math.floor(Math.random() * 200) + 10;
+        recordsTd.innerText = newRecords.toLocaleString();
+
+        const now = new Date();
+        const timestampStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        row.cells[2].innerText = timestampStr;
+
+        statusSpan.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/20";
+        statusSpan.innerText = "Synced";
+
+        showToast(`${feedName} synchronized successfully. Added ${newRecords - baseRecords} records.`);
+      }, 1500);
+    }
+
+    // Force synchronization on all feeds
+    function syncAllFeeds() {
+      const button = document.getElementById("sync-all-icon");
+      button.classList.add("animate-spin");
+
+      const rows = document.querySelectorAll("#sync-tbody tr");
+      rows.forEach((row, i) => {
+        const btn = row.cells[5].querySelector("button");
+        if (btn) {
+          setTimeout(() => {
+            btn.click();
+          }, i * 300);
+        }
+      });
+
+      setTimeout(() => {
+        button.classList.remove("animate-spin");
+      }, rows.length * 300 + 1500);
+    }
+
+    // Show dynamic notification toast
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      const msgSpan = document.getElementById("toast-message");
+      
+      msgSpan.innerText = message;
+      toast.classList.remove("translate-y-12", "opacity-0");
+      
+      setTimeout(() => {
+        toast.classList.add("translate-y-12", "opacity-0");
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

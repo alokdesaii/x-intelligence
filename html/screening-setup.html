@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screening Setup | X-Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#001741',
+            'navy-dark': '#000b21',
+            teal: '#00dc8d',
+            'teal-hover': '#00c47e',
+            'teal-light': '#ebfbf5',
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          borderRadius: {
+            DEFAULT: '0px',
+            'xs': '0px',
+            'sm': '0px',
+            'md': '0px',
+            'lg': '0px',
+            'xl': '0px',
+            '2xl': '0px',
+            '3xl': '0px',
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="shell.js" defer></script>
+  <style>
+    .drawer-transition {
+      transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Split Panel Layout (32px padding per CLAUDE.md) -->
+      <main class="flex-1 flex overflow-hidden p-8 gap-6">
+        
+        <!-- LEFT PANEL: Settings/Scope Configuration (280px wide) -->
+        <section class="w-[280px] bg-[#f5f5f5] border border-[#e5e5e5] rounded-xl p-5 flex flex-col justify-between shrink-0 overflow-y-auto">
+          <div class="space-y-6">
+            
+            <!-- Section: Mode -->
+            <div>
+              <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Screening Mode</h4>
+              <div class="flex flex-col gap-1 text-xs">
+                <!-- Single Mode (Active) -->
+                <div class="flex items-center justify-between px-3 py-2 bg-white rounded border-l-4 border-[#001741] font-semibold text-[#001741]">
+                  <span>Single Scan</span>
+                  <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                </div>
+                <!-- Batch Mode (Inactive) -->
+                <a href="bulk-screening.html" class="flex items-center justify-between px-3 py-2 text-gray-600 hover:text-gray-900 rounded hover:bg-gray-200 transition-colors font-medium">
+                  <span>Batch Upload</span>
+                  <i data-lucide="files" class="w-3.5 h-3.5"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Section: Entity Type -->
+            <div>
+              <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Entity Type</h4>
+              <div class="flex flex-col gap-1 text-xs" id="entity-selector">
+                <button onclick="setEntityType('individual')" id="tab-individual" class="flex items-center gap-2.5 px-3 py-2 w-full text-left font-semibold text-navy bg-teal-light rounded border border-teal/30">
+                  <i data-lucide="user" class="w-4 h-4"></i>
+                  <span>Individual</span>
+                </button>
+                <button onclick="setEntityType('corporate')" id="tab-corporate" class="flex items-center gap-2.5 px-3 py-2 w-full text-left text-gray-600 hover:bg-gray-200 rounded font-medium transition-colors">
+                  <i data-lucide="building-2" class="w-4 h-4"></i>
+                  <span>Organisation</span>
+                </button>
+                <button onclick="setEntityType('vessel')" id="tab-vessel" class="flex items-center gap-2.5 px-3 py-2 w-full text-left text-gray-600 hover:bg-gray-200 rounded font-medium transition-colors">
+                  <i data-lucide="anchor" class="w-4 h-4"></i>
+                  <span>Vessel</span>
+                </button>
+                <button onclick="setEntityType('unspecified')" id="tab-unspecified" class="flex items-center gap-2.5 px-3 py-2 w-full text-left text-gray-600 hover:bg-gray-200 rounded font-medium transition-colors">
+                  <i data-lucide="help-circle" class="w-4 h-4"></i>
+                  <span>Unspecified</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section: Check Types -->
+            <div>
+              <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Check Types</h4>
+              <div class="space-y-1.5 text-xs">
+                <!-- Check Type 1: Sanction Lists -->
+                <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded">
+                  <span class="font-semibold text-gray-750">Sanction Lists</span>
+                  <div onclick="toggleCheckTypeSwitch(this)" class="w-8 h-4 bg-teal rounded-full relative cursor-pointer flex items-center px-0.5 justify-end transition-colors">
+                    <span class="w-3.5 h-3.5 bg-white rounded-full transform transition-transform"></span>
+                  </div>
+                </div>
+                <!-- Check Type 2: LexisNexis -->
+                <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded">
+                  <span class="font-semibold text-gray-750">LexisNexis</span>
+                  <div onclick="toggleCheckTypeSwitch(this)" class="w-8 h-4 bg-teal rounded-full relative cursor-pointer flex items-center px-0.5 justify-end transition-colors">
+                    <span class="w-3.5 h-3.5 bg-white rounded-full transform transition-transform"></span>
+                  </div>
+                </div>
+                <!-- Check Type 3: Adverse Media -->
+                <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded">
+                  <span class="font-semibold text-gray-750">Adverse Media</span>
+                  <div onclick="toggleCheckTypeSwitch(this)" class="w-8 h-4 bg-gray-300 rounded-full relative cursor-pointer flex items-center px-0.5 transition-colors">
+                    <span class="w-3.5 h-3.5 bg-white rounded-full transform transition-transform"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section: Ongoing Screening -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ongoing Screening</h4>
+                <div onclick="toggleOngoingScreeningSwitch(this)" id="ongoing-switch" class="w-8 h-4 bg-gray-300 rounded-full relative cursor-pointer flex items-center px-0.5 transition-colors">
+                  <span class="w-3.5 h-3.5 bg-white rounded-full transform transition-transform"></span>
+                </div>
+              </div>
+              
+              <!-- Ongoing Settings (Initially hidden unless ongoing toggled ON) -->
+              <div id="ongoing-options" class="hidden mt-3 p-3 bg-white border border-gray-200 rounded text-xs space-y-2.5">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="ongoing-opt" checked onchange="toggleOngoingSelection('new')" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                  <span class="font-semibold text-gray-700">Create New Batch</span>
+                </label>
+                <div id="ongoing-new-input">
+                  <input type="text" id="new-batch-name" placeholder="Batch name" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                </div>
+
+                <label class="flex items-center gap-2 cursor-pointer pt-1">
+                  <input type="radio" name="ongoing-opt" onchange="toggleOngoingSelection('existing')" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                  <span class="font-semibold text-gray-700">Add to Existing Batch</span>
+                </label>
+                <div id="ongoing-existing-input" class="hidden">
+                  <select id="existing-batch-select" class="w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                    <option value="">Select individual batch</option>
+                    <option value="Asia">Asia-Pacific Roster [IND-ASIA]</option>
+                    <option value="EU">EU Contractors [IND-EU]</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom update meta -->
+          <div class="mt-4 pt-4 border-t border-gray-200 flex items-center gap-2 text-[10px] text-gray-400 font-mono">
+            <i data-lucide="shield-check" class="w-4 h-4 text-teal"></i>
+            DB VER: 2026.06.16
+          </div>
+        </section>
+
+        <!-- RIGHT PANEL: Dynamic Form Workspace (White bg, 32px padding, scrollable) -->
+        <section class="flex-1 bg-white border border-[#e5e5e5] rounded-xl p-8 flex flex-col justify-between overflow-y-auto">
+          
+          <div class="max-w-[680px] w-full">
+            <div class="mb-6">
+              <h2 id="form-title" class="text-lg font-semibold tracking-[-0.3px] text-gray-900">Individual Screening</h2>
+              <p class="text-xs text-gray-500 mt-1">Specify target credentials. Mandatory fields are flagged with red asterisk (<span class="text-[#ef4444]">*</span>).</p>
+            </div>
+
+            <form id="screening-form" onsubmit="executeScreening(event)">
+              
+              <!-- 1. INDIVIDUAL FORM FIELDS -->
+              <div id="fields-individual" class="space-y-4">
+                
+                <!-- First / Middle Name -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="ind-first" class="block text-xs font-semibold text-gray-700 mb-1">First Name <span class="text-[#ef4444]">*</span></label>
+                    <input type="text" id="ind-first" placeholder="Enter first name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                  </div>
+                  <div>
+                    <label for="ind-middle" class="block text-xs font-semibold text-gray-700 mb-1">Middle Name</label>
+                    <input type="text" id="ind-middle" placeholder="Enter middle name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                  </div>
+                </div>
+
+                <!-- Last Name -->
+                <div>
+                  <label for="ind-last" class="block text-xs font-semibold text-gray-700 mb-1">Last Name</label>
+                  <input type="text" id="ind-last" placeholder="Enter last name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                </div>
+
+                <!-- Gender & Country -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="ind-gender" class="block text-xs font-semibold text-gray-700 mb-1">Gender</label>
+                    <div class="relative">
+                      <select id="ind-gender" class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm appearance-none cursor-pointer">
+                        <option value="">Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="ind-country" class="block text-xs font-semibold text-gray-700 mb-1">Country</label>
+                    <div class="relative">
+                      <select id="ind-country" class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm appearance-none cursor-pointer">
+                        <option value="">Select country</option>
+                        <option value="US">United States</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="RU">Russia</option>
+                        <option value="AE">United Arab Emirates</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Search Type Selection -->
+                <div class="flex items-center gap-4 py-2 text-xs font-semibold text-gray-700">
+                  <span class="uppercase tracking-wider">Search Type</span>
+                  <div class="flex items-center gap-5">
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input type="radio" name="search-type" value="precise" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                      <span>PRECISE</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input type="radio" name="search-type" value="near" class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                      <span>NEAR</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                      <input type="radio" name="search-type" value="broad" checked class="w-4 h-4 text-teal border-gray-300 focus:ring-teal">
+                      <span>BROAD</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- DOB Tabs: Year | DD/MM/YYYY | Age Range -->
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 mb-1.5">Date of Birth</label>
+                  <div class="flex bg-gray-100 p-0.5 rounded-md border border-gray-200 max-w-xs mb-3 text-xs font-semibold">
+                    <button type="button" onclick="setDobTab('year')" id="dob-tab-year" class="flex-1 py-1 rounded transition-all bg-white text-gray-900 shadow-sm border border-gray-200">Year</button>
+                    <button type="button" onclick="setDobTab('full')" id="dob-tab-full" class="flex-1 py-1 rounded transition-all text-gray-500 hover:text-gray-900">DD/MM/YYYY</button>
+                    <button type="button" onclick="setDobTab('range')" id="dob-tab-range" class="flex-1 py-1 rounded transition-all text-gray-500 hover:text-gray-900">Age Range</button>
+                  </div>
+
+                  <!-- Tab DOB Year -->
+                  <div id="dob-input-year" class="">
+                    <input type="number" min="1900" max="2026" placeholder="e.g. 1985" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                  </div>
+                  <!-- Tab DOB Full Date -->
+                  <div id="dob-input-full" class="hidden">
+                    <input type="date" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                  </div>
+                  <!-- Tab DOB Age Range -->
+                  <div id="dob-input-range" class="hidden grid grid-cols-2 gap-4">
+                    <input type="number" placeholder="From Age" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                    <input type="number" placeholder="To Age" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                  </div>
+                </div>
+
+                <!-- ID Number & ID Type -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="ind-id-num" class="block text-xs font-semibold text-gray-700 mb-1">ID Number</label>
+                    <input type="text" id="ind-id-num" placeholder="Enter ID Number" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm font-mono">
+                  </div>
+                  <div>
+                    <label for="ind-id-type" class="block text-xs font-semibold text-gray-700 mb-1">ID Type</label>
+                    <div class="relative">
+                      <select id="ind-id-type" class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm appearance-none cursor-pointer">
+                        <option value="">Select ID Type</option>
+                        <option value="PP">Passport</option>
+                        <option value="NID">National Identification</option>
+                        <option value="DL">Driver's License</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Issuing Country & Case ID -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="ind-id-issuer" class="block text-xs font-semibold text-gray-700 mb-1">Issuing Country</label>
+                    <div class="relative">
+                      <select id="ind-id-issuer" class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm appearance-none cursor-pointer">
+                        <option value="">Select country</option>
+                        <option value="US">United States</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="RU">Russia</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="ind-case-id" class="block text-xs font-semibold text-gray-700 mb-1">Case ID (Optional)</label>
+                    <input type="text" id="ind-case-id" placeholder="Enter custom Case ID" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm font-mono">
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- 2. ORGANISATION FORM FIELDS -->
+              <div id="fields-corporate" class="hidden space-y-4">
+                <div>
+                  <label for="corp-name" class="block text-xs font-semibold text-gray-700 mb-1">Organisation Name <span class="text-[#ef4444]">*</span></label>
+                  <input type="text" id="corp-name" placeholder="Enter organisation name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="corp-case" class="block text-xs font-semibold text-gray-700 mb-1">Case ID (Optional)</label>
+                    <input type="text" id="corp-case" placeholder="Enter custom Case ID" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm font-mono">
+                  </div>
+                  <div>
+                    <label for="corp-country" class="block text-xs font-semibold text-gray-700 mb-1">Registered Country</label>
+                    <div class="relative">
+                      <select id="corp-country" class="w-full h-10 pl-3 pr-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm appearance-none cursor-pointer">
+                        <option value="">Select country</option>
+                        <option value="US">United States</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="RU">Russia</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="corp-reg" class="block text-xs font-semibold text-gray-700 mb-1">Registration Number</label>
+                    <input type="text" id="corp-reg" placeholder="Optional identifier" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm font-mono">
+                  </div>
+                  <div>
+                    <label for="corp-date" class="block text-xs font-semibold text-gray-700 mb-1">Registration Date</label>
+                    <input type="date" id="corp-date" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                  </div>
+                </div>
+
+                <!-- Collapsible Identification Number -->
+                <div class="border border-gray-200 rounded-md overflow-hidden bg-gray-50">
+                  <button type="button" onclick="toggleAccordion('corp-acc-id')" class="w-full px-4 py-3 flex items-center justify-between font-semibold text-xs text-gray-700 border-b border-gray-200">
+                    <span>ADDITIONAL IDENTIFICATION DETAILS</span>
+                    <i data-lucide="chevron-down" id="corp-acc-id-icon" class="w-4 h-4 text-gray-500"></i>
+                  </button>
+                  <div id="corp-acc-id-body" class="hidden p-4 space-y-4 bg-white border-t border-gray-150">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">ID Number</label>
+                        <input type="text" class="w-full h-9 px-2 border border-gray-300 rounded text-xs font-mono focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Issuer / Country</label>
+                        <input type="text" class="w-full h-9 px-2 border border-gray-300 rounded text-xs focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                      </div>
+                      <div>
+                        <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">ID Type</label>
+                        <input type="text" class="w-full h-9 px-2 border border-gray-300 rounded text-xs focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Collapsible Primary Case linkage -->
+                <div class="border border-gray-200 rounded-md overflow-hidden bg-gray-50">
+                  <button type="button" onclick="toggleAccordion('corp-acc-link')" class="w-full px-4 py-3 flex items-center justify-between font-semibold text-xs text-gray-700 border-b border-gray-200">
+                    <span>LINK TO PRIMARY CASE</span>
+                    <i data-lucide="chevron-down" id="corp-acc-link-icon" class="w-4 h-4 text-gray-500"></i>
+                  </button>
+                  <div id="corp-acc-link-body" class="hidden p-4 bg-white border-t border-gray-150">
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Choose Primary Case</label>
+                    <div class="relative">
+                      <input type="text" placeholder="Search by Case ID or name target..." class="w-full h-9 pl-3 pr-10 border border-gray-300 rounded text-xs focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                      <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute right-3 top-2.5"></i>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- 3. VESSEL FORM FIELDS -->
+              <div id="fields-vessel" class="hidden space-y-4">
+                <div>
+                  <label for="ves-name" class="block text-xs font-semibold text-gray-700 mb-1">Vessel Name <span class="text-[#ef4444]">*</span></label>
+                  <input type="text" id="ves-name" placeholder="Enter vessel name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="ves-case" class="block text-xs font-semibold text-gray-700 mb-1">Case ID (Optional)</label>
+                    <input type="text" id="ves-case" placeholder="Enter custom Case ID" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm font-mono">
+                  </div>
+                  <div>
+                    <label for="ves-imo" class="block text-xs font-semibold text-gray-700 mb-1">IMO Number</label>
+                    <input type="text" id="ves-imo" placeholder="Enter IMO reference" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm font-mono">
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. UNSPECIFIED FORM FIELDS -->
+              <div id="fields-unspecified" class="hidden space-y-4">
+                <div>
+                  <label for="un-name" class="block text-xs font-semibold text-gray-700 mb-1">Name <span class="text-[#ef4444]">*</span></label>
+                  <input type="text" id="un-name" placeholder="Enter name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
+                </div>
+              </div>
+
+              <!-- Shared Section: Collapsible Database checkboxes -->
+              <div class="border border-gray-200 rounded-md overflow-hidden bg-gray-50 mt-6" id="db-accordion">
+                <button type="button" onclick="toggleAccordion('acc-db')" class="w-full px-4 py-3 flex items-center justify-between font-semibold text-xs text-gray-700 border-b border-gray-200">
+                  <span>SEARCH SPECIFIC DATABASE</span>
+                  <i data-lucide="chevron-down" id="acc-db-icon" class="w-4 h-4 text-gray-500"></i>
+                </button>
+                
+                <div id="acc-db-body" class="p-4 bg-white border-t border-gray-150">
+                  <!-- Saved Templates Selector Row (Initially Hidden unless templates exist) -->
+                  <div id="saved-templates-row" class="hidden mb-4 pb-3 border-b border-gray-100 flex items-center justify-between text-xs">
+                    <span class="text-gray-500 font-semibold uppercase tracking-wider">Apply Saved Format:</span>
+                    <div class="relative w-48">
+                      <select id="apply-template-select" onchange="applySelectedTemplate(this.value)" class="w-full h-8 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                        <option value="">Select a format...</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-semibold text-gray-700">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" id="db-all" checked onchange="toggleAllDbCheckboxes(this)" class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+                      <span>All Database</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked class="db-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal" id="db-pep" onchange="updateMasterCheckbox()">
+                      <span>PEP</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked class="db-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal" id="db-adverse" onchange="updateMasterCheckbox()">
+                      <span>Adverse News</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked class="db-checkbox w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal" id="db-sanctions" onchange="updateMasterCheckbox()">
+                      <span>Sanctions</span>
+                    </label>
+                  </div>
+                  
+                  <!-- Unspecified Expanded Checklist Nodes (only visible when Unspecified tab active) -->
+                  <div id="unspecified-sub-dbs" class="hidden mt-4 p-3 bg-gray-50 border border-gray-200 rounded text-xs space-y-2 max-w-md">
+                    <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Watchlists Sub-Indices</span>
+                    <label class="flex items-center gap-2 cursor-pointer text-gray-700">
+                      <input type="checkbox" checked class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+                      <span>PEP News &amp; Relations</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-gray-700">
+                      <input type="checkbox" checked class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+                      <span>PEP Official Registry</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-gray-700">
+                      <input type="checkbox" checked class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+                      <span>OFAC SDN (US) List</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-gray-700">
+                      <input type="checkbox" checked class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+                      <span>UN Security watchlists</span>
+                    </label>
+                  </div>
+
+                  <!-- Save Template Prompt -->
+                  <div id="save-template-prompt" class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs">
+                    <span class="text-gray-400">Save this database configuration template?</span>
+                    <button type="button" onclick="showSaveTemplateForm()" class="text-teal font-semibold hover:underline">New Format</button>
+                  </div>
+
+                  <!-- Save Template Form Container (Initially Hidden) -->
+                  <div id="save-template-container" class="hidden mt-4 pt-3 border-t border-gray-150 flex flex-col sm:flex-row gap-2 items-center text-xs">
+                    <input type="text" id="template-name-input" placeholder="Enter template name (e.g. EU Watchlist)" class="flex-1 w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                    <div class="flex gap-1.5 shrink-0 w-full sm:w-auto justify-end">
+                      <button type="button" onclick="cancelSaveTemplate()" class="h-8 px-3 text-gray-500 hover:bg-gray-100 rounded font-semibold transition-colors">Cancel</button>
+                      <button type="button" onclick="saveDatabaseTemplate()" class="h-8 px-3 bg-[#001741] hover:bg-[#00143a] text-white rounded font-semibold transition-colors">Save Template</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons Row (Clear, Save, Screen) -->
+              <div class="mt-8 flex justify-end gap-3 shrink-0">
+                <button type="button" onclick="clearForm()" class="h-10 px-4 hover:bg-gray-150 text-gray-600 text-xs font-semibold rounded-md transition-colors">
+                  Clear
+                </button>
+                <button type="button" onclick="alert('Saving configurations...')" class="h-10 px-4 border border-[#001741] text-[#001741] text-xs font-semibold rounded-md hover:bg-gray-50 transition-colors">
+                  Save
+                </button>
+                <button type="submit" id="submit-btn" class="h-10 px-6 bg-[#001741] hover:bg-[#00143a] text-white text-xs font-semibold rounded-md transition-colors flex items-center gap-2">
+                  <i data-lucide="play" class="w-4 h-4"></i>
+                  <span>Screen</span>
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Loading Dialog Simulation -->
+          <div id="loader-sandbox" class="hidden fixed inset-0 bg-navy/20 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div class="bg-white border border-[#e5e5e5] p-8 rounded-lg max-w-[400px] w-full text-center">
+              <svg class="animate-spin h-10 w-10 text-teal mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <h3 class="text-sm font-semibold tracking-[-0.3px] text-gray-900 uppercase">Screening Entity...</h3>
+              <p class="text-xs text-gray-500 mt-2">Checking target against OFAC, PEP, and HMT consolidated watchlists. Do not refresh.</p>
+              
+              <div class="mt-4 w-full bg-gray-100 h-1.5 rounded overflow-hidden">
+                <div class="h-full bg-teal w-0" id="loader-progress"></div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide
+    lucide.createIcons();
+
+    let currentEntity = 'individual';
+
+    // Toggle entity layout forms
+    // Toggle entity layout forms
+    function setEntityType(type) {
+      currentEntity = type;
+      const entities = ['individual', 'corporate', 'vessel', 'unspecified'];
+      const formTitle = document.getElementById("form-title");
+      
+      // Update left side sub-navigation styles
+      entities.forEach(ent => {
+        const btn = document.getElementById(`tab-${ent}`);
+        const fieldsDiv = document.getElementById(`fields-${ent}`);
+        
+        if (ent === type) {
+          btn.className = "flex items-center gap-2.5 px-3 py-2 w-full text-left font-semibold text-navy bg-teal-light rounded border border-teal/30";
+          fieldsDiv.classList.remove("hidden");
+        } else {
+          btn.className = "flex items-center gap-2.5 px-3 py-2 w-full text-left text-gray-600 hover:bg-gray-200 rounded font-medium transition-colors";
+          fieldsDiv.classList.add("hidden");
+        }
+      });
+
+      // Update Form Titles & visibility details
+      const unspecifiedSub = document.getElementById("unspecified-sub-dbs");
+      const dbAccordionBody = document.getElementById("acc-db-body");
+
+      if (type === 'individual') {
+        formTitle.innerText = "Individual Screening";
+        unspecifiedSub.classList.add("hidden");
+      } else if (type === 'corporate') {
+        formTitle.innerText = "Organisation Screening";
+        unspecifiedSub.classList.add("hidden");
+      } else if (type === 'vessel') {
+        formTitle.innerText = "Vessel Screening";
+        unspecifiedSub.classList.add("hidden");
+      } else {
+        formTitle.innerText = "Unspecified Screening";
+        unspecifiedSub.classList.remove("hidden");
+        // Expand database checklists by default for unspecified
+        document.getElementById("acc-db-body").classList.remove("hidden");
+        document.getElementById("acc-db-icon").classList.add("rotate-180");
+      }
+
+      // Dynamically filter existing batches dropdown
+      const batchSelect = document.getElementById("existing-batch-select");
+      if (batchSelect) {
+        batchSelect.innerHTML = "";
+        if (type === 'individual') {
+          batchSelect.innerHTML = `
+            <option value="">Select individual batch</option>
+            <option value="Asia">Asia-Pacific Roster [IND-ASIA]</option>
+            <option value="EU">EU Contractors [IND-EU]</option>
+          `;
+        } else if (type === 'corporate') {
+          batchSelect.innerHTML = `
+            <option value="">Select corporate batch</option>
+            <option value="NBFI">Client NBFI Batch [ENT-NBFI]</option>
+            <option value="Subsidiaries">Holdings & Subsidiaries [ENT-HOLD]</option>
+          `;
+        } else if (type === 'vessel') {
+          batchSelect.innerHTML = `
+            <option value="">Select vessel batch</option>
+            <option value="Fleet">Vessel Fleet Alpha [VES-ALPH]</option>
+            <option value="Charters">Chartered Ships Registry [VES-CHAR]</option>
+          `;
+        } else {
+          batchSelect.innerHTML = `
+            <option value="">Select unspecified batch</option>
+            <option value="Misc">Unspecified Ad-hoc Targets [UNS-MISC]</option>
+          `;
+        }
+      }
+    }
+
+    // Toggle check type switches
+    function toggleCheckTypeSwitch(div) {
+      const pin = div.querySelector("span");
+      if (div.classList.contains("bg-gray-300")) {
+        div.classList.replace("bg-gray-300", "bg-teal");
+        div.classList.add("justify-end");
+      } else {
+        div.classList.replace("bg-teal", "bg-gray-300");
+        div.classList.remove("justify-end");
+      }
+    }
+
+    // Toggle Ongoing screening options
+    function toggleOngoingScreeningSwitch(div) {
+      const pin = div.querySelector("span");
+      const options = document.getElementById("ongoing-options");
+      if (div.classList.contains("bg-gray-300")) {
+        div.classList.replace("bg-gray-300", "bg-teal");
+        pin.classList.add("translate-x-3.5");
+        options.classList.remove("hidden");
+      } else {
+        div.classList.replace("bg-teal", "bg-gray-300");
+        pin.classList.remove("translate-x-3.5");
+        options.classList.add("hidden");
+      }
+    }
+
+    // Toggle Ongoing options sub-inputs
+    function toggleOngoingSelection(type) {
+      const newInput = document.getElementById("ongoing-new-input");
+      const existInput = document.getElementById("ongoing-existing-input");
+      if (type === 'new') {
+        newInput.classList.remove("hidden");
+        existInput.classList.add("hidden");
+      } else {
+        newInput.classList.add("hidden");
+        existInput.classList.remove("hidden");
+      }
+    }
+
+    // DOB sub tabs Year / Date / Range
+    function setDobTab(tab) {
+      const tabs = ['year', 'full', 'range'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`dob-tab-${t}`);
+        const inputDiv = document.getElementById(`dob-input-${t}`);
+        
+        if (t === tab) {
+          btn.className = "flex-1 py-1 rounded transition-all bg-white text-gray-900 shadow-sm border border-gray-200";
+          inputDiv.classList.remove("hidden");
+        } else {
+          btn.className = "flex-1 py-1 rounded transition-all text-gray-500 hover:text-gray-900";
+          inputDiv.classList.add("hidden");
+        }
+      });
+    }
+
+    // Accordion Toggle
+    function toggleAccordion(id) {
+      const body = document.getElementById(`${id}-body`);
+      const icon = document.getElementById(`${id}-icon`);
+      if (body.classList.contains("hidden")) {
+        body.classList.remove("hidden");
+        icon.classList.add("rotate-180");
+      } else {
+        body.classList.add("hidden");
+        icon.classList.remove("rotate-180");
+      }
+    }
+
+    // Checkbox database selection sync
+    function toggleAllDbCheckboxes(master) {
+      const cbs = document.querySelectorAll(".db-checkbox");
+      cbs.forEach(cb => cb.checked = master.checked);
+    }
+
+    // Clear form fields
+    function clearForm() {
+      document.getElementById("screening-form").reset();
+      // Reset DOB tabs
+      setDobTab('year');
+    }
+
+    // Execute watchlist loading simulation
+    function executeScreening(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById("submit-btn");
+      const loaderSandbox = document.getElementById("loader-sandbox");
+      const progressBar = document.getElementById("loader-progress");
+      
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `Screening…`;
+      loaderSandbox.classList.remove("hidden");
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = `${progress}%`;
+        if (progress >= 100) {
+          clearInterval(interval);
+          window.location.href = "search-results.html";
+        }
+      }, 120);
+    }
+
+    // Database Template Management Functions
+    function updateMasterCheckbox() {
+      const allCbs = document.querySelectorAll(".db-checkbox");
+      const checkedCbs = document.querySelectorAll(".db-checkbox:checked");
+      const master = document.getElementById("db-all");
+      if (master) {
+        master.checked = (allCbs.length === checkedCbs.length);
+      }
+    }
+
+    function showSaveTemplateForm() {
+      document.getElementById("save-template-prompt").classList.add("hidden");
+      document.getElementById("save-template-container").classList.remove("hidden");
+      document.getElementById("template-name-input").value = "";
+      document.getElementById("template-name-input").focus();
+    }
+
+    function cancelSaveTemplate() {
+      document.getElementById("save-template-prompt").classList.remove("hidden");
+      document.getElementById("save-template-container").classList.add("hidden");
+    }
+
+    function loadSavedTemplates() {
+      const select = document.getElementById("apply-template-select");
+      if (!select) return;
+
+      // Reset options
+      select.innerHTML = '<option value="">Select a format...</option>';
+
+      let templates = {};
+      try {
+        templates = JSON.parse(localStorage.getItem("database_templates")) || {};
+      } catch (e) {
+        templates = {};
+      }
+
+      const keys = Object.keys(templates);
+      const row = document.getElementById("saved-templates-row");
+      if (keys.length > 0) {
+        row.classList.remove("hidden");
+        keys.forEach(key => {
+          const opt = document.createElement("option");
+          opt.value = key;
+          opt.textContent = key;
+          select.appendChild(opt);
+        });
+      } else {
+        row.classList.add("hidden");
+      }
+      
+      // Also refresh standard layout icons for the dynamically injected selector
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    function saveDatabaseTemplate() {
+      const nameInput = document.getElementById("template-name-input");
+      const name = nameInput.value.trim();
+      if (!name) {
+        alert("Please enter a template name.");
+        nameInput.focus();
+        return;
+      }
+
+      const pep = document.getElementById("db-pep").checked;
+      const adverse = document.getElementById("db-adverse").checked;
+      const sanctions = document.getElementById("db-sanctions").checked;
+
+      let templates = {};
+      try {
+        templates = JSON.parse(localStorage.getItem("database_templates")) || {};
+      } catch (e) {
+        templates = {};
+      }
+
+      templates[name] = { pep, adverse, sanctions };
+      localStorage.setItem("database_templates", JSON.stringify(templates));
+
+      loadSavedTemplates();
+      cancelSaveTemplate();
+      
+      // Auto-select template
+      const select = document.getElementById("apply-template-select");
+      if (select) {
+        select.value = name;
+      }
+    }
+
+    function applySelectedTemplate(name) {
+      if (!name) return;
+
+      let templates = {};
+      try {
+        templates = JSON.parse(localStorage.getItem("database_templates")) || {};
+      } catch (e) {
+        return;
+      }
+
+      const config = templates[name];
+      if (config) {
+        document.getElementById("db-pep").checked = !!config.pep;
+        document.getElementById("db-adverse").checked = !!config.adverse;
+        document.getElementById("db-sanctions").checked = !!config.sanctions;
+        updateMasterCheckbox();
+      }
+    }
+
+    // Load templates on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedTemplates();
+    });
+  </script>
+</body>
+</html>
