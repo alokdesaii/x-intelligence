@@ -1,15 +1,16 @@
 /**
- * X-Intelligence Shell Layout Injector
- * Adheres to DESIGN.md constraints:
- * - 256px rigid Navy (#001741) sidebar
- * - 64px white top bar
- * - High-contrast text colors (#b3c5d0 on Navy)
- * - Display headings font weights and spacing
+ * X-Intelligence Shell Layout Injector (Merged)
+ * Dynamically switches layout configuration between Customer and Admin portals.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
   const currentPath = window.location.pathname;
-  const pageName = currentPath.split("/").pop() || "dashboard.html";
+  const pageName = currentPath.split("/").pop() || "";
+  
+  // Detect if we are in the Admin console
+  const isAdmin = pageName.startsWith("admin-");
+  const fallbackPage = isAdmin ? "admin-dashboard.html" : "dashboard.html";
+  const activePage = pageName || fallbackPage;
 
   const isGitHubPages = window.location.hostname.includes("github.io");
 
@@ -30,11 +31,58 @@ document.addEventListener("DOMContentLoaded", () => {
     { name: "Reports", url: "reports.html", icon: "bar-chart-3", disabled: isGitHubPages }
   ];
 
-  const activeNavItems = customerNavItems;
+  const adminNavItems = [
+    { name: "Admin Dashboard", url: "admin-dashboard.html", icon: "layout-dashboard" },
+    { 
+      name: "Masters", 
+      icon: "database",
+      subItems: [
+        { name: "Product Master", url: "admin-masters.html?tab=products", icon: "package" },
+        { name: "Country Master DB", url: "admin-masters.html?tab=countries", icon: "globe" },
+        { name: "Country Risk Rating", url: "admin-masters.html?tab=risks", icon: "sliders" },
+        { name: "Sanctions Registry", url: "admin-masters.html?tab=sanctions", icon: "shield-ban" }
+      ]
+    },
+    { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card" },
+    { name: "Package Manager", url: "admin-packages.html", icon: "package-plus" },
+    { name: "Admin User Mgmt", url: "admin-user-mgmt.html", icon: "shield-check", disabled: true },
+    { name: "User Manager", url: "admin-user-manager.html", icon: "users", disabled: true },
+    { name: "Admin Reports", url: "admin-reports.html", icon: "bar-chart-3", disabled: true }
+  ];
+
+  const activeNavItems = isAdmin ? adminNavItems : customerNavItems;
+
+  // 3. Global Toast HTML element injection
+  if (!document.getElementById("toast")) {
+    const toastHtml = `
+      <div id="toast" class="fixed bottom-6 right-6 bg-navy text-white text-xs px-4 py-3 rounded border border-[#00276e] flex items-center gap-2 transform translate-y-12 opacity-0 transition-all duration-300 z-50 pointer-events-none select-none" style="box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.04), 0 0 1px 0 rgba(0, 0, 0, 0.1);">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-teal"></i>
+        <span class="font-medium"></span>
+      </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", toastHtml);
+  }
+
+  // Define global showToast helper
+  window.showToast = (message) => {
+    const toast = document.getElementById("toast");
+    if (toast) {
+      toast.querySelector("span").textContent = message;
+      toast.classList.remove("translate-y-12", "opacity-0");
+      setTimeout(() => {
+        toast.classList.add("translate-y-12", "opacity-0");
+      }, 3000);
+    }
+  };
 
   // Create Shell structure
   const appContainer = document.getElementById("app");
-  if (!appContainer) return;
+  if (!appContainer) {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+    return;
+  }
 
   const mainContent = document.getElementById("main-content");
   if (!mainContent) return;
@@ -42,9 +90,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // Helper to generate sidebar menu HTML
   const generateMenuHtml = () => {
     return activeNavItems.map(item => {
+      // Check if URL matches the item
+      const isActiveUrl = (url) => {
+        if (!url) return false;
+        // Exact match or query parameter match
+        if (activePage === url) return true;
+        const normalizedUrl = url.split("?")[0];
+        const normalizedActive = activePage.split("?")[0];
+        return normalizedActive === normalizedUrl && (url.includes("?") ? window.location.search === url.substring(url.indexOf("?")) : true);
+      };
+
       if (item.subItems) {
         // Check if any sub-item is active
-        const isChildActive = item.subItems.some(sub => pageName === sub.url || (pageName + window.location.search) === sub.url);
+        const isChildActive = item.subItems.some(sub => isActiveUrl(sub.url));
         const subMenuId = `submenu-${item.name.replace(/\s+/g, '-').toLowerCase()}`;
         
         return `
@@ -58,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </button>
             <div id="${subMenuId}" class="${isChildActive ? '' : 'hidden'} pl-4 space-y-1 border-l border-[#00276e] ml-5 mt-1">
               ${item.subItems.map(sub => {
-                const isSubActive = pageName === sub.url || (pageName + window.location.search) === sub.url;
+                const isSubActive = isActiveUrl(sub.url);
                 const subLinkClass = isSubActive
                   ? "flex items-center gap-3 px-3 py-2 rounded-md text-white bg-[#001f5c] font-medium transition-colors"
                   : "flex items-center gap-3 px-3 py-2 rounded-md text-[#b3c5d0] hover:text-white hover:bg-[#00143a] transition-colors" + (sub.disabled ? " opacity-50 cursor-not-allowed pointer-events-none" : "");
@@ -74,9 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
       } else {
-        const isActive = pageName === item.url;
+        const isActive = isActiveUrl(item.url);
         const linkClass = isActive 
-          ? "flex items-center justify-between px-3 py-2.5 rounded-md text-white bg-[#001f5c] font-medium transition-colors"
+          ? "flex items-center justify-between px-3 py-2.5 rounded-md text-white bg-[#001f5c]" + (isAdmin ? " border-l-4 border-teal" : "") + " font-medium transition-colors"
           : "flex items-center justify-between px-3 py-2.5 rounded-md text-[#b3c5d0] hover:text-white hover:bg-[#00143a] transition-colors" + (item.disabled ? " opacity-50 cursor-not-allowed pointer-events-none" : "");
         
         return `
@@ -85,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <i data-lucide="${item.icon}" class="w-5 h-5 ${isActive ? 'text-teal' : 'text-[#8ba2b1] group-hover:text-white'}"></i>
               <span class="text-sm">${item.name}</span>
             </div>
-            ${isActive ? '<span class="w-2 h-2 bg-teal rounded-full shadow-[0_0_8px_#00dc8d] shrink-0 mr-1"></span>' : ''}
+            ${isActive && !isAdmin ? '<span class="w-2 h-2 bg-teal rounded-full shadow-[0_0_8px_#00dc8d] shrink-0 mr-1"></span>' : ''}
             ${item.disabled ? '<i data-lucide="lock" class="w-3 h-3 text-[#5b7383] shrink-0"></i>' : ''}
           </a>
         `;
@@ -94,13 +152,40 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // 1. Sidebar HTML
+  const sidebarHeaderHtml = isAdmin
+    ? `
+      <div class="h-16 flex items-center px-6 border-b border-[#00276e]">
+        <span class="text-white font-semibold text-lg tracking-[-0.5px] flex items-center gap-2">
+          <span class="w-3 h-3 bg-teal rounded-full animate-pulse"></span>
+          X-INTELLIGENCE
+        </span>
+      </div>
+    `
+    : `
+      <div class="flex items-center justify-center border-b border-[#00276e] px-4 py-8">
+        <img src="logo/hh-logo-white.svg" alt="X-Intelligence" class="h-24 w-auto">
+      </div>
+    `;
+
+  const roleBadgeHtml = isAdmin
+    ? `
+      <div class="bg-[#00276e] border border-[#00308a] rounded-md py-2 px-3 text-center">
+        <span class="text-[10px] font-semibold tracking-wider text-teal uppercase block mb-0.5">Role Authorization</span>
+        <span class="text-white text-xs font-semibold font-mono">System Administrator</span>
+      </div>
+    `
+    : `
+      <div class="bg-[#00276e] border border-[#00308a] rounded-md py-2 px-3 text-center">
+        <span class="text-[10px] font-semibold tracking-wider text-teal uppercase block mb-0.5">Role Authorization</span>
+        <span class="text-white text-xs font-semibold font-mono">Compliance Analyst</span>
+      </div>
+    `;
+
   const sidebarHtml = `
     <div class="w-64 bg-[#001741] flex flex-col justify-between shrink-0 border-r border-[#e5e5e5] h-full text-[#b3c5d0]">
       <div>
         <!-- Brand Header -->
-        <div class="flex items-center justify-center border-b border-[#00276e] px-4 py-8">
-          <img src="logo/hh-logo-white.svg" alt="X-Intelligence" class="h-24 w-auto">
-        </div>
+        ${sidebarHeaderHtml}
 
         <!-- Nav Links -->
         <nav class="mt-6 px-3 space-y-1">
@@ -121,10 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         
         <!-- Safety Role Badge -->
-        <div class="bg-[#00276e] border border-[#00308a] rounded-md py-2 px-3 text-center">
-          <span class="text-[10px] font-semibold tracking-wider text-teal uppercase block mb-0.5">Role Authorization</span>
-          <span class="text-white text-xs font-semibold font-mono">Compliance Analyst</span>
-        </div>
+        ${roleBadgeHtml}
       </div>
     </div>
   `;
@@ -132,12 +214,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Insert Sidebar
   appContainer.insertAdjacentHTML("afterbegin", sidebarHtml);
 
-  // 2. Topbar HTML (Without portal switcher toggle)
+  // 2. Topbar HTML
+  const topbarTitle = activePage.replace('.html', '').replace('admin-', '').replace('-', ' ');
   const topbarHtml = `
     <header class="h-16 bg-white border-b border-[#e5e5e5] flex items-center justify-between px-6 shrink-0">
       <div class="flex items-center gap-3">
         <h1 class="text-lg font-semibold tracking-[-0.3px] text-gray-900 capitalize" id="shell-title">
-          ${pageName.replace('.html', '').replace('-', ' ')}
+          ${topbarTitle}
         </h1>
         <span class="text-xs text-gray-400 font-mono">|</span>
         <span class="text-xs text-gray-500 font-mono bg-gray-100 border border-gray-200 px-2 py-0.5 rounded">ENV: Production</span>

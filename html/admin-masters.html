@@ -4,44 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Masters Database | X-Intelligence</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Core Tailwind, Fonts & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            navy: '#001741',
-            'navy-dark': '#000b21',
-            teal: '#00dc8d',
-            'teal-hover': '#00c47e',
-            'teal-light': '#ebfbf5',
-          },
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          borderRadius: {
-            DEFAULT: '0px',
-            'xs': '0px',
-            'sm': '0px',
-            'md': '0px',
-            'lg': '0px',
-            'xl': '0px',
-            '2xl': '0px',
-            '3xl': '0px',
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="admin-shell.js" defer></script>
+  <script src="head.js"></script>
+  <script src="shell.js" defer></script>
 </head>
 <body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
 
@@ -411,14 +377,11 @@
   </div>
 
   <!-- Dynamic Toast -->
-  <div id="toast" class="fixed bottom-6 right-6 bg-navy text-white text-xs px-4 py-3 rounded border border-[#00276e] flex items-center gap-2 transform translate-y-12 opacity-0 transition-all duration-300 z-50 select-none">
-    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal"></i>
-    <span id="toast-message">Master database table updated.</span>
-  </div>
+
 
   <script>
     // Initialize Lucide Icons
-    lucide.createIcons();
+    window.lucide && window.lucide.createIcons();
 
     // Parse current URL tab parameter to trigger tab on load
     window.addEventListener('DOMContentLoaded', () => {
@@ -536,18 +499,7 @@
       showToast("Sensitivity threshold ranges saved and deployed to API nodes.");
     }
 
-    // Toast triggers
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      const msgSpan = document.getElementById("toast-message");
-      
-      msgSpan.innerText = message;
-      toast.classList.remove("translate-y-12", "opacity-0");
-      
-      setTimeout(() => {
-        toast.classList.add("translate-y-12", "opacity-0");
-      }, 3000);
-    }
+
   </script>
 </body>
 </html>

@@ -4,43 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ongoing Monitoring | X-Intelligence</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Core Tailwind, Fonts & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            navy: '#001741',
-            'navy-dark': '#000b21',
-            teal: '#00dc8d',
-            'teal-hover': '#00c47e',
-            'teal-light': '#ebfbf5',
-          },
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          borderRadius: {
-            DEFAULT: '0px',
-            'xs': '0px',
-            'sm': '0px',
-            'md': '0px',
-            'lg': '0px',
-            'xl': '0px',
-            '2xl': '0px',
-            '3xl': '0px',
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="head.js"></script>
   <script src="shell.js" defer></script>
 </head>
 <body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
@@ -289,11 +255,7 @@
     </div>
   </div>
 
-  <!-- Notification Toast Container -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-gray-900 text-white text-xs font-semibold px-4 py-3 rounded-lg border border-gray-800 flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 shadow-xl">
-    <i data-lucide="info" class="w-4 h-4 text-[#00dc8d]" id="toast-icon"></i>
-    <span id="toast-message">Batch execution started...</span>
-  </div>
+
 
   <!-- Create Schedule Modal (Figma standard off-canvas or centered dialog) -->
   <div id="schedule-modal" class="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
@@ -382,7 +344,7 @@
     // Run after DOM content load (lucide will be instantiated by shell.js but we re-trigger here if necessary)
     window.addEventListener("load", () => {
       if (window.lucide) {
-        window.lucide.createIcons();
+        window.lucide && window.lucide.createIcons();
       }
     });
 
@@ -393,27 +355,7 @@
       { name: "Correspondent Bank Registry", type: "Entity", freq: "Monthly", lastRun: "2026-06-01 02:00 GMT", nextRun: "2026-07-01 02:00 GMT", total: 40, newHits: 0, disposed: 12, unresolved: 0, status: "Error" }
     ];
 
-    // Show toast message
-    function showToast(message, isSuccess = true) {
-      const toast = document.getElementById("toast");
-      const toastMsg = document.getElementById("toast-message");
-      const toastIcon = document.getElementById("toast-icon");
-      
-      toastMsg.innerText = message;
-      if (window.lucide) {
-        toastIcon.setAttribute("data-lucide", isSuccess ? "check-circle" : "info");
-        toastIcon.className = `w-4 h-4 ${isSuccess ? 'text-teal' : 'text-amber-500'}`;
-        window.lucide.createIcons();
-      }
-      
-      toast.classList.remove("translate-y-20", "opacity-0");
-      toast.classList.add("translate-y-0", "opacity-100");
-      
-      setTimeout(() => {
-        toast.classList.remove("translate-y-0", "opacity-100");
-        toast.classList.add("translate-y-20", "opacity-0");
-      }, 3500);
-    }
+
 
     // Trigger immediate batch run
     function runNow(index) {
@@ -436,7 +378,7 @@
         // Restore run button icon
         runBtn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i>`;
         runBtn.disabled = false;
-        if (window.lucide) window.lucide.createIcons();
+        if (window.lucide) window.lucide && window.lucide.createIcons();
         
         // Update last run timestamp
         const now = new Date();
@@ -483,7 +425,7 @@
         showToast(`Monitoring schedule resumed for "${item.name}".`);
       }
       
-      if (window.lucide) window.lucide.createIcons();
+      if (window.lucide) window.lucide && window.lucide.createIcons();
     }
 
     // Modal Control
@@ -594,7 +536,7 @@
       // Update KPIs
       document.getElementById("kpi-batches").innerText = `${monitoringData.length} Batches`;
       
-      if (window.lucide) window.lucide.createIcons();
+      if (window.lucide) window.lucide && window.lucide.createIcons();
       
       closeSchedulerModal();
       showToast(`Successfully created monitoring schedule for "${newItem.name}".`);

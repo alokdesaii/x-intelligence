@@ -4,44 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard | X-Intelligence</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Core Tailwind, Fonts & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            navy: '#001741',
-            'navy-dark': '#000b21',
-            teal: '#00dc8d',
-            'teal-hover': '#00c47e',
-            'teal-light': '#ebfbf5',
-          },
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          borderRadius: {
-            DEFAULT: '0px',
-            'xs': '0px',
-            'sm': '0px',
-            'md': '0px',
-            'lg': '0px',
-            'xl': '0px',
-            '2xl': '0px',
-            '3xl': '0px',
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="admin-shell.js" defer></script>
+  <script src="head.js"></script>
+  <script src="shell.js" defer></script>
 </head>
 <body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
 
@@ -307,22 +273,18 @@
     </div>
   </div>
 
-  <!-- Dynamic Toast Container -->
-  <div id="toast" class="fixed bottom-6 right-6 bg-navy text-white text-xs px-4 py-3 rounded border border-[#00276e] flex items-center gap-2 transform translate-y-12 opacity-0 transition-all duration-300 z-50 select-none">
-    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal"></i>
-    <span id="toast-message">Database synchronized successfully.</span>
-  </div>
+
 
   <script>
     // Initialize Lucide Icons
-    lucide.createIcons();
+    window.lucide && window.lucide.createIcons();
 
     // Trigger individual feed synchronization
     function syncFeed(button, feedName, baseRecords) {
       button.disabled = true;
       const originalContent = button.innerHTML;
       button.innerHTML = `<i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin"></i> Syncing...`;
-      lucide.createIcons();
+      window.lucide && window.lucide.createIcons();
 
       const row = button.closest("tr");
       const statusSpan = row.cells[4].querySelector("span");
@@ -335,7 +297,7 @@
         // Complete Sync
         button.disabled = false;
         button.innerHTML = originalContent;
-        lucide.createIcons();
+        window.lucide && window.lucide.createIcons();
 
         // Increment record count slightly for visualization
         const newRecords = baseRecords + Math.floor(Math.random() * 200) + 10;
@@ -372,18 +334,7 @@
       }, rows.length * 300 + 1500);
     }
 
-    // Show dynamic notification toast
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      const msgSpan = document.getElementById("toast-message");
-      
-      msgSpan.innerText = message;
-      toast.classList.remove("translate-y-12", "opacity-0");
-      
-      setTimeout(() => {
-        toast.classList.add("translate-y-12", "opacity-0");
-      }, 3500);
-    }
+
   </script>
 </body>
 </html>

@@ -4,43 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bulk Screening | X-Intelligence</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Core Tailwind, Fonts & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            navy: '#001741',
-            'navy-dark': '#000b21',
-            teal: '#00dc8d',
-            'teal-hover': '#00c47e',
-            'teal-light': '#ebfbf5',
-          },
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          borderRadius: {
-            DEFAULT: '0px',
-            'xs': '0px',
-            'sm': '0px',
-            'md': '0px',
-            'lg': '0px',
-            'xl': '0px',
-            '2xl': '0px',
-            '3xl': '0px',
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="head.js"></script>
   <script src="shell.js" defer></script>
 </head>
 <body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
@@ -470,7 +436,7 @@
 
   <script>
     // Initialize Lucide
-    lucide.createIcons();
+    window.lucide && window.lucide.createIcons();
 
     // Mock dataset storage for roster edits and trails
     const mockRosters = {
@@ -544,7 +510,7 @@
       });
 
       openModal("edit-file-modal");
-      lucide.createIcons();
+      window.lucide && window.lucide.createIcons();
     }
 
     function addModalRow() {
@@ -561,7 +527,7 @@
           </td>
         </tr>
       `;
-      lucide.createIcons();
+      window.lucide && window.lucide.createIcons();
     }
 
     function removeModalRow(btn) {
@@ -796,7 +762,7 @@
       `;
 
       tbody.insertAdjacentHTML("afterbegin", newRowHtml);
-      lucide.createIcons();
+      window.lucide && window.lucide.createIcons();
 
       // Clear dropzone
       clearDropzone({ stopPropagation: () => {} });
@@ -816,7 +782,7 @@
             <button onclick="openAuditModal('${nameInput}')" class="hover:underline text-[#8ba2b1] hover:text-navy transition-colors" title="Audit Trail"><i data-lucide="history" class="w-4 h-4"></i></button>
           </div>
         `;
-        lucide.createIcons();
+        window.lucide && window.lucide.createIcons();
       }, 2000);
     }
 

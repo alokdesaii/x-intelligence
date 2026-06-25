@@ -4,43 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search Results | X-Intelligence</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Core Tailwind, Fonts & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            navy: '#001741',
-            'navy-dark': '#000b21',
-            teal: '#00dc8d',
-            'teal-hover': '#00c47e',
-            'teal-light': '#ebfbf5',
-          },
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          borderRadius: {
-            DEFAULT: '0px',
-            'xs': '0px',
-            'sm': '0px',
-            'md': '0px',
-            'lg': '0px',
-            'xl': '0px',
-            '2xl': '0px',
-            '3xl': '0px',
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="head.js"></script>
   <script src="shell.js" defer></script>
 </head>
 <body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
@@ -327,15 +293,11 @@
     </div>
   </div>
 
-  <!-- Dynamic Toast Feedback -->
-  <div id="toast" class="fixed bottom-6 right-6 bg-navy text-white text-xs px-4 py-3 rounded border border-[#00276e] flex items-center gap-2 transform translate-y-12 opacity-0 transition-all duration-300 z-50">
-    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal" id="toast-icon"></i>
-    <span id="toast-message">Success feedback details.</span>
-  </div>
+
 
   <script>
     // Initialize Lucide
-    lucide.createIcons();
+    window.lucide && window.lucide.createIcons();
 
     // Data structures for Matches
     let currentCategory = 'individual';
@@ -413,7 +375,7 @@
       // Refresh checkboxes listeners or totals
       updateSummaryCounters();
       if (window.lucide) {
-        window.lucide.createIcons();
+        window.lucide && window.lucide.createIcons();
       }
     }
 
@@ -505,22 +467,11 @@
       renderMatchesTable();
 
       // Show toast
-      const toast = document.getElementById("toast");
-      const toastMsg = document.getElementById("toast-message");
-      const toastIcon = document.getElementById("toast-icon");
-      
       if (action === 'TRUE') {
-        toastMsg.textContent = `Disposal Approved: Mark ${checkedCbs.length} matches as TRUE matches.`;
-        toastIcon.setAttribute("data-lucide", "alert-triangle");
+        window.showToast(`Disposal Approved: Mark ${checkedCbs.length} matches as TRUE matches.`);
       } else {
-        toastMsg.textContent = `Disposal Approved: Mark ${checkedCbs.length} matches as FALSE matches.`;
-        toastIcon.setAttribute("data-lucide", "check-circle");
+        window.showToast(`Disposal Approved: Mark ${checkedCbs.length} matches as FALSE matches.`);
       }
-      
-      toast.classList.remove("translate-y-12", "opacity-0");
-      setTimeout(() => {
-        toast.classList.add("translate-y-12", "opacity-0");
-      }, 3000);
 
       // Clear fields and headers
       document.getElementById("disposal-comment").value = "";
