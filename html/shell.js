@@ -17,18 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // Navigation Items Definitions
   const customerNavItems = [
     { name: "Dashboard", url: "dashboard.html", icon: "layout-dashboard" },
-    { name: "Name Screening", url: "screening-setup.html", icon: "search", disabled: isGitHubPages },
+    { name: "Name Screening", url: "screening-setup.html", icon: "search" },
     { 
       name: "Bulk & Monitoring", 
       icon: "layers",
       subItems: [
-        { name: "Bulk Screening", url: "bulk-screening.html", icon: "files", disabled: isGitHubPages },
-        { name: "Ongoing Monitoring", url: "ongoing-monitoring.html", icon: "activity", showLock: true, disabled: isGitHubPages }
+        { name: "Bulk Screening", url: "bulk-screening.html", icon: "files", disabled: true },
+        { name: "Ongoing Monitoring", url: "ongoing-monitoring.html", icon: "activity", showLock: true, disabled: true }
       ]
     },
-    { name: "Case Manager", url: "case-management.html", icon: "shield-alert", disabled: isGitHubPages },
-    { name: "Profile Manager", url: "profile-manager.html", icon: "users", disabled: isGitHubPages },
-    { name: "Reports", url: "reports.html", icon: "bar-chart-3", disabled: isGitHubPages }
+    { name: "Case Manager", url: "case-management.html", icon: "shield-alert", disabled: true },
+    { name: "Profile Manager", url: "profile-manager.html", icon: "users", disabled: true },
+    { name: "Reports", url: "reports.html", icon: "bar-chart-3", disabled: true }
   ];
 
   const adminNavItems = [
@@ -37,14 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Masters", 
       icon: "database",
       subItems: [
-        { name: "Product Master", url: "admin-masters.html?tab=products", icon: "package" },
-        { name: "Country Master DB", url: "admin-masters.html?tab=countries", icon: "globe" },
-        { name: "Country Risk Rating", url: "admin-masters.html?tab=risks", icon: "sliders" },
-        { name: "Sanctions Registry", url: "admin-masters.html?tab=sanctions", icon: "shield-ban" }
+        { name: "Product Master", url: "admin-masters.html?tab=products", icon: "package", disabled: true },
+        { name: "Country Master DB", url: "admin-masters.html?tab=countries", icon: "globe", disabled: true },
+        { name: "Country Risk Rating", url: "admin-masters.html?tab=risks", icon: "sliders", disabled: true },
+        { name: "Sanctions Registry", url: "admin-masters.html?tab=sanctions", icon: "shield-ban", disabled: true }
       ]
     },
-    { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card" },
-    { name: "Package Manager", url: "admin-packages.html", icon: "package-plus" },
+    { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card", disabled: true },
+    { name: "Package Manager", url: "admin-packages.html", icon: "package-plus", disabled: true },
     { name: "Admin User Mgmt", url: "admin-user-mgmt.html", icon: "shield-check", disabled: true },
     { name: "User Manager", url: "admin-user-manager.html", icon: "users", disabled: true },
     { name: "Admin Reports", url: "admin-reports.html", icon: "bar-chart-3", disabled: true }
