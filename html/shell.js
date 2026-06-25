@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const activePage = pageName || fallbackPage;
 
   const isGitHubPages = window.location.hostname.includes("github.io");
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
 
   // Navigation Items Definitions
   const customerNavItems = [
@@ -22,13 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Bulk & Monitoring", 
       icon: "layers",
       subItems: [
-        { name: "Bulk Screening", url: "bulk-screening.html", icon: "files", disabled: true },
-        { name: "Ongoing Monitoring", url: "ongoing-monitoring.html", icon: "activity", showLock: true, disabled: true }
+        { name: "Bulk Screening", url: "bulk-screening.html", icon: "files", disabled: !isLocal },
+        { name: "Ongoing Monitoring", url: "ongoing-monitoring.html", icon: "activity", showLock: true, disabled: !isLocal }
       ]
     },
-    { name: "Case Manager", url: "case-management.html", icon: "shield-alert", disabled: true },
-    { name: "Profile Manager", url: "profile-manager.html", icon: "users", disabled: true },
-    { name: "Reports", url: "reports.html", icon: "bar-chart-3", disabled: true }
+    { name: "Case Manager", url: "case-management.html", icon: "shield-alert", disabled: !isLocal },
+    { name: "Profile Manager", url: "profile-manager.html", icon: "users", disabled: !isLocal },
+    { name: "Reports", url: "reports.html", icon: "bar-chart-3", disabled: !isLocal }
   ];
 
   const adminNavItems = [
@@ -37,14 +38,14 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Masters", 
       icon: "database",
       subItems: [
-        { name: "Product Master", url: "admin-masters.html?tab=products", icon: "package", disabled: true },
-        { name: "Country Master DB", url: "admin-masters.html?tab=countries", icon: "globe", disabled: true },
-        { name: "Country Risk Rating", url: "admin-masters.html?tab=risks", icon: "sliders", disabled: true },
-        { name: "Sanctions Registry", url: "admin-masters.html?tab=sanctions", icon: "shield-ban", disabled: true }
+        { name: "Product Master", url: "admin-masters.html?tab=products", icon: "package", disabled: !isLocal },
+        { name: "Country Master DB", url: "admin-masters.html?tab=countries", icon: "globe", disabled: !isLocal },
+        { name: "Country Risk Rating", url: "admin-masters.html?tab=risks", icon: "sliders", disabled: !isLocal },
+        { name: "Sanctions Registry", url: "admin-masters.html?tab=sanctions", icon: "shield-ban", disabled: !isLocal }
       ]
     },
-    { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card", disabled: true },
-    { name: "Package Manager", url: "admin-packages.html", icon: "package-plus", disabled: true },
+    { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card", disabled: !isLocal },
+    { name: "Package Manager", url: "admin-packages.html", icon: "package-plus", disabled: !isLocal },
     { name: "Admin User Mgmt", url: "admin-user-mgmt.html", icon: "shield-check", disabled: true },
     { name: "User Manager", url: "admin-user-manager.html", icon: "users", disabled: true },
     { name: "Admin Reports", url: "admin-reports.html", icon: "bar-chart-3", disabled: true }
