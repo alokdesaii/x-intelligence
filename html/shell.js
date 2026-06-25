@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `
     : `
       <div class="flex items-center justify-center border-b border-[#00276e] px-4 py-8">
-        <img src="logo/hh-logo-white.svg" alt="X-Intelligence" class="h-24 w-auto">
+        <img src="logo/x-logo-white.svg" alt="X-Intelligence" class="h-24 w-auto">
       </div>
     `;
 
