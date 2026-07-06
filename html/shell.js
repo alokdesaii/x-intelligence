@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 2. Topbar HTML
   const topbarTitle = activePage.replace('.html', '').replace('admin-', '').replace('-', ' ');
   const topbarHtml = `
-    <header class="h-16 bg-white border-b border-[#e5e5e5] flex items-center justify-between px-6 shrink-0">
+    <header class="h-16 bg-white border-b border-[#e5e5e5] flex items-center justify-between px-6 shrink-0 relative">
       <div class="flex items-center gap-3">
         <h1 class="text-lg font-semibold tracking-[-0.3px] text-gray-900 capitalize" id="shell-title">
           ${topbarTitle}
@@ -238,9 +238,55 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="h-8 w-px bg-[#e5e5e5]"></div>
 
         <!-- Help & Notifications -->
-        <button class="text-gray-500 hover:text-gray-900 transition-colors p-1" title="Notification Log">
-          <i data-lucide="bell" class="w-5 h-5"></i>
-        </button>
+        <div class="relative">
+          <button id="notification-bell-btn" class="text-gray-500 hover:text-gray-900 transition-colors p-1 relative flex items-center justify-center" title="Notification Log">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+          </button>
+          
+          <!-- Dropdown Popup -->
+          <div id="notification-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden transition-all duration-200 origin-top-right transform scale-95 opacity-0">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <span class="font-semibold text-gray-900 text-sm">Notifications</span>
+              <button id="mark-all-read-btn" class="text-xs text-[#00276e] hover:underline font-semibold">Mark all read</button>
+            </div>
+            
+            <div class="max-h-80 overflow-y-auto divide-y divide-gray-50" id="notification-list">
+              <!-- Item 1 -->
+              <div class="p-3.5 hover:bg-gray-50 transition-colors flex gap-3 relative cursor-pointer notification-item">
+                <span class="w-2 h-2 bg-rose-500 rounded-full mt-1.5 shrink-0 notification-dot"></span>
+                <div>
+                  <p class="text-xs font-semibold text-gray-900">Critical PEP Match Detected</p>
+                  <p class="text-[11px] text-gray-500 mt-0.5">High-risk PEP match identified in batch screening upload #4812.</p>
+                  <span class="text-[9px] text-gray-400 font-mono mt-1 block">5m ago</span>
+                </div>
+              </div>
+              <!-- Item 2 -->
+              <div class="p-3.5 hover:bg-gray-50 transition-colors flex gap-3 relative cursor-pointer notification-item">
+                <span class="w-2 h-2 bg-amber-500 rounded-full mt-1.5 shrink-0 notification-dot"></span>
+                <div>
+                  <p class="text-xs font-semibold text-gray-900">New Adverse Media Alert</p>
+                  <p class="text-[11px] text-gray-500 mt-0.5">New Adverse Media article published regarding profile "Marcus Vance".</p>
+                  <span class="text-[9px] text-gray-400 font-mono mt-1 block">1h ago</span>
+                </div>
+              </div>
+              <!-- Item 3 -->
+              <div class="p-3.5 hover:bg-gray-50 transition-colors flex gap-3 relative cursor-pointer notification-item">
+                <span class="w-2 h-2 bg-[#00dc8d] rounded-full mt-1.5 shrink-0 notification-dot"></span>
+                <div>
+                  <p class="text-xs font-semibold text-gray-900">Database Sync Complete</p>
+                  <p class="text-[11px] text-gray-500 mt-0.5">Global Sanctions database sync succeeded. 1,429 records updated.</p>
+                  <span class="text-[9px] text-gray-400 font-mono mt-1 block">3h ago</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-3 border-t border-gray-100 text-center bg-gray-50">
+              <a href="case-management.html" class="text-xs font-semibold text-[#00276e] hover:underline">View all in Case Manager</a>
+            </div>
+          </div>
+        </div>
+        
         <button class="text-gray-500 hover:text-gray-900 transition-colors p-1" title="API Status">
           <i data-lucide="terminal" class="w-5 h-5"></i>
         </button>
@@ -270,5 +316,75 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize Lucide icons
   if (window.lucide) {
     window.lucide.createIcons();
+  }
+
+  // Handle notification dropdown
+  const bellBtn = document.getElementById("notification-bell-btn");
+  const dropdown = document.getElementById("notification-dropdown");
+  const badge = document.getElementById("notification-badge");
+  const markReadBtn = document.getElementById("mark-all-read-btn");
+  const notificationDots = document.querySelectorAll(".notification-dot");
+
+  if (bellBtn && dropdown) {
+    const toggleDropdown = (show) => {
+      if (show) {
+        dropdown.classList.remove("hidden");
+        // Trigger reflow/animation
+        setTimeout(() => {
+          dropdown.classList.remove("scale-95", "opacity-0");
+          dropdown.classList.add("scale-100", "opacity-100");
+        }, 10);
+      } else {
+        dropdown.classList.remove("scale-100", "opacity-100");
+        dropdown.classList.add("scale-95", "opacity-0");
+        setTimeout(() => {
+          dropdown.classList.add("hidden");
+        }, 150);
+      }
+    };
+
+    bellBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isHidden = dropdown.classList.contains("hidden");
+      toggleDropdown(isHidden);
+    });
+
+    // Close when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!dropdown.contains(e.target) && !bellBtn.contains(e.target)) {
+        toggleDropdown(false);
+      }
+    });
+
+    // Mark all as read
+    if (markReadBtn) {
+      markReadBtn.addEventListener("click", () => {
+        if (badge) {
+          badge.classList.add("hidden");
+        }
+        notificationDots.forEach(dot => {
+          dot.classList.remove("bg-rose-500", "bg-amber-500", "bg-[#00dc8d]");
+          dot.classList.add("bg-gray-200");
+        });
+        window.showToast("All notifications marked as read");
+      });
+    }
+
+    // Individual click to mark as read
+    const items = document.querySelectorAll(".notification-item");
+    items.forEach(item => {
+      item.addEventListener("click", () => {
+        const dot = item.querySelector(".notification-dot");
+        if (dot) {
+          dot.classList.remove("bg-rose-500", "bg-amber-500", "bg-[#00dc8d]");
+          dot.classList.add("bg-gray-200");
+        }
+        // Check if there are any remaining unread dots
+        const remainingUnread = Array.from(notificationDots).some(d => d.classList.contains("bg-rose-500") || d.classList.contains("bg-amber-500"));
+        if (!remainingUnread && badge) {
+          badge.classList.add("hidden");
+        }
+      });
+    });
   }
 });
