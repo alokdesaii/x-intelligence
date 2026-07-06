@@ -23,13 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Bulk & Monitoring", 
       icon: "layers",
       subItems: [
-        { name: "Bulk Screening", url: "bulk-screening.html", icon: "files", disabled: !isLocal },
-        { name: "Ongoing Monitoring", url: "ongoing-monitoring.html", icon: "activity", showLock: true, disabled: !isLocal }
+        { name: "Bulk Screening", url: "bulk-screening.html", icon: "files" },
+        { name: "Ongoing Monitoring", url: "ongoing-monitoring.html", icon: "activity" }
       ]
     },
-    { name: "Case Manager", url: "case-management.html", icon: "shield-alert", disabled: !isLocal },
-    { name: "Profile Manager", url: "profile-manager.html", icon: "users", disabled: !isLocal },
-    { name: "Reports", url: "reports.html", icon: "bar-chart-3", disabled: !isLocal }
+    { name: "Case Manager", url: "case-management.html", icon: "shield-alert" },
+    { name: "Profile Manager", url: "profile-manager.html", icon: "users" },
+    { name: "Reports", url: "reports.html", icon: "bar-chart-3" }
   ];
 
   const adminNavItems = [
