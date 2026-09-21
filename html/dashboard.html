@@ -22,7 +22,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <!-- Screening Mode toggles (Pill style, teal active) -->
           <div class="flex flex-wrap gap-2">
-            <button onclick="setScreenMode('ALL')" id="mode-ALL" class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border bg-teal text-white border-teal transition-all">
+            <button onclick="setScreenMode('ALL')" id="mode-ALL" class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border bg-teal text-[#0a0a0a] border-teal transition-all">
               ALL
             </button>
             <button onclick="setScreenMode('API')" id="mode-API" class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border bg-white text-gray-600 border-gray-300 hover:border-gray-900 transition-all">
@@ -67,7 +67,7 @@
           
           <!-- Card 1: Total Profiles Screened -->
           <div onclick="location.href='case-management.html?filter=all'" class="bg-[#f0fdfd] rounded-xl border border-[#e5e5e5] p-5 hover:border-teal transition-all cursor-pointer flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#00dc8d] shadow-sm">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#007c74] shadow-sm">
               <i data-lucide="users" class="w-5 h-5"></i>
             </div>
             <div>
@@ -78,7 +78,7 @@
 
           <!-- Card 2: Total Alerts Disposed -->
           <div onclick="location.href='case-management.html?filter=disposed'" class="bg-[#f2fdf6] rounded-xl border border-[#e5e5e5] p-5 hover:border-green-400 transition-all cursor-pointer flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#22c55e] shadow-sm">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#15803d] shadow-sm">
               <i data-lucide="check-circle" class="w-5 h-5"></i>
             </div>
             <div>
@@ -89,22 +89,22 @@
 
           <!-- Card 3: Unresolved Hits (0 when all resolved) -->
           <div onclick="location.href='case-management.html?filter=unresolved'" class="bg-[#fff5f5] rounded-xl border border-[#e5e5e5] p-5 hover:border-red-400 transition-all cursor-pointer flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#ef4444] shadow-sm" id="alert-icon-container">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#b91c1c] shadow-sm" id="alert-icon-container">
               <i data-lucide="alert-circle" class="w-5 h-5" id="alert-icon"></i>
             </div>
             <div>
-              <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block">Unresolved Hits</span>
+              <span class="text-[10px] font-semibold text-[#525252] uppercase tracking-wider block">Unresolved Hits</span>
               <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5" id="val-unresolved">14</span>
             </div>
           </div>
 
           <!-- Card 4: True Matches -->
           <div onclick="location.href='case-management.html?filter=true'" class="bg-[#fff1f2] rounded-xl border border-[#e5e5e5] p-5 hover:border-rose-400 transition-all cursor-pointer flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#ef4444] shadow-sm">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white text-[#b91c1c] shadow-sm">
               <i data-lucide="user-x" class="w-5 h-5"></i>
             </div>
             <div>
-              <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block">True Matches</span>
+              <span class="text-[10px] font-semibold text-[#525252] uppercase tracking-wider block">True Matches</span>
               <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5" id="val-true">36</span>
             </div>
           </div>
@@ -190,7 +190,7 @@
                   <span>False Hits</span>
                 </div>
               </div>
-              <span class="text-[10px] text-gray-400 font-mono">JAN - DEC</span>
+              <span class="text-[10px] text-[#737373] font-mono">JAN - DEC</span>
             </div>
           </div>
 
@@ -282,7 +282,7 @@
               </div>
             </div>
             
-            <div class="mt-2 border-t border-gray-150 pt-2 text-[10px] text-gray-400 font-mono text-right">
+            <div class="mt-2 border-t border-gray-150 pt-2 text-[10px] text-[#737373] font-mono text-right">
               TOP COMPLIANCE RISK CRITERIA
             </div>
           </div>
@@ -336,7 +336,7 @@
           <!-- Ongoing Screening Table (Left 60% / 3 cols span) -->
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 lg:col-span-3">
             <div class="flex items-center gap-2 mb-4">
-              <i data-lucide="binoculars" class="w-4 h-4 text-teal"></i>
+              <i data-lucide="binoculars" class="w-4 h-4 text-[#007c74]"></i>
               <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Ongoing Screening</h3>
             </div>
 
@@ -347,7 +347,7 @@
                     <th class="px-2 py-2">
                       <div class="flex items-center justify-between px-1">
                         <span>Type</span>
-                        <div class="flex items-center gap-0.5 text-gray-400">
+                        <div class="flex items-center gap-0.5 text-[#737373]">
                           <i data-lucide="chevrons-up-down" class="w-3 h-3"></i>
                           <i data-lucide="filter" class="w-2.5 h-2.5"></i>
                         </div>
@@ -356,7 +356,7 @@
                     <th class="px-2 py-2 text-center">
                       <div class="flex items-center justify-between px-1">
                         <span>Hit</span>
-                        <div class="flex items-center gap-0.5 text-gray-400">
+                        <div class="flex items-center gap-0.5 text-[#737373]">
                           <i data-lucide="chevrons-up-down" class="w-3 h-3"></i>
                           <i data-lucide="filter" class="w-2.5 h-2.5"></i>
                         </div>
@@ -365,7 +365,7 @@
                     <th class="px-2 py-2 text-center">
                       <div class="flex items-center justify-between px-1">
                         <span>Filtered</span>
-                        <div class="flex items-center gap-0.5 text-gray-400">
+                        <div class="flex items-center gap-0.5 text-[#737373]">
                           <i data-lucide="chevrons-up-down" class="w-3 h-3"></i>
                           <i data-lucide="filter" class="w-2.5 h-2.5"></i>
                         </div>
@@ -374,7 +374,7 @@
                     <th class="px-2 py-2 text-center">
                       <div class="flex items-center justify-between px-1">
                         <span>New Hits</span>
-                        <div class="flex items-center gap-0.5 text-gray-400">
+                        <div class="flex items-center gap-0.5 text-[#737373]">
                           <i data-lucide="chevrons-up-down" class="w-3 h-3"></i>
                           <i data-lucide="filter" class="w-2.5 h-2.5"></i>
                         </div>
@@ -383,7 +383,7 @@
                     <th class="px-2 py-2">
                       <div class="flex items-center justify-between px-1">
                         <span>Frequency</span>
-                        <div class="flex items-center gap-0.5 text-gray-400">
+                        <div class="flex items-center gap-0.5 text-[#737373]">
                           <i data-lucide="chevrons-up-down" class="w-3 h-3"></i>
                           <i data-lucide="filter" class="w-2.5 h-2.5"></i>
                         </div>
@@ -410,7 +410,7 @@
                       </div>
                     </td>
                     <td class="px-2 py-0">
-                      <div id="ong-new-entity" class="ong-cell bg-teal-light border border-teal/30 text-red-600 font-bold rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
+                      <div id="ong-new-entity" class="ong-cell bg-teal-light border border-teal/30 text-[#b91c1c] font-bold rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
                         6
                       </div>
                     </td>
@@ -439,7 +439,7 @@
                       </div>
                     </td>
                     <td class="px-2 py-0">
-                      <div id="ong-new-employee" class="ong-cell bg-white border border-[#e5e5e5] text-gray-400 rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
+                      <div id="ong-new-employee" class="ong-cell bg-white border border-[#e5e5e5] text-[#737373] rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
                         0
                       </div>
                     </td>
@@ -468,7 +468,7 @@
                       </div>
                     </td>
                     <td class="px-2 py-0">
-                      <div id="ong-new-key" class="ong-cell bg-white border border-[#e5e5e5] text-red-600 font-bold rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
+                      <div id="ong-new-key" class="ong-cell bg-white border border-[#e5e5e5] text-[#b91c1c] font-bold rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
                         1
                       </div>
                     </td>
@@ -497,12 +497,12 @@
                       </div>
                     </td>
                     <td class="px-2 py-0">
-                      <div id="ong-new-portal" class="ong-cell bg-white border border-[#e5e5e5] text-red-600 font-bold rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
+                      <div id="ong-new-portal" class="ong-cell bg-white border border-[#e5e5e5] text-[#b91c1c] font-bold rounded-md px-3 py-2 shadow-sm text-xs font-mono text-center transition-all">
                         5
                       </div>
                     </td>
                     <td class="px-2 py-0">
-                      <div id="ong-cell-freq-portal" class="ong-cell ong-cell-empty px-3 py-2 text-xs text-gray-400">
+                      <div id="ong-cell-freq-portal" class="ong-cell ong-cell-empty px-3 py-2 text-xs text-[#737373]">
                         —
                       </div>
                     </td>
@@ -516,7 +516,7 @@
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 lg:col-span-2 flex flex-col justify-between">
             <div>
               <div class="flex items-center gap-2 mb-4">
-                <i data-lucide="calendar" class="w-4 h-4 text-teal"></i>
+                <i data-lucide="calendar" class="w-4 h-4 text-[#007c74]"></i>
                 <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Screening Mode</h3>
               </div>
               
@@ -543,16 +543,16 @@
                 <!-- Custom Styled Legend with Checkbox Style (matching screenshot) -->
                 <div class="flex flex-col gap-2.5 text-xs font-semibold">
                   <label class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" checked disabled class="w-3.5 h-3.5 rounded border-gray-300 text-[#ff5a36] focus:ring-[#ff5a36]">
-                    <span class="text-[#ff5a36]">Ongoing Screening</span>
+                    <input type="checkbox" checked disabled class="w-3.5 h-3.5 rounded border-gray-300 text-[#c2410c] focus:ring-[#ff5a36]">
+                    <span class="text-[#c2410c]">Ongoing Screening</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" checked disabled class="w-3.5 h-3.5 rounded border-gray-300 text-[#ffc72c] focus:ring-[#ffc72c]">
-                    <span class="text-[#ffc72c]">Bulk Upload</span>
+                    <input type="checkbox" checked disabled class="w-3.5 h-3.5 rounded border-gray-300 text-[#b45309] focus:ring-[#ffc72c]">
+                    <span class="text-[#b45309]">Bulk Upload</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" checked disabled class="w-3.5 h-3.5 rounded border-gray-300 text-[#38bdf8] focus:ring-[#38bdf8]">
-                    <span class="text-[#38bdf8]">Webportal</span>
+                    <input type="checkbox" checked disabled class="w-3.5 h-3.5 rounded border-gray-300 text-[#0369a1] focus:ring-[#38bdf8]">
+                    <span class="text-[#0369a1]">Webportal</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer select-none">
                     <input type="checkbox" checked disabled class="w-3.5 h-3.5 rounded border-gray-300 text-[#2563eb] focus:ring-[#2563eb]">
@@ -561,9 +561,9 @@
                 </div>
               </div>
             </div>
-            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400 font-mono">
+            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-[#737373] font-mono">
               <span>REAL-TIME DISTRIBUTION</span>
-              <span class="text-teal font-semibold">Live Feed</span>
+              <span class="text-[#007c74] font-semibold">Live Feed</span>
             </div>
           </div>
         </div>
@@ -574,7 +574,7 @@
           <!-- Database Update Table (Left 60% / 3 cols span) -->
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 lg:col-span-3">
             <div class="flex items-center gap-2 mb-4">
-              <i data-lucide="database" class="w-4 h-4 text-teal"></i>
+              <i data-lucide="database" class="w-4 h-4 text-[#007c74]"></i>
               <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Database Update</h3>
             </div>
 
@@ -620,7 +620,7 @@
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 lg:col-span-2 flex flex-col justify-between">
             <div>
               <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a] mb-4 flex items-center gap-2">
-                <i data-lucide="activity" class="w-4 h-4 text-teal"></i>
+                <i data-lucide="activity" class="w-4 h-4 text-[#007c74]"></i>
                 <span>Ongoing Monitoring Summary</span>
               </h3>
               
@@ -634,20 +634,20 @@
                 <!-- KPI 2: Alerts Disposed -->
                 <div onclick="location.href='case-management.html?filter=ongoing&status=disposed'" class="border border-gray-150 rounded-lg p-3 bg-gray-50 hover:border-teal transition-all cursor-pointer text-center">
                   <span class="text-[9px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Disposed</span>
-                  <span class="text-xl font-semibold tracking-[-0.5px] text-green-600 block mt-1" id="ongoing-val-disposed">216</span>
+                  <span class="text-xl font-semibold tracking-[-0.5px] text-[#15803d] block mt-1" id="ongoing-val-disposed">216</span>
                 </div>
                 
                 <!-- KPI 3: Unresolved Hits -->
                 <div onclick="location.href='case-management.html?filter=ongoing&status=unresolved'" class="border border-gray-150 rounded-lg p-3 bg-gray-50 hover:border-teal transition-all cursor-pointer text-center">
                   <span class="text-[9px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Unresolved</span>
-                  <span class="text-xl font-semibold tracking-[-0.5px] text-red-500 block mt-1" id="ongoing-val-unresolved">2</span>
+                  <span class="text-xl font-semibold tracking-[-0.5px] text-[#b91c1c] block mt-1" id="ongoing-val-unresolved">2</span>
                 </div>
               </div>
             </div>
 
-            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400 font-mono">
+            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[10px] text-[#737373] font-mono">
               <span>FREQUENCY: DAILY/WEEKLY</span>
-              <a href="ongoing-monitoring.html" class="text-teal font-semibold hover:underline flex items-center gap-0.5 font-sans">
+              <a href="ongoing-monitoring.html" class="text-[#007c74] font-semibold hover:underline flex items-center gap-0.5 font-sans">
                 <span>View Schedules</span> <i data-lucide="chevron-right" class="w-3 h-3"></i>
               </a>
             </div>
@@ -662,11 +662,11 @@
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
             <h4 class="text-xs font-semibold text-[#737373] uppercase tracking-wider mb-3">Top 5 Corporate Screened</h4>
             <ul class="divide-y divide-gray-100 text-xs font-medium text-gray-800">
-              <li class="py-2.5 flex justify-between"><span>Severstal PAO</span> <span class="text-gray-400 font-mono text-[10px]">112 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>VTB Bank PJSC</span> <span class="text-gray-400 font-mono text-[10px]">94 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>Rosneft Oil Company</span> <span class="text-gray-400 font-mono text-[10px]">82 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>Alfa-Bank Russia</span> <span class="text-gray-400 font-mono text-[10px]">71 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>Gazprom PJSC</span> <span class="text-gray-400 font-mono text-[10px]">64 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Severstal PAO</span> <span class="text-[#737373] font-mono text-[10px]">112 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>VTB Bank PJSC</span> <span class="text-[#737373] font-mono text-[10px]">94 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Rosneft Oil Company</span> <span class="text-[#737373] font-mono text-[10px]">82 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Alfa-Bank Russia</span> <span class="text-[#737373] font-mono text-[10px]">71 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Gazprom PJSC</span> <span class="text-[#737373] font-mono text-[10px]">64 scans</span></li>
             </ul>
           </div>
 
@@ -674,11 +674,11 @@
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
             <h4 class="text-xs font-semibold text-[#737373] uppercase tracking-wider mb-3">Top 5 Individuals Screened</h4>
             <ul class="divide-y divide-gray-100 text-xs font-medium text-gray-800">
-              <li class="py-2.5 flex justify-between"><span>Alexey Mordashov</span> <span class="text-gray-400 font-mono text-[10px]">143 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>Vladimir Putin</span> <span class="text-gray-400 font-mono text-[10px]">122 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>Roman Abramovich</span> <span class="text-gray-400 font-mono text-[10px]">98 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>Alisher Usmanov</span> <span class="text-gray-400 font-mono text-[10px]">85 scans</span></li>
-              <li class="py-2.5 flex justify-between"><span>Igor Sechin</span> <span class="text-gray-400 font-mono text-[10px]">54 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Alexey Mordashov</span> <span class="text-[#737373] font-mono text-[10px]">143 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Vladimir Putin</span> <span class="text-[#737373] font-mono text-[10px]">122 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Roman Abramovich</span> <span class="text-[#737373] font-mono text-[10px]">98 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Alisher Usmanov</span> <span class="text-[#737373] font-mono text-[10px]">85 scans</span></li>
+              <li class="py-2.5 flex justify-between"><span>Igor Sechin</span> <span class="text-[#737373] font-mono text-[10px]">54 scans</span></li>
             </ul>
           </div>
 
@@ -689,17 +689,17 @@
               
               <li class="py-2 flex justify-between items-center">
                 <span>Afghanistan</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20 uppercase">High Risk</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20 uppercase">High Risk</span>
               </li>
               
               <li class="py-2 flex justify-between items-center">
                 <span>Russia</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20 uppercase">High Risk</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20 uppercase">High Risk</span>
               </li>
 
               <li class="py-2 flex justify-between items-center">
                 <span>United Arab Emirates</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fef3c7] text-[#d97706] border border-[#f59e0b]/20 uppercase">Medium Risk</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fef3c7] text-[#b45309] border border-[#f59e0b]/20 uppercase">Medium Risk</span>
               </li>
 
               <li class="py-2 flex justify-between items-center">
@@ -813,10 +813,10 @@
         const iconContainer = document.getElementById("alert-icon-container");
         const valUnresolvedSpan = document.getElementById("val-unresolved");
         if (unresolvedVal === 0) {
-          iconContainer.className = "w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#ebfbf5] text-[#00dc8d]";
-          valUnresolvedSpan.className = "text-xl font-semibold tracking-[-0.5px] text-[#00dc8d] block mt-0.5";
+          iconContainer.className = "w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#ebfbf5] text-[#007c74]";
+          valUnresolvedSpan.className = "text-xl font-semibold tracking-[-0.5px] text-[#007c74] block mt-0.5";
         } else {
-          iconContainer.className = "w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#fef2f2] text-[#ef4444]";
+          iconContainer.className = "w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#fef2f2] text-[#b91c1c]";
           valUnresolvedSpan.className = "text-xl font-semibold tracking-[-0.5px] text-gray-900 block mt-0.5";
         }
 
@@ -862,7 +862,7 @@
       modes.forEach(m => {
         const btn = document.getElementById(`mode-${m}`);
         if (m === mode) {
-          btn.className = "px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border bg-teal text-white border-teal transition-all";
+          btn.className = "px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border bg-teal text-[#0a0a0a] border-teal transition-all";
         } else {
           btn.className = "px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border bg-white text-gray-600 border-gray-300 hover:border-gray-900 transition-all";
         }
@@ -906,20 +906,20 @@
             }
             if (c.id.includes('new') && c.innerText !== '0') {
               c.classList.remove('text-navy');
-              c.classList.add('text-red-600', 'font-bold');
+              c.classList.add('text-[#b91c1c]', 'font-bold');
             }
           });
         } else {
           cells.forEach(c => {
             if (c.classList.contains('ong-cell-empty')) {
-              c.className = "ong-cell ong-cell-empty px-3 py-2 text-xs text-gray-400";
+              c.className = "ong-cell ong-cell-empty px-3 py-2 text-xs text-[#737373]";
             } else {
               c.className = "ong-cell bg-white border border-[#e5e5e5] text-gray-900 rounded-md px-3 py-2 shadow-sm text-xs transition-all";
               if (c.id.includes('hit') || c.id.includes('filt') || c.id.includes('new')) {
                 c.classList.add('text-center', 'font-mono');
                 c.classList.remove('text-gray-900');
                 if (c.id.includes('new') && c.innerText !== '0') {
-                  c.classList.add('text-red-600', 'font-bold');
+                  c.classList.add('text-[#b91c1c]', 'font-bold');
                 } else {
                   c.classList.add('text-gray-700');
                 }

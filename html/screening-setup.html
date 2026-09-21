@@ -73,21 +73,21 @@
               <div class="space-y-1.5 text-xs">
                 <!-- Check Type 1: Sanction Lists -->
                 <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded">
-                  <span class="font-semibold text-gray-750">Sanction Lists</span>
+                  <span class="font-semibold text-[#404040]">Sanction Lists</span>
                   <div onclick="toggleCheckTypeSwitch(this)" class="w-8 h-4 bg-teal rounded-full relative cursor-pointer flex items-center px-0.5 justify-end transition-colors">
                     <span class="w-3.5 h-3.5 bg-white rounded-full transform transition-transform"></span>
                   </div>
                 </div>
                 <!-- Check Type 2: LexisNexis -->
                 <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded">
-                  <span class="font-semibold text-gray-750">LexisNexis</span>
+                  <span class="font-semibold text-[#404040]">LexisNexis</span>
                   <div onclick="toggleCheckTypeSwitch(this)" class="w-8 h-4 bg-teal rounded-full relative cursor-pointer flex items-center px-0.5 justify-end transition-colors">
                     <span class="w-3.5 h-3.5 bg-white rounded-full transform transition-transform"></span>
                   </div>
                 </div>
                 <!-- Check Type 3: Adverse Media -->
                 <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded">
-                  <span class="font-semibold text-gray-750">Adverse Media</span>
+                  <span class="font-semibold text-[#404040]">Adverse Media</span>
                   <div onclick="toggleCheckTypeSwitch(this)" class="w-8 h-4 bg-gray-300 rounded-full relative cursor-pointer flex items-center px-0.5 transition-colors">
                     <span class="w-3.5 h-3.5 bg-white rounded-full transform transition-transform"></span>
                   </div>
@@ -131,8 +131,8 @@
           </div>
 
           <!-- Bottom update meta -->
-          <div class="mt-4 pt-4 border-t border-gray-200 flex items-center gap-2 text-[10px] text-gray-400 font-mono">
-            <i data-lucide="shield-check" class="w-4 h-4 text-teal"></i>
+          <div class="mt-4 pt-4 border-t border-gray-200 flex items-center gap-2 text-[10px] text-[#525252] font-mono">
+            <i data-lucide="shield-check" class="w-4 h-4 text-[#007c74]"></i>
             DB VER: 2026.06.16
           </div>
         </section>
@@ -143,7 +143,7 @@
           <div class="max-w-[680px] w-full">
             <div class="mb-6">
               <h2 id="form-title" class="text-lg font-semibold tracking-[-0.3px] text-gray-900">Individual Screening</h2>
-              <p class="text-xs text-gray-500 mt-1">Specify target credentials. Mandatory fields are flagged with red asterisk (<span class="text-[#ef4444]">*</span>).</p>
+              <p class="text-xs text-gray-500 mt-1">Specify target credentials. Mandatory fields are flagged with red asterisk (<span class="text-[#b91c1c]">*</span>).</p>
             </div>
 
             <form id="screening-form" onsubmit="executeScreening(event)">
@@ -154,7 +154,7 @@
                 <!-- First / Middle Name -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label for="ind-first" class="block text-xs font-semibold text-gray-700 mb-1">First Name <span class="text-[#ef4444]">*</span></label>
+                    <label for="ind-first" class="block text-xs font-semibold text-gray-700 mb-1">First Name <span class="text-[#b91c1c]">*</span></label>
                     <input type="text" id="ind-first" placeholder="Enter first name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
                   </div>
                   <div>
@@ -180,7 +180,7 @@
                         <option value="F">Female</option>
                         <option value="O">Other</option>
                       </select>
-                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
                     </div>
                   </div>
                   <div>
@@ -193,7 +193,7 @@
                         <option value="RU">Russia</option>
                         <option value="AE">United Arab Emirates</option>
                       </select>
-                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
                     </div>
                   </div>
                 </div>
@@ -256,7 +256,7 @@
                         <option value="NID">National Identification</option>
                         <option value="DL">Driver's License</option>
                       </select>
-                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
                     </div>
                   </div>
                 </div>
@@ -272,7 +272,7 @@
                         <option value="GB">United Kingdom</option>
                         <option value="RU">Russia</option>
                       </select>
-                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
                     </div>
                   </div>
                   <div>
@@ -286,7 +286,7 @@
               <!-- 2. ORGANISATION FORM FIELDS -->
               <div id="fields-corporate" class="hidden space-y-4">
                 <div>
-                  <label for="corp-name" class="block text-xs font-semibold text-gray-700 mb-1">Organisation Name <span class="text-[#ef4444]">*</span></label>
+                  <label for="corp-name" class="block text-xs font-semibold text-gray-700 mb-1">Organisation Name <span class="text-[#b91c1c]">*</span></label>
                   <input type="text" id="corp-name" placeholder="Enter organisation name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
                 </div>
 
@@ -304,7 +304,7 @@
                         <option value="GB">United Kingdom</option>
                         <option value="RU">Russia</option>
                       </select>
-                      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
                     </div>
                   </div>
                 </div>
@@ -354,7 +354,7 @@
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Choose Primary Case</label>
                     <div class="relative">
                       <input type="text" placeholder="Search by Case ID or name target..." class="w-full h-9 pl-3 pr-10 border border-gray-300 rounded text-xs focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
-                      <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute right-3 top-2.5"></i>
+                      <i data-lucide="search" class="w-4 h-4 text-[#737373] absolute right-3 top-2.5"></i>
                     </div>
                   </div>
                 </div>
@@ -364,7 +364,7 @@
               <!-- 3. VESSEL FORM FIELDS -->
               <div id="fields-vessel" class="hidden space-y-4">
                 <div>
-                  <label for="ves-name" class="block text-xs font-semibold text-gray-700 mb-1">Vessel Name <span class="text-[#ef4444]">*</span></label>
+                  <label for="ves-name" class="block text-xs font-semibold text-gray-700 mb-1">Vessel Name <span class="text-[#b91c1c]">*</span></label>
                   <input type="text" id="ves-name" placeholder="Enter vessel name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
                 </div>
 
@@ -383,7 +383,7 @@
               <!-- 4. UNSPECIFIED FORM FIELDS -->
               <div id="fields-unspecified" class="hidden space-y-4">
                 <div>
-                  <label for="un-name" class="block text-xs font-semibold text-gray-700 mb-1">Name <span class="text-[#ef4444]">*</span></label>
+                  <label for="un-name" class="block text-xs font-semibold text-gray-700 mb-1">Name <span class="text-[#b91c1c]">*</span></label>
                   <input type="text" id="un-name" placeholder="Enter name" class="w-full h-10 px-3 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal/25 focus:border-teal text-sm">
                 </div>
               </div>
@@ -403,7 +403,7 @@
                       <select id="apply-template-select" onchange="applySelectedTemplate(this.value)" class="w-full h-8 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
                         <option value="">Select a format...</option>
                       </select>
-                      <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+                      <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#737373] absolute right-2.5 top-2.5 pointer-events-none"></i>
                     </div>
                   </div>
 
@@ -431,7 +431,7 @@
                   
                   <!-- Unspecified Expanded Checklist Nodes (only visible when Unspecified tab active) -->
                   <div id="unspecified-sub-dbs" class="hidden mt-4 p-3 bg-gray-50 border border-gray-200 rounded text-xs space-y-2 max-w-md">
-                    <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Watchlists Sub-Indices</span>
+                    <span class="block text-[10px] font-semibold text-[#737373] uppercase tracking-wider mb-1">Watchlists Sub-Indices</span>
                     <label class="flex items-center gap-2 cursor-pointer text-gray-700">
                       <input type="checkbox" checked class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
                       <span>PEP News &amp; Relations</span>
@@ -452,15 +452,15 @@
 
                   <!-- Save Template Prompt -->
                   <div id="save-template-prompt" class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs">
-                    <span class="text-gray-400">Save this database configuration template?</span>
-                    <button type="button" onclick="showSaveTemplateForm()" class="text-teal font-semibold hover:underline">New Format</button>
+                    <span class="text-[#737373]">Save this database configuration template?</span>
+                    <button type="button" onclick="showSaveTemplateForm()" class="text-[#007c74] font-semibold hover:underline">New Format</button>
                   </div>
 
                   <!-- Save Template Form Container (Initially Hidden) -->
                   <div id="save-template-container" class="hidden mt-4 pt-3 border-t border-gray-150 flex flex-col sm:flex-row gap-2 items-center text-xs">
                     <input type="text" id="template-name-input" placeholder="Enter template name (e.g. EU Watchlist)" class="flex-1 w-full h-8 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
                     <div class="flex gap-1.5 shrink-0 w-full sm:w-auto justify-end">
-                      <button type="button" onclick="cancelSaveTemplate()" class="h-8 px-3 text-gray-500 hover:bg-gray-100 rounded font-semibold transition-colors">Cancel</button>
+                      <button type="button" onclick="cancelSaveTemplate()" class="h-8 px-3 text-[#525252] hover:bg-gray-100 rounded font-semibold transition-colors">Cancel</button>
                       <button type="button" onclick="saveDatabaseTemplate()" class="h-8 px-3 bg-[#001741] hover:bg-[#00143a] text-white rounded font-semibold transition-colors">Save Template</button>
                     </div>
                   </div>
@@ -487,7 +487,7 @@
           <!-- Loading Dialog Simulation -->
           <div id="loader-sandbox" class="hidden fixed inset-0 bg-navy/20 backdrop-blur-sm z-50 flex items-center justify-center">
             <div class="bg-white border border-[#e5e5e5] p-8 rounded-lg max-w-[400px] w-full text-center">
-              <svg class="animate-spin h-10 w-10 text-teal mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin h-10 w-10 text-[#007c74] mx-auto mb-4" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>

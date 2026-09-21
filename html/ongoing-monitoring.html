@@ -22,10 +22,10 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Automated AML/KYC Sync Scheduler</h2>
-            <p class="text-xs text-gray-400 mt-0.5">Real-time daily background screening matching active global watchlists</p>
+            <p class="text-xs text-[#737373] mt-0.5">Real-time daily background screening matching active global watchlists</p>
           </div>
           <div class="flex items-center gap-2 select-none">
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#ebfbf5] text-[#00c47e] border border-[#9df0cc] flex items-center gap-1.5">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#ebfbf5] text-[#005f59] border border-[#9df0cc] flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 bg-[#00dc8d] rounded-full animate-ping"></span>
               Subscription Active
             </span>
@@ -41,7 +41,7 @@
           
           <!-- Card 1: Total Batches Monitored -->
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#ebfbf5] text-[#00dc8d]">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#ebfbf5] text-[#007c74]">
               <i data-lucide="layers" class="w-5 h-5"></i>
             </div>
             <div>
@@ -63,12 +63,12 @@
 
           <!-- Card 3: Pending Review (Critical) -->
           <div class="bg-white rounded-xl border border-[#e5e5e5] p-6 flex items-center gap-4 cursor-pointer hover:border-red-400 transition-colors" onclick="filterTable('unresolved')">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#fef2f2] text-[#ef4444]">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#fef2f2] text-[#b91c1c]">
               <i data-lucide="shield-alert" class="w-5 h-5"></i>
             </div>
             <div>
               <span class="text-xs font-semibold text-[#737373] uppercase tracking-wider block">Pending Review</span>
-              <span class="text-2xl font-semibold tracking-[-0.5px] text-[#ef4444] block mt-0.5" id="kpi-pending">8 Cases</span>
+              <span class="text-2xl font-semibold tracking-[-0.5px] text-[#b91c1c] block mt-0.5" id="kpi-pending">8 Cases</span>
             </div>
           </div>
 
@@ -82,7 +82,7 @@
             <span class="text-xs font-semibold text-gray-900 uppercase" id="table-roster-title">Active Monitoring Schedules</span>
             
             <div class="flex items-center gap-2">
-              <button onclick="resetFilters()" class="text-xs font-semibold text-gray-500 hover:text-gray-950 px-2 py-1 rounded hover:bg-gray-100 hidden" id="reset-filter-btn">
+              <button onclick="resetFilters()" class="text-xs font-semibold text-[#525252] hover:text-gray-950 px-2 py-1 rounded hover:bg-gray-100 hidden" id="reset-filter-btn">
                 Clear Filter
               </button>
               <button onclick="alert('Exporting monitoring logs...')" class="h-8 px-2.5 border border-gray-300 hover:bg-gray-100 text-gray-600 hover:text-gray-950 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
@@ -117,28 +117,28 @@
                   <td class="px-4 font-semibold text-gray-900">Client NBFI Batch</td>
                   <td class="px-4 text-center"><span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-mono">Entity</span></td>
                   <td class="px-4 text-center text-gray-500 font-semibold">Daily</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400" id="last-run-0">2026-06-16 04:00 GMT</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400">2026-06-17 04:00 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]" id="last-run-0">2026-06-16 04:00 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]">2026-06-17 04:00 GMT</td>
                   <td class="px-4 text-center font-mono">112</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" id="new-hits-0">2</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20" id="new-hits-0">2</span>
                   </td>
                   <td class="px-4 text-center font-mono">8</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" id="unresolved-0">2</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20" id="unresolved-0">2</span>
                   </td>
                   <td class="px-4 text-center" id="status-cell-0">
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/30">Active</span>
                   </td>
                   <td class="px-4 text-right select-none">
                     <div class="flex items-center justify-end gap-1.5">
-                      <button onclick="runNow(0)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#00dc8d] rounded text-gray-400 transition-colors" id="btn-run-0">
+                      <button onclick="runNow(0)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#007c74] rounded text-[#737373] transition-colors" id="btn-run-0">
                         <i data-lucide="play" class="w-4 h-4"></i>
                       </button>
-                      <button onclick="togglePause(0)" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-amber-500 rounded text-gray-400 transition-colors" id="btn-pause-0">
+                      <button onclick="togglePause(0)" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-[#b45309] rounded text-[#737373] transition-colors" id="btn-pause-0">
                         <i data-lucide="pause" class="w-4 h-4"></i>
                       </button>
-                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-gray-400 transition-colors">
+                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-[#737373] transition-colors">
                         <i data-lucide="external-link" class="w-4 h-4"></i>
                       </a>
                     </div>
@@ -150,28 +150,28 @@
                   <td class="px-4 font-semibold text-gray-900">Key Personnel Roster</td>
                   <td class="px-4 text-center"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">Individual</span></td>
                   <td class="px-4 text-center text-gray-500 font-semibold">Daily</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400" id="last-run-1">2026-06-16 04:00 GMT</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400">2026-06-17 04:00 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]" id="last-run-1">2026-06-16 04:00 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]">2026-06-17 04:00 GMT</td>
                   <td class="px-4 text-center font-mono">85</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" id="new-hits-1">4</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20" id="new-hits-1">4</span>
                   </td>
                   <td class="px-4 text-center font-mono">18</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" id="unresolved-1">4</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20" id="unresolved-1">4</span>
                   </td>
                   <td class="px-4 text-center" id="status-cell-1">
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/30">Active</span>
                   </td>
                   <td class="px-4 text-right select-none">
                     <div class="flex items-center justify-end gap-1.5">
-                      <button onclick="runNow(1)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#00dc8d] rounded text-gray-400 transition-colors" id="btn-run-1">
+                      <button onclick="runNow(1)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#007c74] rounded text-[#737373] transition-colors" id="btn-run-1">
                         <i data-lucide="play" class="w-4 h-4"></i>
                       </button>
-                      <button onclick="togglePause(1)" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-amber-500 rounded text-gray-400 transition-colors" id="btn-pause-1">
+                      <button onclick="togglePause(1)" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-[#b45309] rounded text-[#737373] transition-colors" id="btn-pause-1">
                         <i data-lucide="pause" class="w-4 h-4"></i>
                       </button>
-                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-gray-400 transition-colors">
+                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-[#737373] transition-colors">
                         <i data-lucide="external-link" class="w-4 h-4"></i>
                       </a>
                     </div>
@@ -183,28 +183,28 @@
                   <td class="px-4 font-semibold text-gray-900">Online Portal Users</td>
                   <td class="px-4 text-center"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">Individual</span></td>
                   <td class="px-4 text-center text-gray-500 font-semibold">Weekly</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400" id="last-run-2">2026-06-12 11:30 GMT</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400">2026-06-19 11:30 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]" id="last-run-2">2026-06-12 11:30 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]">2026-06-19 11:30 GMT</td>
                   <td class="px-4 text-center font-mono">142</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200" id="new-hits-2">0</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-[#525252] border border-gray-200" id="new-hits-2">0</span>
                   </td>
                   <td class="px-4 text-center font-mono">4</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" id="unresolved-2">2</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20" id="unresolved-2">2</span>
                   </td>
                   <td class="px-4 text-center" id="status-cell-2">
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-350">Paused</span>
                   </td>
                   <td class="px-4 text-right select-none">
                     <div class="flex items-center justify-end gap-1.5">
-                      <button onclick="runNow(2)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#00dc8d] rounded text-gray-400 transition-colors" id="btn-run-2">
+                      <button onclick="runNow(2)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#007c74] rounded text-[#737373] transition-colors" id="btn-run-2">
                         <i data-lucide="play" class="w-4 h-4"></i>
                       </button>
-                      <button onclick="togglePause(2)" title="Resume Schedule" class="p-1 hover:bg-gray-100 hover:text-[#00dc8d] rounded text-gray-450 transition-colors" id="btn-pause-2">
+                      <button onclick="togglePause(2)" title="Resume Schedule" class="p-1 hover:bg-gray-100 hover:text-[#007c74] rounded text-[#737373] transition-colors" id="btn-pause-2">
                         <i data-lucide="play-circle" class="w-4 h-4"></i>
                       </button>
-                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-gray-400 transition-colors">
+                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-[#737373] transition-colors">
                         <i data-lucide="external-link" class="w-4 h-4"></i>
                       </a>
                     </div>
@@ -216,28 +216,28 @@
                   <td class="px-4 font-semibold text-gray-900">Correspondent Bank Registry</td>
                   <td class="px-4 text-center"><span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-mono">Entity</span></td>
                   <td class="px-4 text-center text-gray-500 font-semibold">Monthly</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400" id="last-run-3">2026-06-01 02:00 GMT</td>
-                  <td class="px-4 font-mono text-[10px] text-gray-400">2026-07-01 02:00 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]" id="last-run-3">2026-06-01 02:00 GMT</td>
+                  <td class="px-4 font-mono text-[10px] text-[#737373]">2026-07-01 02:00 GMT</td>
                   <td class="px-4 text-center font-mono">40</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200" id="new-hits-3">0</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-[#525252] border border-gray-200" id="new-hits-3">0</span>
                   </td>
                   <td class="px-4 text-center font-mono">12</td>
                   <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200" id="unresolved-3">0</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-[#525252] border border-gray-200" id="unresolved-3">0</span>
                   </td>
                   <td class="px-4 text-center" id="status-cell-3">
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200">Error</span>
                   </td>
                   <td class="px-4 text-right select-none">
                     <div class="flex items-center justify-end gap-1.5">
-                      <button onclick="runNow(3)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#00dc8d] rounded text-gray-400 transition-colors" id="btn-run-3">
+                      <button onclick="runNow(3)" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#007c74] rounded text-[#737373] transition-colors" id="btn-run-3">
                         <i data-lucide="play" class="w-4 h-4"></i>
                       </button>
-                      <button onclick="togglePause(3)" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-amber-500 rounded text-gray-400 transition-colors" id="btn-pause-3">
+                      <button onclick="togglePause(3)" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-[#b45309] rounded text-[#737373] transition-colors" id="btn-pause-3">
                         <i data-lucide="pause" class="w-4 h-4"></i>
                       </button>
-                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-gray-400 transition-colors">
+                      <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-[#737373] transition-colors">
                         <i data-lucide="external-link" class="w-4 h-4"></i>
                       </a>
                     </div>
@@ -264,10 +264,10 @@
       <!-- Modal Header -->
       <div class="flex items-center justify-between">
         <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a] flex items-center gap-2">
-          <i data-lucide="clock" class="w-4 h-4 text-teal"></i>
+          <i data-lucide="clock" class="w-4 h-4 text-[#007c74]"></i>
           Create Monitoring Schedule
         </h3>
-        <button onclick="closeSchedulerModal()" class="text-gray-400 hover:text-gray-900 transition-colors">
+        <button onclick="closeSchedulerModal()" class="text-[#737373] hover:text-gray-900 transition-colors">
           <i data-lucide="x" class="w-4.5 h-4.5"></i>
         </button>
       </div>
@@ -276,7 +276,7 @@
       <form id="new-schedule-form" onsubmit="createSchedule(event)" class="space-y-4 text-xs font-semibold text-[#171717]">
         <!-- Batch Name Selection -->
         <div>
-          <label class="block mb-1">Select Uploaded Batch <span class="text-red-500">*</span></label>
+          <label class="block mb-1">Select Uploaded Batch <span class="text-[#b91c1c]">*</span></label>
           <div class="relative">
             <select required id="sched-batch-name" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
               <option value="" disabled selected>Choose a batch roster</option>
@@ -284,13 +284,13 @@
               <option value="Ultimate Beneficial Owners UBO">Ultimate Beneficial Owners UBO</option>
               <option value="Vessel Fleet Alpha">Vessel Fleet Alpha</option>
             </select>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
           </div>
         </div>
 
         <!-- Frequency -->
         <div>
-          <label class="block mb-1">Monitoring Interval <span class="text-red-500">*</span></label>
+          <label class="block mb-1">Monitoring Interval <span class="text-[#b91c1c]">*</span></label>
           <div class="grid grid-cols-3 gap-2">
             <label class="border rounded p-2.5 flex items-center gap-1.5 cursor-pointer hover:bg-gray-50 border-teal bg-teal-light text-navy" id="freq-daily-lbl">
               <input type="radio" name="freq" value="Daily" checked class="accent-teal" onclick="selectFreq('daily')">
@@ -311,15 +311,15 @@
         <div>
           <label class="block mb-1">Database Scope</label>
           <div class="space-y-2 border rounded p-3 bg-gray-50">
-            <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-750">
+            <label class="flex items-center gap-2 font-medium cursor-pointer text-[#404040]">
               <input type="checkbox" id="db-all" checked class="rounded text-teal focus:ring-teal accent-teal">
               <span>All Databases (World-Check, PEP, Sanctions)</span>
             </label>
-            <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-650 ml-5">
+            <label class="flex items-center gap-2 font-medium cursor-pointer text-[#525252] ml-5">
               <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
               <span>PEP News &amp; Relations database</span>
             </label>
-            <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-655 ml-5">
+            <label class="flex items-center gap-2 font-medium cursor-pointer text-[#525252] ml-5">
               <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
               <span>OFAC/UN/EU Sanction Lists</span>
             </label>
@@ -331,7 +331,7 @@
           <button type="button" onclick="closeSchedulerModal()" class="h-10 px-4 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded transition-all">
             Cancel
           </button>
-          <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors flex items-center gap-1.5">
+          <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors flex items-center gap-1.5">
             <i data-lucide="check" class="w-4.5 h-4.5"></i>
             <span>Schedule Watchlist Sync</span>
           </button>
@@ -369,7 +369,7 @@
       }
 
       // Turn icon into spinner
-      runBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-[#00dc8d]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+      runBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-[#007c74]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
       runBtn.disabled = true;
       
       showToast(`Triggering screening run for "${item.name}"...`);
@@ -414,7 +414,7 @@
         item.status = "Paused";
         statusCell.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-350">Paused</span>`;
         pauseBtn.title = "Resume Schedule";
-        pauseBtn.innerHTML = `<i data-lucide="play-circle" class="w-4 h-4 text-emerald-500"></i>`;
+        pauseBtn.innerHTML = `<i data-lucide="play-circle" class="w-4 h-4 text-[#15803d]"></i>`;
         showToast(`Monitoring schedule paused for "${item.name}".`);
       } else {
         // Resume it
@@ -502,28 +502,28 @@
           <td class="px-4 font-semibold text-gray-900">${newItem.name}</td>
           <td class="px-4 text-center">${typeBadge}</td>
           <td class="px-4 text-center text-gray-500 font-semibold">${newItem.freq}</td>
-          <td class="px-4 font-mono text-[10px] text-gray-400" id="last-run-${index}">Never Screened</td>
-          <td class="px-4 font-mono text-[10px] text-gray-400">Scheduled (Queued)</td>
+          <td class="px-4 font-mono text-[10px] text-[#737373]" id="last-run-${index}">Never Screened</td>
+          <td class="px-4 font-mono text-[10px] text-[#737373]">Scheduled (Queued)</td>
           <td class="px-4 text-center font-mono">24</td>
           <td class="px-4 text-center">
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200" id="new-hits-${index}">0</span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-[#525252] border border-gray-200" id="new-hits-${index}">0</span>
           </td>
           <td class="px-4 text-center font-mono">0</td>
           <td class="px-4 text-center">
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200" id="unresolved-${index}">0</span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-[#525252] border border-gray-200" id="unresolved-${index}">0</span>
           </td>
           <td class="px-4 text-center" id="status-cell-${index}">
             <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#dcfce7] text-[#166534] border border-[#22c55e]/30">Active</span>
           </td>
           <td class="px-4 text-right select-none">
             <div class="flex items-center justify-end gap-1.5">
-              <button onclick="runNow(${index})" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#00dc8d] rounded text-gray-400 transition-colors" id="btn-run-${index}">
+              <button onclick="runNow(${index})" title="Run Screening Now" class="p-1 hover:bg-gray-100 hover:text-[#007c74] rounded text-[#737373] transition-colors" id="btn-run-${index}">
                 <i data-lucide="play" class="w-4 h-4"></i>
               </button>
-              <button onclick="togglePause(${index})" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-amber-500 rounded text-gray-400 transition-colors" id="btn-pause-${index}">
+              <button onclick="togglePause(${index})" title="Pause Schedule" class="p-1 hover:bg-gray-100 hover:text-[#b45309] rounded text-[#737373] transition-colors" id="btn-pause-${index}">
                 <i data-lucide="pause" class="w-4 h-4"></i>
               </button>
-              <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-gray-400 transition-colors">
+              <a href="case-management.html" title="View Results" class="p-1 hover:bg-gray-100 hover:text-[#001741] rounded text-[#737373] transition-colors">
                 <i data-lucide="external-link" class="w-4 h-4"></i>
               </a>
             </div>

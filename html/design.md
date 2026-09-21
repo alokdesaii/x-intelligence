@@ -110,6 +110,28 @@ These are the raw brand color ramps. Do not use directly in components — use s
 
 These are the tokens to reference in all components. They map from primitives above.
 
+> **Contrast rule (audit, Sept 2026).** A full WCAG audit of all 19 screens found 544 failing
+> text/background pairs, almost all caused by using raw Tailwind shades (`text-gray-400`,
+> `text-red-500`, `text-green-600`, `text-amber-600`) instead of the tokens below. **Always use
+> the token, never the nearest Tailwind shade** — the tokens are chosen to pass AA, the Tailwind
+> 400/500/600 shades are not. Verified minimums on white: `--muted-foreground` 4.74:1,
+> red-700 6.47:1, `--success` 5.02:1, amber-700 5.02:1.
+>
+> **Teal rule — background vs foreground.** The brand teal `#00dc8d` is **never changed when used
+> as a surface**: buttons, badges, bars, borders, focus rings and checkbox/​control fills all keep
+> `#00dc8d` exactly. Teal as a *foreground* is context-dependent, because it must earn its contrast
+> against whatever it sits on:
+>
+> | Teal used as | On | Value | Ratio |
+> |---|---|---|---|
+> | Background (button, badge, bar) | any | `#00dc8d` unchanged | brand-black text on it = 10.96:1 |
+> | Foreground — text, links, icons | **light** surfaces | `#007c74` (secondary-700) | 5.08:1 on white |
+> | Foreground — text on teal-light | `#ebfbf5` | `#005f59` (secondary-800) | 7.07:1 |
+> | Foreground — text, icons | **dark navy** surfaces (sidebar, topbar chrome, toast, login panels) | `#00dc8d` unchanged | 9.69:1 on `#001741` |
+>
+> The last row matters: darkening teal on navy would *reduce* contrast from 9.69:1 to 3.45:1. Never
+> apply the light-surface teal to the sidebar, the injected shell chrome, or the login gradient panels.
+
 ```css
 :root {
   /* ── Backgrounds ── */
@@ -129,7 +151,12 @@ These are the tokens to reference in all components. They map from primitives ab
   --primary:           #001741;   /* Navy — primary CTA, active nav, links */
   --primary-foreground:#ffffff;   /* Text on primary bg */
   --brand:             #00dc8d;   /* Teal — accent, highlights, brand badge */
-  --brand-foreground:  #ffffff;   /* Text on brand bg */
+  --brand-foreground:  #0a0a0a;   /* Text on brand bg — BRAND BLACK (neutral-950), not white.
+                                     White on #00dc8d is 1.81:1 and fails WCAG AA (needs 4.5:1
+                                     for text, 3:1 for UI). Brand black on teal is 10.96:1, and
+                                     8.67:1 against the #00c47e hover state — passes AAA. Matches
+                                     --foreground, so teal buttons read as the same ink as body
+                                     copy. (Sept 2026: white -> navy -> brand black.) */
 
   /* ── UI Surface Colors ── */
   --secondary:         #f5f5f5;   /* Secondary button background */
@@ -194,7 +221,7 @@ These are the tokens to reference in all components. They map from primitives ab
   --primary:           #001741;   /* Navy stays the same */
   --primary-foreground:#ffffff;
   --brand:             #4cd2c9;   /* Lighter teal for dark bg legibility */
-  --brand-foreground:  #ffffff;
+  --brand-foreground:  #001741;   /* Navy — white on #4cd2c9 is 1.85:1 and fails AA; navy is 9.48:1 */
 
   --secondary:         #262626;
   --secondary-foreground: #fafafa;
@@ -335,7 +362,7 @@ box-shadow: 0 0 0 3px rgba(0, 220, 141, 0.25);
 | Outline | transparent | `--foreground` | `--muted` | Tertiary actions |
 | Ghost | transparent | `--foreground` | `--muted` | Nav, icon buttons |
 | Link | transparent | `--primary` | transparent + underline | Inline links |
-| Brand | `--brand` (#00dc8d) | `--brand-foreground` (#fff) | `--secondary-600` | Brand highlights |
+| Brand | `--brand` (#00dc8d) | `--brand-foreground` (#0a0a0a brand black) | `--secondary-600` | Brand highlights |
 
 Sizes: `sm` = 32px height, `md` = 36px height, `lg` = 40px height, `icon` = 36×36px
 Label: **13px semibold** (compact — updated June 2026; was 14px Label/md)

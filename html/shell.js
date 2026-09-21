@@ -46,9 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card", disabled: !isLocal },
     { name: "Package Manager", url: "admin-packages.html", icon: "package-plus", disabled: !isLocal },
-    { name: "Admin User Mgmt", url: "admin-user-mgmt.html", icon: "shield-check", disabled: true },
-    { name: "User Manager", url: "admin-user-manager.html", icon: "users", disabled: true },
-    { name: "Admin Reports", url: "admin-reports.html", icon: "bar-chart-3", disabled: true }
+    { name: "Admin Settings", url: "admin-settings.html", icon: "settings", disabled: !isLocal },
+    { name: "Admin User Mgmt", url: "admin-user-mgmt.html", icon: "shield-check", disabled: !isLocal },
+    { name: "User Manager", url: "admin-user-manager.html", icon: "users", disabled: !isLocal },
+    { name: "Admin Reports", url: "admin-reports.html", icon: "bar-chart-3", disabled: !isLocal }
   ];
 
   const activeNavItems = isAdmin ? adminNavItems : customerNavItems;
@@ -153,18 +154,16 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // 1. Sidebar HTML
-  const sidebarHeaderHtml = isAdmin
-    ? `
-      <div class="h-16 flex items-center px-6 border-b border-[#00276e]">
-        <span class="text-white font-semibold text-lg tracking-[-0.5px] flex items-center gap-2">
-          <span class="w-3 h-3 bg-teal rounded-full animate-pulse"></span>
-          X-INTELLIGENCE
-        </span>
-      </div>
-    `
-    : `
-      <div class="flex items-center justify-center border-b border-[#00276e] px-4 py-8">
+  // Both portals use the real X-Intelligence logo asset. The admin console adds a caption
+  // underneath so it stays distinguishable from the customer portal at a glance.
+  const sidebarHeaderHtml = `
+      <div class="flex flex-col items-center justify-center border-b border-[#00276e] px-4 ${isAdmin ? 'pt-8 pb-5' : 'py-8'}">
         <img src="logo/x-logo-white.svg" alt="X-Intelligence" class="h-24 w-auto">
+        ${isAdmin ? `
+        <span class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#00276e] border border-[#00308a]">
+          <span class="w-1.5 h-1.5 bg-teal rounded-full"></span>
+          <span class="text-[10px] font-semibold tracking-[0.12em] text-teal uppercase">Admin Console</span>
+        </span>` : ''}
       </div>
     `;
 
@@ -223,14 +222,14 @@ document.addEventListener("DOMContentLoaded", () => {
         <h1 class="text-lg font-semibold tracking-[-0.3px] text-gray-900 capitalize" id="shell-title">
           ${topbarTitle}
         </h1>
-        <span class="text-xs text-gray-400 font-mono">|</span>
-        <span class="text-xs text-gray-500 font-mono bg-gray-100 border border-gray-200 px-2 py-0.5 rounded">ENV: Production</span>
+        <span class="text-xs text-[#737373] font-mono">|</span>
+        <span class="text-xs text-[#525252] font-mono bg-gray-100 border border-gray-200 px-2 py-0.5 rounded">ENV: Production</span>
       </div>
 
       <div class="flex items-center gap-4">
         <!-- Date display -->
         <div class="text-right hidden sm:block">
-          <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Current Audit Period</p>
+          <p class="text-[10px] text-[#737373] uppercase tracking-wider font-semibold">Current Audit Period</p>
           <p class="text-xs font-semibold text-gray-700 font-mono" id="audit-date">Q2 2026</p>
         </div>
 
@@ -258,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div>
                   <p class="text-xs font-semibold text-gray-900">Critical PEP Match Detected</p>
                   <p class="text-[11px] text-gray-500 mt-0.5">High-risk PEP match identified in batch screening upload #4812.</p>
-                  <span class="text-[9px] text-gray-400 font-mono mt-1 block">5m ago</span>
+                  <span class="text-[9px] text-[#737373] font-mono mt-1 block">5m ago</span>
                 </div>
               </div>
               <!-- Item 2 -->
@@ -267,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div>
                   <p class="text-xs font-semibold text-gray-900">New Adverse Media Alert</p>
                   <p class="text-[11px] text-gray-500 mt-0.5">New Adverse Media article published regarding profile "Marcus Vance".</p>
-                  <span class="text-[9px] text-gray-400 font-mono mt-1 block">1h ago</span>
+                  <span class="text-[9px] text-[#737373] font-mono mt-1 block">1h ago</span>
                 </div>
               </div>
               <!-- Item 3 -->
@@ -276,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div>
                   <p class="text-xs font-semibold text-gray-900">Database Sync Complete</p>
                   <p class="text-[11px] text-gray-500 mt-0.5">Global Sanctions database sync succeeded. 1,429 records updated.</p>
-                  <span class="text-[9px] text-gray-400 font-mono mt-1 block">3h ago</span>
+                  <span class="text-[9px] text-[#737373] font-mono mt-1 block">3h ago</span>
                 </div>
               </div>
             </div>

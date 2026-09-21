@@ -21,7 +21,7 @@
         <!-- Header Info -->
         <div>
           <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">User Settings &amp; Engine Preferences</h2>
-          <p class="text-xs text-gray-400 mt-0.5">Customize your compliance profile, MFA credentials, database targets, and thresholds</p>
+          <p class="text-xs text-[#737373] mt-0.5">Customize your compliance profile, MFA credentials, database targets, and thresholds</p>
         </div>
 
         <!-- Settings Split Layout -->
@@ -65,7 +65,7 @@
             <div id="section-profile" class="space-y-6">
               <div class="border-b border-gray-100 pb-4">
                 <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Analyst Profile Settings</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Manage your personal identification, avatar, and workplace directory fields</p>
+                <p class="text-xs text-[#737373] mt-0.5">Manage your personal identification, avatar, and workplace directory fields</p>
               </div>
 
               <!-- Profile Form -->
@@ -78,8 +78,8 @@
                   </div>
                   <div>
                     <h4 class="text-xs text-gray-900 font-bold mb-1">Avatar Profile Photo</h4>
-                    <button type="button" onclick="uploadMockPhoto()" class="px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-gray-650 text-[10px] rounded transition-all font-semibold uppercase flex items-center gap-1.5">
-                      <i data-lucide="upload" class="w-3.5 h-3.5 text-gray-400"></i>
+                    <button type="button" onclick="uploadMockPhoto()" class="px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-[#525252] text-[10px] rounded transition-all font-semibold uppercase flex items-center gap-1.5">
+                      <i data-lucide="upload" class="w-3.5 h-3.5 text-[#737373]"></i>
                       <span>Upload Photo</span>
                     </button>
                   </div>
@@ -88,12 +88,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <!-- First Name -->
                   <div>
-                    <label class="block mb-1 text-gray-500">First Name <span class="text-red-500">*</span></label>
+                    <label class="block mb-1 text-gray-500">First Name <span class="text-[#b91c1c]">*</span></label>
                     <input type="text" required value="Alok" id="prof-firstname" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
                   </div>
                   <!-- Last Name -->
                   <div>
-                    <label class="block mb-1 text-gray-500">Last Name <span class="text-red-500">*</span></label>
+                    <label class="block mb-1 text-gray-500">Last Name <span class="text-[#b91c1c]">*</span></label>
                     <input type="text" required value="Desai" id="prof-lastname" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
                   </div>
                 </div>
@@ -101,8 +101,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <!-- Email (Read-Only) -->
                   <div>
-                    <label class="block mb-1 text-gray-400">Corporate Email Address (Read-only)</label>
-                    <input type="email" readonly value="alok.desai@xirni.com" class="w-full h-10 px-3 border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed rounded focus:outline-none font-mono">
+                    <label class="block mb-1 text-[#737373]">Corporate Email Address (Read-only)</label>
+                    <input type="email" readonly value="alok.desai@xirni.com" class="w-full h-10 px-3 border border-gray-200 bg-gray-50 text-[#737373] cursor-not-allowed rounded focus:outline-none font-mono">
                   </div>
                   <!-- Phone -->
                   <div>
@@ -125,7 +125,7 @@
                 </div>
 
                 <div class="border-t border-gray-100 pt-4 flex justify-end">
-                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-profile">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-profile">
                     <i data-lucide="save" class="w-4 h-4"></i>
                     <span>Save Profile</span>
                   </button>
@@ -137,20 +137,20 @@
             <div id="section-security" class="space-y-6 hidden">
               <div class="border-b border-gray-100 pb-4">
                 <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Security &amp; Authorization</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Configure authentication parameters, passwords, MFA, and inactivity locks</p>
+                <p class="text-xs text-[#737373] mt-0.5">Configure authentication parameters, passwords, MFA, and inactivity locks</p>
               </div>
 
               <!-- Two-Factor Auth Toggle -->
               <div class="border rounded-xl p-4 bg-gray-50 flex items-center justify-between">
                 <div class="space-y-1">
                   <h4 class="text-xs text-gray-900 font-bold flex items-center gap-1">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-[#00dc8d]"></i>
+                    <i data-lucide="shield-check" class="w-4 h-4 text-[#007c74]"></i>
                     Two-Factor Authentication (MFA)
                   </h4>
                   <p class="text-[11px] text-gray-500 font-normal">Enforce authenticator app verification code on every login cycle</p>
                 </div>
                 <div>
-                  <button onclick="toggleMfa()" id="mfa-toggle-btn" class="h-9 px-4 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e]">
+                  <button onclick="toggleMfa()" id="mfa-toggle-btn" class="h-9 px-4 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-[#9df0cc] bg-[#ebfbf5] text-[#005f59]">
                     <i data-lucide="check" class="w-4 h-4"></i>
                     <span>Enabled</span>
                   </button>
@@ -169,7 +169,7 @@
                       <option value="60">60 Minutes</option>
                       <option value="none">Never Lock Session (Not Recommended)</option>
                     </select>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
                   </div>
                 </div>
 
@@ -194,7 +194,7 @@
                 </div>
 
                 <div class="border-t border-gray-100 pt-4 flex justify-end">
-                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-security">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-security">
                     <i data-lucide="save" class="w-4 h-4"></i>
                     <span>Update Credentials</span>
                   </button>
@@ -206,7 +206,7 @@
             <div id="section-preferences" class="space-y-6 hidden">
               <div class="border-b border-gray-100 pb-4">
                 <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Global Engine Search Defaults</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Customize thresholds and screening options applied to manual screening queries</p>
+                <p class="text-xs text-[#737373] mt-0.5">Customize thresholds and screening options applied to manual screening queries</p>
               </div>
 
               <!-- Preferences Form -->
@@ -221,7 +221,7 @@
                       <option value="Vessel">Vessel (Maritime)</option>
                       <option value="Unspecified">Auto-Detect / Unspecified</option>
                     </select>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none"></i>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
                   </div>
                 </div>
 
@@ -229,12 +229,12 @@
                 <div>
                   <div class="flex justify-between items-center mb-1">
                     <label class="text-gray-500">Fuzzy Match Sensitivity Threshold</label>
-                    <span class="font-mono text-teal text-sm" id="threshold-val">85% Match</span>
+                    <span class="font-mono text-[#007c74] text-sm" id="threshold-val">85% Match</span>
                   </div>
                   <div class="flex items-center gap-4">
-                    <span class="text-[10px] text-gray-400">70% (Broad)</span>
+                    <span class="text-[10px] text-[#737373]">70% (Broad)</span>
                     <input type="range" min="70" max="100" value="85" id="pref-threshold" oninput="updateThresholdSlider(this.value)" class="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal">
-                    <span class="text-[10px] text-gray-400">100% (Precise)</span>
+                    <span class="text-[10px] text-[#737373]">100% (Precise)</span>
                   </div>
                 </div>
 
@@ -242,19 +242,19 @@
                 <div>
                   <label class="block mb-1 text-gray-500">Default Watchlist Routing</label>
                   <div class="space-y-2 border rounded p-3 bg-gray-50">
-                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-750">
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-[#404040]">
                       <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
                       <span>World-Check Global Database (Refinitiv)</span>
                     </label>
-                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-650">
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-[#525252]">
                       <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
                       <span>Politically Exposed Persons (PEP) News &amp; Lists</span>
                     </label>
-                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-650">
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-[#525252]">
                       <input type="checkbox" checked class="rounded text-teal focus:ring-teal accent-teal">
                       <span>US OFAC Consolidated Sanctions</span>
                     </label>
-                    <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-650">
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-[#525252]">
                       <input type="checkbox" class="rounded text-teal focus:ring-teal accent-teal">
                       <span>EU Financial Freezes &amp; UN Watchlists</span>
                     </label>
@@ -262,7 +262,7 @@
                 </div>
 
                 <div class="border-t border-gray-100 pt-4 flex justify-end">
-                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-pref">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-pref">
                     <i data-lucide="save" class="w-4 h-4"></i>
                     <span>Apply Defaults</span>
                   </button>
@@ -274,7 +274,7 @@
             <div id="section-notifications" class="space-y-6 hidden">
               <div class="border-b border-gray-100 pb-4">
                 <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Email Notification Presets</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Control email notifications and logs dispatched by the compliance engine</p>
+                <p class="text-xs text-[#737373] mt-0.5">Control email notifications and logs dispatched by the compliance engine</p>
               </div>
 
               <!-- Notifications Preferences -->
@@ -287,7 +287,7 @@
                       <h4 class="text-xs text-gray-900 font-bold mb-0.5">System Activity Briefs</h4>
                       <p class="text-[11px] text-gray-500 font-normal">Receive weekly summaries of case volumes, success rates, and audit reviews</p>
                     </div>
-                    <button type="button" onclick="toggleBtn('btn-ntf-1')" id="btn-ntf-1" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e] flex items-center gap-1">
+                    <button type="button" onclick="toggleBtn('btn-ntf-1')" id="btn-ntf-1" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
                       <i data-lucide="check" class="w-4 h-4"></i> Enabled
                     </button>
                   </div>
@@ -298,7 +298,7 @@
                       <h4 class="text-xs text-gray-900 font-bold mb-0.5">New Watchlist Matches detected</h4>
                       <p class="text-[11px] text-gray-500 font-normal">Instant dispatch whenever background ongoing monitoring schedules locate a hit</p>
                     </div>
-                    <button type="button" onclick="toggleBtn('btn-ntf-2')" id="btn-ntf-2" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e] flex items-center gap-1">
+                    <button type="button" onclick="toggleBtn('btn-ntf-2')" id="btn-ntf-2" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
                       <i data-lucide="check" class="w-4 h-4"></i> Enabled
                     </button>
                   </div>
@@ -317,7 +317,7 @@
                 </div>
 
                 <div class="border-t border-gray-100 pt-4 flex justify-end">
-                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-white rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-ntf">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-ntf">
                     <i data-lucide="save" class="w-4 h-4"></i>
                     <span>Apply Notification Rules</span>
                   </button>
@@ -369,7 +369,7 @@
         btn.className = "h-9 px-4 rounded-lg font-semibold border transition-colors border-gray-300 bg-white text-gray-500 flex items-center gap-1";
         btn.innerHTML = `<i data-lucide="x" class="w-4 h-4"></i> Disabled`;
       } else {
-        btn.className = "h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e] flex items-center gap-1";
+        btn.className = "h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1";
         btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Enabled`;
       }
       
@@ -382,7 +382,7 @@
       mfaEnabled = !mfaEnabled;
       const btn = document.getElementById("mfa-toggle-btn");
       if (mfaEnabled) {
-        btn.className = "h-9 px-4 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-[#9df0cc] bg-[#ebfbf5] text-[#00c47e]";
+        btn.className = "h-9 px-4 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-[#9df0cc] bg-[#ebfbf5] text-[#005f59]";
         btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> <span>Enabled</span>`;
         showToast("MFA enrollment active. A validation code will be requested on login.");
       } else {
@@ -399,7 +399,7 @@
       setTimeout(() => {
         // Change initials AD to initials Xirni or simulated file upload
         const avatar = document.getElementById("profile-avatar");
-        avatar.className = "w-16 h-16 rounded-full bg-teal flex items-center justify-center text-white font-semibold text-xl border-2 border-navy";
+        avatar.className = "w-16 h-16 rounded-full bg-teal flex items-center justify-center text-[#0a0a0a] font-semibold text-xl border-2 border-navy";
         avatar.innerText = "AD";
         showToast("Simulated photo upload complete.", true);
       }, 1200);
@@ -409,7 +409,7 @@
     function saveProfile(e) {
       e.preventDefault();
       const btn = document.getElementById("btn-save-profile");
-      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...`;
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#0a0a0a]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...`;
       btn.disabled = true;
 
       setTimeout(() => {
@@ -423,7 +423,7 @@
     function saveSecurity(e) {
       e.preventDefault();
       const btn = document.getElementById("btn-save-security");
-      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Updating...`;
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#0a0a0a]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Updating...`;
       btn.disabled = true;
 
       setTimeout(() => {
@@ -437,7 +437,7 @@
     function savePreferences(e) {
       e.preventDefault();
       const btn = document.getElementById("btn-save-pref");
-      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Appending...`;
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#0a0a0a]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Appending...`;
       btn.disabled = true;
 
       setTimeout(() => {
@@ -451,7 +451,7 @@
     function saveNotifications(e) {
       e.preventDefault();
       const btn = document.getElementById("btn-save-ntf");
-      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Applying...`;
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#0a0a0a]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Applying...`;
       btn.disabled = true;
 
       setTimeout(() => {
