@@ -24,3 +24,6 @@ Thumbs.db
 
 # Local logs
 *.log
+
+# Reference documentation — kept in Drive, not versioned (~17MB)
+docs/
