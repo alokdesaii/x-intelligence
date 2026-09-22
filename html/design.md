@@ -27,7 +27,10 @@ The portal has two distinct front-ends sharing a common design system:
 ### 2.1 Brand Identity Principles
 - **Brand name in UI:** "X-Intelligence" (product), "Xirni" or "Xirni" (company)
 - **Tone:** Professional, authoritative, data-dense but clean. Compliance software must inspire trust.
-- **Mode:** Light mode primary. Dark mode tokens also defined below (use for future dark mode support).
+- **Mode:** **Light mode only.** Decided Sept 2026 — the portal ships light-mode-only and no dark
+  mode is planned for v1. Reference tools in this category (LSEG World-Check) are light-only, and
+  analysts work dense tables in lit offices. Dark tokens remain defined in §2.4 as reference, but
+  nothing in the build consumes them — see the warning there before using them.
 - **Density:** Compact / high. Tables, filters, and data grids are core to the UX — avoid over-whitespace. Prefer **smaller fonts (13px body, 11px table headers)** and **semibold** labels + key data cells. Form/field labels 13px semibold; option/control labels 13px; tight table rows (`py-2`). This dense, sharp treatment is the standing direction — apply it to every new screen.
 - **Figma file key:** `afnJspYOcdwu9rpX6XoIgh` (HnH Design System) — for component reference only; all tokens are embedded below.
 
@@ -205,6 +208,18 @@ These are the tokens to reference in all components. They map from primitives ab
 ---
 
 ### 2.4 Semantic Tokens — Dark Mode
+
+> **Not implemented, and not contrast-audited.** The portal is light-mode only (§2.1). Nothing in
+> the build reads these tokens — there are no `dark:` variants, no `darkMode` Tailwind setting and
+> no theme toggle. They are kept as a starting point only.
+>
+> Two things to know before anyone builds on them:
+> 1. **These values have not been through a contrast audit.** The one token that was checked,
+>    `--brand-foreground`, was white on `#4cd2c9` at 1.85:1 — the same AA failure the light palette
+>    had before Sept 2026. Assume the rest need the same scrutiny.
+> 2. **Retrofitting is a large job.** ~5,500 hardcoded colour utilities across 19 screens. The cheap
+>    path is to convert the light palette to CSS custom properties first, so dark mode becomes one
+>    block that redefines variables rather than a `dark:` twin on every class.
 
 ```css
 [data-theme="dark"] {
