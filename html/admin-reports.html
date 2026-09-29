@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Reports | X-Intelligence</title>
+  <!-- Core Tailwind, Fonts & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="head.js"></script>
+  <script src="shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Workspace Container (32px padding per CLAUDE.md) -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+
+        <!-- Header Actions & Reports Title -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Platform Reporting &amp; Revenue Analytics</h2>
+            <p class="text-xs text-[#737373] mt-0.5">Aggregate screening volumes, billing recovery, and watchlist ingestion across every tenant</p>
+          </div>
+          <div class="flex items-center gap-2 select-none">
+            <button onclick="triggerGenerateReport()" class="h-9 px-4 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] text-xs font-semibold rounded flex items-center gap-1.5 transition-colors" id="btn-generate">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>Generate Board Report</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Aggregate Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Screenings This Period</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5" id="val-scans">—</span>
+          </div>
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Billed Revenue (MRR)</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-[#15803d] block mt-0.5" id="val-mrr">—</span>
+          </div>
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Unresolved Alerts</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-rose-600 block mt-0.5" id="val-unresolved">—</span>
+          </div>
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Feeds In Sync</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-[#001741] block mt-0.5" id="val-feeds">—</span>
+          </div>
+        </div>
+
+        <!-- Horizontal Sub-Tabs Selection -->
+        <div class="flex border-b border-[#e5e5e5] gap-4 select-none">
+          <button onclick="switchTab('aggregate')" id="tab-aggregate" class="pb-3 px-1 border-b-2 border-teal text-navy font-semibold text-sm transition-all flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <span>Aggregate Screening</span>
+          </button>
+          <button onclick="switchTab('billing')" id="tab-billing" class="pb-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-navy font-medium text-sm transition-all flex items-center gap-2">
+            <i data-lucide="receipt" class="w-4 h-4"></i>
+            <span>Billing &amp; Usage</span>
+          </button>
+          <button onclick="switchTab('database')" id="tab-database" class="pb-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-navy font-medium text-sm transition-all flex items-center gap-2">
+            <i data-lucide="database" class="w-4 h-4"></i>
+            <span>Database Update Logs</span>
+          </button>
+        </div>
+
+        <!-- Filters Row -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] p-6">
+          <form onsubmit="applyReportFilters(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 text-xs font-semibold">
+
+            <!-- Date From -->
+            <div>
+              <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Date From</label>
+              <input type="date" id="filter-date-from" class="w-full h-9 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+            </div>
+
+            <!-- Date To -->
+            <div>
+              <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Date To</label>
+              <input type="date" id="filter-date-to" class="w-full h-9 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+            </div>
+
+            <!-- Customer -->
+            <div>
+              <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Customer Tenant</label>
+              <div class="relative">
+                <select id="filter-customer" class="w-full h-9 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                  <option value="ALL">All Customers</option>
+                </select>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#737373] absolute right-2.5 top-2.5 pointer-events-none"></i>
+              </div>
+            </div>
+
+            <!-- Plan -->
+            <div>
+              <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Plan Package</label>
+              <div class="relative">
+                <select id="filter-plan" class="w-full h-9 pl-2 pr-8 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                  <option value="ALL">All Plan Tiers</option>
+                  <option value="Enterprise Plan">Enterprise Plan</option>
+                  <option value="Growth Plan">Growth Plan</option>
+                  <option value="Basic Plan">Basic Plan</option>
+                </select>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#737373] absolute right-2.5 top-2.5 pointer-events-none"></i>
+              </div>
+            </div>
+
+            <!-- Filter buttons -->
+            <div class="flex items-end gap-2">
+              <button type="submit" class="h-9 flex-1 bg-[#001741] hover:bg-[#000f33] text-white font-semibold rounded flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                <span>Filter Logs</span>
+              </button>
+              <button type="button" onclick="resetReportFilters()" class="h-9 px-3 border border-gray-300 hover:bg-gray-50 text-gray-600 rounded transition-all">
+                Reset
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Table Results Card -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] overflow-hidden" id="report-card-container">
+
+          <!-- Table Toolbar -->
+          <div class="p-4 border-b border-[#e5e5e5] bg-gray-50 flex items-center justify-between shrink-0 select-none">
+            <span class="text-xs font-semibold text-gray-900 uppercase" id="table-logs-title">Aggregate Screening Volumes</span>
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-[#737373] font-semibold" id="table-logs-count">—</span>
+              <button onclick="exportCurrentView()" class="h-7 px-2.5 border border-gray-300 hover:bg-white text-gray-600 text-[11px] font-semibold rounded flex items-center gap-1 transition-colors">
+                <i data-lucide="download" class="w-3.5 h-3.5 text-gray-500"></i> Export View
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="reports-table">
+              <thead id="reports-thead"></thead>
+              <tbody class="divide-y divide-[#e5e5e5] text-xs text-gray-700 font-medium" id="reports-tbody"></tbody>
+              <tfoot id="reports-tfoot" class="bg-gray-50 border-t-2 border-[#e5e5e5] text-xs font-bold text-gray-900"></tfoot>
+            </table>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    let currentTab = 'aggregate';
+
+    // ── Aggregate screening across every customer tenant (spec 6.8) ──
+    const aggregateData = [
+      { customer: "Xirni Ltd",              plan: "Enterprise Plan", scans: 18240, hits: 1284, truePct: "12.4%", unresolved: 42,  date: "2026-09-18" },
+      { customer: "Apex Global Partners",   plan: "Growth Plan",     scans: 8412,  hits: 604,  truePct: "9.1%",  unresolved: 18,  date: "2026-09-18" },
+      { customer: "Zenith Commercial Bank", plan: "Enterprise Plan", scans: 11920, hits: 988,  truePct: "14.8%", unresolved: 61,  date: "2026-09-17" },
+      { customer: "Falcon Trust Corp",      plan: "Basic Plan",      scans: 2340,  hits: 142,  truePct: "6.2%",  unresolved: 7,   date: "2026-09-16" },
+      { customer: "Lighthouse Capital",     plan: "Growth Plan",     scans: 6180,  hits: 415,  truePct: "10.7%", unresolved: 23,  date: "2026-09-15" }
+    ];
+
+    // ── Billing and usage recovery ──
+    const billingData = [
+      { customer: "Xirni Ltd",              plan: "Enterprise Plan", mrr: 12500, used: 18240, limit: 20000, overage: 0,    status: "Paid",    date: "2026-09-01" },
+      { customer: "Apex Global Partners",   plan: "Growth Plan",     mrr: 4800,  used: 8412,  limit: 8000,  overage: 330,  status: "Paid",    date: "2026-09-01" },
+      { customer: "Zenith Commercial Bank", plan: "Enterprise Plan", mrr: 9500,  used: 11920, limit: 15000, overage: 0,    status: "Overdue", date: "2026-09-01" },
+      { customer: "Falcon Trust Corp",      plan: "Basic Plan",      mrr: 1200,  used: 2340,  limit: 2500,  overage: 0,    status: "Paid",    date: "2026-09-01" },
+      { customer: "Lighthouse Capital",     plan: "Growth Plan",     mrr: 4800,  used: 6180,  limit: 8000,  overage: 0,    status: "Pending", date: "2026-09-15" }
+    ];
+
+    // ── Watchlist ingestion logs (platform-wide) ──
+    const dbLogData = [
+      { feed: "OFAC Consolidated Sanctions", provider: "US Treasury Dept",        status: "Success", records: 124563, ins: 114, del: 42, date: "2026-09-18" },
+      { feed: "UN Security Council Lists",   provider: "United Nations",          status: "Success", records: 345645, ins: 48,  del: 12, date: "2026-09-18" },
+      { feed: "EU Asset Freeze Register",    provider: "European Union Council",  status: "Success", records: 45345,  ins: 300, del: 200,date: "2026-09-17" },
+      { feed: "UK HMT Sanctions List",       provider: "HM Treasury",             status: "Success", records: 56456,  ins: 22,  del: 8,  date: "2026-09-17" },
+      { feed: "LexisNexis World-Check",      provider: "LSEG / Refinitiv",        status: "Failed",  records: 0,      ins: 0,   del: 0,  date: "2026-09-16" }
+    ];
+
+    // Populate the customer filter from the data itself
+    (function initCustomerFilter() {
+      const sel = document.getElementById('filter-customer');
+      [...new Set(aggregateData.map(r => r.customer))].sort().forEach(c => {
+        const o = document.createElement('option');
+        o.value = c; o.textContent = c;
+        sel.appendChild(o);
+      });
+    })();
+
+    const money = (n) => '$' + n.toLocaleString();
+
+    // ── Tabs ──
+    function switchTab(tabId) {
+      currentTab = tabId;
+      ['aggregate', 'billing', 'database'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        btn.className = (t === tabId)
+          ? "pb-3 px-1 border-b-2 border-teal text-navy font-semibold text-sm transition-all flex items-center gap-2"
+          : "pb-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-navy font-medium text-sm transition-all flex items-center gap-2";
+      });
+      renderTable();
+    }
+
+    // ── Table rendering ──
+    function renderTable(dataOverride = null) {
+      const thead = document.getElementById("reports-thead");
+      const tbody = document.getElementById("reports-tbody");
+      const tfoot = document.getElementById("reports-tfoot");
+      const title = document.getElementById("table-logs-title");
+      const countLabel = document.getElementById("table-logs-count");
+
+      let headHtml = "", bodyHtml = "", footHtml = "", dataList = [];
+
+      if (currentTab === 'aggregate') {
+        title.innerText = "Aggregate Screening Volumes";
+        dataList = dataOverride || aggregateData;
+        countLabel.innerText = `Showing ${dataList.length} customer tenants`;
+
+        headHtml = `
+          <tr class="bg-gray-50 border-b border-[#e5e5e5] text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <th class="py-3 px-4">Customer Tenant</th>
+            <th class="py-3 px-4 w-36">Plan Package</th>
+            <th class="py-3 px-4 text-right w-32">Screenings</th>
+            <th class="py-3 px-4 text-right w-28">Watchlist Hits</th>
+            <th class="py-3 px-4 text-right w-28">True Match %</th>
+            <th class="py-3 px-4 text-center w-32">Unresolved</th>
+            <th class="py-3 px-4 font-mono text-right w-32">Last Activity</th>
+            <th class="py-3 px-4 text-right w-24">Export</th>
+          </tr>`;
+
+        bodyHtml = dataList.map(r => `
+          <tr class="hover:bg-gray-50 h-[52px]">
+            <td class="px-4 font-semibold text-gray-900">${r.customer}</td>
+            <td class="px-4"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">${r.plan}</span></td>
+            <td class="px-4 text-right font-mono text-gray-800 font-semibold">${r.scans.toLocaleString()}</td>
+            <td class="px-4 text-right font-mono text-gray-600">${r.hits.toLocaleString()}</td>
+            <td class="px-4 text-right font-mono text-gray-600">${r.truePct}</td>
+            <td class="px-4 text-center">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${r.unresolved > 40 ? 'bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20' : 'bg-gray-100 text-gray-600 border border-gray-200'}">${r.unresolved}</span>
+            </td>
+            <td class="px-4 font-mono text-right text-[#737373] text-[10px]">${r.date}</td>
+            <td class="px-4 text-right select-none">
+              <div class="flex items-center justify-end gap-1">
+                <button onclick="downloadReport('${r.customer}', 'PDF')" title="Download PDF Report" aria-label="Download PDF report" class="p-1 hover:bg-red-50 rounded text-[#b91c1c] transition-colors">
+                  ${FORMAT_ICONS.pdf}
+                </button>
+                <button onclick="downloadReport('${r.customer}', 'Excel')" title="Download Excel Sheet" aria-label="Download Excel sheet" class="p-1 hover:bg-green-50 rounded text-[#15803d] transition-colors">
+                  ${FORMAT_ICONS.xlsx}
+                </button>
+              </div>
+            </td>
+          </tr>`).join('');
+
+        if (dataList.length) {
+          const tScans = dataList.reduce((s, r) => s + r.scans, 0);
+          const tHits  = dataList.reduce((s, r) => s + r.hits, 0);
+          const tUnres = dataList.reduce((s, r) => s + r.unresolved, 0);
+          footHtml = `
+            <tr class="h-11">
+              <td class="px-4" colspan="2">Platform Total</td>
+              <td class="px-4 text-right font-mono">${tScans.toLocaleString()}</td>
+              <td class="px-4 text-right font-mono">${tHits.toLocaleString()}</td>
+              <td class="px-4 text-right font-mono text-[#737373]">—</td>
+              <td class="px-4 text-center font-mono text-[#b91c1c]">${tUnres}</td>
+              <td class="px-4" colspan="2"></td>
+            </tr>`;
+        }
+
+      } else if (currentTab === 'billing') {
+        title.innerText = "Billing Recovery & Usage Against Contract";
+        dataList = dataOverride || billingData;
+        countLabel.innerText = `Showing ${dataList.length} billing records`;
+
+        headHtml = `
+          <tr class="bg-gray-50 border-b border-[#e5e5e5] text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <th class="py-3 px-4">Customer Tenant</th>
+            <th class="py-3 px-4 w-36">Plan Package</th>
+            <th class="py-3 px-4 text-right w-28">Monthly MRR</th>
+            <th class="py-3 px-4 w-44">Usage vs Contract</th>
+            <th class="py-3 px-4 text-right w-28">Overage Due</th>
+            <th class="py-3 px-4 text-center w-28">Invoice</th>
+            <th class="py-3 px-4 font-mono text-right w-32">Billing Date</th>
+            <th class="py-3 px-4 text-right w-24">Export</th>
+          </tr>`;
+
+        const invoiceBadge = {
+          'Paid':    'bg-[#dcfce7] text-[#166534] border-[#22c55e]/20',
+          'Pending': 'bg-[#fef3c7] text-[#b45309] border-[#f59e0b]/20',
+          'Overdue': 'bg-[#fee2e2] text-[#b91c1c] border-[#ef4444]/20'
+        };
+
+        bodyHtml = dataList.map(r => {
+          const pct = Math.round((r.used / r.limit) * 100);
+          const over = pct > 100;
+          return `
+          <tr class="hover:bg-gray-50 h-[52px]">
+            <td class="px-4 font-semibold text-gray-900">${r.customer}</td>
+            <td class="px-4"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">${r.plan}</span></td>
+            <td class="px-4 text-right font-mono text-gray-800 font-semibold">${money(r.mrr)}</td>
+            <td class="px-4">
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full ${over ? 'bg-[#ef4444]' : 'bg-teal'}" style="width:${Math.min(pct, 100)}%"></div>
+                </div>
+                <span class="font-mono text-[10px] ${over ? 'text-[#b91c1c] font-bold' : 'text-gray-500'} shrink-0">${pct}%</span>
+              </div>
+              <span class="font-mono text-[9px] text-[#737373]">${r.used.toLocaleString()} / ${r.limit.toLocaleString()}</span>
+            </td>
+            <td class="px-4 text-right font-mono ${r.overage > 0 ? 'text-[#b91c1c] font-bold' : 'text-[#737373]'}">${r.overage > 0 ? money(r.overage) : '—'}</td>
+            <td class="px-4 text-center">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${invoiceBadge[r.status]}">${r.status}</span>
+            </td>
+            <td class="px-4 font-mono text-right text-[#737373] text-[10px]">${r.date}</td>
+            <td class="px-4 text-right select-none">
+              <div class="flex items-center justify-end gap-1">
+                <button onclick="downloadReport('${r.customer}', 'PDF')" title="Download Invoice PDF" aria-label="Download invoice PDF" class="p-1 hover:bg-red-50 rounded text-[#b91c1c] transition-colors">
+                  ${FORMAT_ICONS.pdf}
+                </button>
+                <button onclick="downloadReport('${r.customer}', 'Excel')" title="Download Excel Sheet" aria-label="Download Excel sheet" class="p-1 hover:bg-green-50 rounded text-[#15803d] transition-colors">
+                  ${FORMAT_ICONS.xlsx}
+                </button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+
+        if (dataList.length) {
+          const tMrr = dataList.reduce((s, r) => s + r.mrr, 0);
+          const tOver = dataList.reduce((s, r) => s + r.overage, 0);
+          footHtml = `
+            <tr class="h-11">
+              <td class="px-4" colspan="2">Platform Total</td>
+              <td class="px-4 text-right font-mono text-[#15803d]">${money(tMrr)}</td>
+              <td class="px-4"></td>
+              <td class="px-4 text-right font-mono ${tOver > 0 ? 'text-[#b91c1c]' : 'text-[#737373]'}">${tOver > 0 ? money(tOver) : '—'}</td>
+              <td class="px-4" colspan="3"></td>
+            </tr>`;
+        }
+
+      } else if (currentTab === 'database') {
+        title.innerText = "Watchlist Database Update Logs";
+        dataList = dataOverride || dbLogData;
+        countLabel.innerText = `Showing ${dataList.length} ingestion runs`;
+
+        headHtml = `
+          <tr class="bg-gray-50 border-b border-[#e5e5e5] text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <th class="py-3 px-4">Watchlist Feed</th>
+            <th class="py-3 px-4">Source Provider</th>
+            <th class="py-3 px-4 w-28 text-center">Status</th>
+            <th class="py-3 px-4 text-right w-32">Total Records</th>
+            <th class="py-3 px-4 text-right w-24">Insertions</th>
+            <th class="py-3 px-4 text-right w-24">Deletions</th>
+            <th class="py-3 px-4 font-mono text-right w-32">Last Refreshed</th>
+            <th class="py-3 px-4 text-right w-24">Actions</th>
+          </tr>`;
+
+        bodyHtml = dataList.map(r => {
+          const ok = r.status === 'Success';
+          return `
+          <tr class="hover:bg-gray-50 h-[52px] ${ok ? '' : 'bg-[#fef2f2]/40'}">
+            <td class="px-4 font-semibold text-gray-900">${r.feed}</td>
+            <td class="px-4 text-gray-600 font-medium">${r.provider}</td>
+            <td class="px-4 text-center">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${ok ? 'bg-[#ebfbf5] text-[#005f59] border border-[#9df0cc]' : 'bg-[#fee2e2] text-[#b91c1c] border border-[#ef4444]/20'}">
+                <span class="w-1.5 h-1.5 rounded-full ${ok ? 'bg-[#00dc8d]' : 'bg-[#ef4444]'}"></span>
+                ${r.status}
+              </span>
+            </td>
+            <td class="px-4 text-right font-mono text-gray-800 font-semibold">${ok ? r.records.toLocaleString() : '—'}</td>
+            <td class="px-4 text-right font-mono ${ok ? 'text-[#15803d]' : 'text-gray-300'}">${ok ? '+' + r.ins : '—'}</td>
+            <td class="px-4 text-right font-mono ${ok ? 'text-[#b91c1c]' : 'text-gray-300'}">${ok ? '-' + r.del : '—'}</td>
+            <td class="px-4 font-mono text-right text-[#737373] text-[10px]">${r.date}</td>
+            <td class="px-4 text-right select-none">
+              ${ok
+                ? `<button onclick="downloadReport('${r.feed}', 'Excel')" title="Download Sync Manifest" aria-label="Download sync manifest as Excel" class="p-1 hover:bg-green-50 rounded text-[#15803d] transition-colors">${FORMAT_ICONS.xlsx}</button>`
+                : `<button onclick="retryFeed('${r.feed}')" class="text-[11px] font-semibold text-[#007c74] hover:underline">Retry Sync</button>`}
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      thead.innerHTML = headHtml;
+      tfoot.innerHTML = footHtml;
+      tbody.innerHTML = bodyHtml || `
+        <tr>
+          <td colspan="10" class="py-12 text-center text-[#737373] font-semibold uppercase">
+            <i data-lucide="folder-search" class="w-10 h-10 text-gray-300 mx-auto mb-3"></i>
+            No matching report records located
+          </td>
+        </tr>`;
+
+      refreshMetrics();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // Headline metrics always reflect the whole platform, not the filtered view
+    function refreshMetrics() {
+      document.getElementById('val-scans').innerText = aggregateData.reduce((s, r) => s + r.scans, 0).toLocaleString();
+      document.getElementById('val-mrr').innerText = money(billingData.reduce((s, r) => s + r.mrr, 0));
+      document.getElementById('val-unresolved').innerText = aggregateData.reduce((s, r) => s + r.unresolved, 0) + ' Alerts';
+      const ok = dbLogData.filter(r => r.status === 'Success').length;
+      document.getElementById('val-feeds').innerText = `${ok} / ${dbLogData.length} Feeds`;
+    }
+
+    // ── Filtering ──
+    function applyReportFilters(e) {
+      e.preventDefault();
+
+      const from = document.getElementById("filter-date-from").value;
+      const to = document.getElementById("filter-date-to").value;
+      const customer = document.getElementById("filter-customer").value;
+      const plan = document.getElementById("filter-plan").value;
+
+      const source = currentTab === 'aggregate' ? aggregateData
+                   : currentTab === 'billing'   ? billingData
+                   : dbLogData;
+
+      const filtered = source.filter(r => {
+        // Customer and plan only exist on the tenant-scoped tabs
+        if (customer !== 'ALL' && r.customer && r.customer !== customer) return false;
+        if (plan !== 'ALL' && r.plan && r.plan !== plan) return false;
+        if (from && r.date < from) return false;
+        if (to && r.date > to) return false;
+        return true;
+      });
+
+      renderTable(filtered);
+      showToast(`Logs filtered. Found ${filtered.length} matching entries.`);
+    }
+
+    function resetReportFilters() {
+      document.getElementById("filter-date-from").value = "";
+      document.getElementById("filter-date-to").value = "";
+      document.getElementById("filter-customer").value = "ALL";
+      document.getElementById("filter-plan").value = "ALL";
+      renderTable();
+    }
+
+    // ── Exports ──
+    function downloadReport(ref, format) {
+      showToast(`Initiating download: ${ref.replace(/\s+/g, '_')}.${format === 'PDF' ? 'pdf' : 'xlsx'}...`);
+    }
+
+    function exportCurrentView() {
+      const rows = document.querySelectorAll('#reports-tbody tr').length;
+      showToast(`Exporting ${rows} rows from the current view to Excel...`);
+    }
+
+    function retryFeed(feed) {
+      const row = dbLogData.find(r => r.feed === feed);
+      showToast(`Re-queued ingestion for ${feed}. Monitoring for completion...`);
+      setTimeout(() => {
+        row.status = 'Success';
+        row.records = 2841902;
+        row.ins = 1429;
+        row.del = 63;
+        renderTable();
+        showToast(`${feed} sync recovered — 1,429 records ingested.`);
+      }, 1600);
+    }
+
+    function triggerGenerateReport() {
+      const btn = document.getElementById("btn-generate");
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#0a0a0a]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Compiling...`;
+      btn.disabled = true;
+
+      showToast("Compiling platform-wide screening, billing, and ingestion metrics...");
+
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="file-text" class="w-4 h-4"></i> <span>Generate Board Report</span>`;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons();
+        showToast("Board report generated. Triggering browser download.");
+      }, 2000);
+    }
+
+    switchTab('aggregate');
+  </script>
+</body>
+</html>

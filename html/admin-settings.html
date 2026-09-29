@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Settings | X-Intelligence</title>
+  <!-- Core Tailwind, Fonts & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="head.js"></script>
+  <script src="shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Workspace Container (32px padding per CLAUDE.md) -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+
+        <!-- Header Info -->
+        <div>
+          <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">System Configuration &amp; Platform Governance</h2>
+          <p class="text-xs text-[#737373] mt-0.5">Global parameters applied across every customer tenant — OTP policy, session locks, and dispatch rules</p>
+        </div>
+
+        <!-- Settings Split Layout -->
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+
+          <!-- Left Settings Sub-Nav (white card, border only) -->
+          <div class="w-full md:w-52 bg-white border border-[#e5e5e5] rounded-xl overflow-hidden shrink-0 select-none">
+            <nav class="flex md:flex-col p-2 gap-1 text-xs font-semibold">
+
+              <!-- System -->
+              <button onclick="switchSettingsTab('system')" id="subnav-system" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 bg-teal-light text-navy transition-colors">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+                <span>System Config</span>
+              </button>
+
+              <!-- Authentication -->
+              <button onclick="switchSettingsTab('auth')" id="subnav-auth" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors">
+                <i data-lucide="key-round" class="w-4 h-4"></i>
+                <span>OTP &amp; Auth Policy</span>
+              </button>
+
+              <!-- Sessions -->
+              <button onclick="switchSettingsTab('session')" id="subnav-session" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors">
+                <i data-lucide="timer" class="w-4 h-4"></i>
+                <span>Session Control</span>
+              </button>
+
+              <!-- Notification Rules -->
+              <button onclick="switchSettingsTab('rules')" id="subnav-rules" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors">
+                <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                <span>Notification Rules</span>
+              </button>
+
+            </nav>
+          </div>
+
+          <!-- Right Content Renders Forms (flex-1) -->
+          <div class="flex-1 w-full bg-white border border-[#e5e5e5] rounded-xl p-6 min-h-[420px] relative">
+
+            <!-- SECTION 1: SYSTEM CONFIGURATION -->
+            <div id="section-system" class="space-y-6">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Platform System Configuration</h3>
+                <p class="text-xs text-[#737373] mt-0.5">Deployment identity, regulatory defaults, and platform-wide operating state</p>
+              </div>
+
+              <form onsubmit="saveSystem(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Platform display name -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Platform Display Name <span class="text-[#b91c1c]">*</span></label>
+                    <input type="text" required value="X-Intelligence" id="sys-name" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+                  </div>
+                  <!-- Operator entity (read-only) -->
+                  <div>
+                    <label class="block mb-1 text-[#737373]">Operating Entity (Read-only)</label>
+                    <input type="text" readonly value="Xirni Limited" class="w-full h-10 px-3 border border-gray-200 bg-gray-50 text-[#737373] cursor-not-allowed rounded focus:outline-none font-mono">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Default jurisdiction -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Default Regulatory Jurisdiction</label>
+                    <div class="relative">
+                      <select id="sys-jurisdiction" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                        <option value="FCA">FCA — United Kingdom</option>
+                        <option value="MAS">MAS — Singapore</option>
+                        <option value="FINRA">FINRA — United States</option>
+                        <option value="SFC">SFC — Hong Kong</option>
+                        <option value="DFSA">DFSA — United Arab Emirates</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                  <!-- Audit retention -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Audit Log Retention Period</label>
+                    <div class="relative">
+                      <select id="sys-retention" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                        <option value="12">12 Months</option>
+                        <option value="60" selected>60 Months (5 Years — AML Standard)</option>
+                        <option value="84">84 Months (7 Years)</option>
+                        <option value="0">Indefinite Retention</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Support contact -->
+                <div class="max-w-md">
+                  <label class="block mb-1 text-gray-500">Support Escalation Mailbox</label>
+                  <input type="email" value="compliance.support@xirni.com" id="sys-support" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                </div>
+
+                <!-- Maintenance mode -->
+                <div class="border rounded-xl p-4 bg-gray-50 flex items-center justify-between">
+                  <div class="space-y-1">
+                    <h4 class="text-xs text-gray-900 font-bold flex items-center gap-1">
+                      <i data-lucide="construction" class="w-4 h-4 text-[#b45309]"></i>
+                      Platform Maintenance Mode
+                    </h4>
+                    <p class="text-[11px] text-gray-500 font-normal">Suspends all customer screening sessions and displays a scheduled downtime notice</p>
+                  </div>
+                  <button type="button" onclick="toggleBtn('btn-sys-maint')" id="btn-sys-maint" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-gray-300 bg-white text-gray-500 flex items-center gap-1">
+                    <i data-lucide="x" class="w-4 h-4"></i> Disabled
+                  </button>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex justify-end">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-system">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Save System Config</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- SECTION 2: OTP & AUTH POLICY -->
+            <div id="section-auth" class="space-y-6 hidden">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">One-Time Password &amp; Authorization Policy</h3>
+                <p class="text-xs text-[#737373] mt-0.5">MFA delivery channel, code lifetime, and brute-force lockout thresholds for all tenants</p>
+              </div>
+
+              <!-- Enforce MFA globally -->
+              <div class="border rounded-xl p-4 bg-gray-50 flex items-center justify-between">
+                <div class="space-y-1">
+                  <h4 class="text-xs text-gray-900 font-bold flex items-center gap-1">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-[#007c74]"></i>
+                    Enforce MFA Across All Tenants
+                  </h4>
+                  <p class="text-[11px] text-gray-500 font-normal">Overrides individual user preference — every login must clear a second factor</p>
+                </div>
+                <button type="button" onclick="toggleBtn('btn-auth-mfa')" id="btn-auth-mfa" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
+                  <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                </button>
+              </div>
+
+              <form onsubmit="saveAuth(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- OTP delivery -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">OTP Delivery Channel</label>
+                    <div class="relative">
+                      <select id="auth-channel" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                        <option value="totp">Authenticator App (TOTP)</option>
+                        <option value="email">Corporate Email Dispatch</option>
+                        <option value="both">Either — User Elects at Enrollment</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                  <!-- OTP length -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Verification Code Length</label>
+                    <div class="relative">
+                      <select id="auth-length" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                        <option value="6">6 Digits (Default)</option>
+                        <option value="8">8 Digits (Elevated)</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- OTP validity window -->
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <label class="text-gray-500">OTP Validity Window</label>
+                    <span class="font-mono text-[#007c74] text-sm" id="auth-validity-val">90 Seconds</span>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="text-[10px] text-[#737373]">30s (Strict)</span>
+                    <input type="range" min="30" max="300" step="30" value="90" id="auth-validity" oninput="updateValidity(this.value)" class="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal">
+                    <span class="text-[10px] text-[#737373]">300s (Lenient)</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-100 pt-4">
+                  <!-- Failed attempts -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Failed Attempts Before Lockout</label>
+                    <input type="number" min="1" max="10" value="5" id="auth-attempts" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                  </div>
+                  <!-- Lockout duration -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Account Lockout Duration (Minutes)</label>
+                    <input type="number" min="5" max="1440" value="30" id="auth-lockout" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                  </div>
+                </div>
+
+                <!-- Password rotation -->
+                <div class="max-w-xs">
+                  <label class="block mb-1 text-gray-500">Mandatory Password Rotation</label>
+                  <div class="relative">
+                    <select id="auth-rotation" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                      <option value="90" selected>Every 90 Days</option>
+                      <option value="180">Every 180 Days</option>
+                      <option value="365">Annually</option>
+                      <option value="0">Never Expire (Not Recommended)</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                  </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex justify-end">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-auth">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Apply Auth Policy</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- SECTION 3: SESSION CONTROL -->
+            <div id="section-session" class="space-y-6 hidden">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Session Lifecycle Control</h3>
+                <p class="text-xs text-[#737373] mt-0.5">Inactivity locks, absolute session ceilings, and concurrent device restrictions</p>
+              </div>
+
+              <form onsubmit="saveSession(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Customer timeout -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Customer Portal Inactivity Timeout</label>
+                    <div class="relative">
+                      <select id="sess-customer" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                        <option value="15" selected>15 Minutes (Default)</option>
+                        <option value="30">30 Minutes</option>
+                        <option value="60">60 Minutes</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                  <!-- Admin timeout -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Admin Console Inactivity Timeout</label>
+                    <div class="relative">
+                      <select id="sess-admin" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                        <option value="10" selected>10 Minutes (Elevated Privilege)</option>
+                        <option value="15">15 Minutes</option>
+                        <option value="30">30 Minutes</option>
+                      </select>
+                      <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Absolute lifetime -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Absolute Session Lifetime (Hours)</label>
+                    <input type="number" min="1" max="24" value="8" id="sess-lifetime" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                  </div>
+                  <!-- Concurrent sessions -->
+                  <div>
+                    <label class="block mb-1 text-gray-500">Max Concurrent Sessions Per User</label>
+                    <input type="number" min="1" max="10" value="2" id="sess-concurrent" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+                  </div>
+                </div>
+
+                <!-- IP allowlist toggle -->
+                <div class="border rounded-xl p-4 bg-gray-50 flex items-center justify-between">
+                  <div class="space-y-1">
+                    <h4 class="text-xs text-gray-900 font-bold flex items-center gap-1">
+                      <i data-lucide="network" class="w-4 h-4 text-[#007c74]"></i>
+                      Restrict Admin Console by IP Allowlist
+                    </h4>
+                    <p class="text-[11px] text-gray-500 font-normal">Admin sessions may only originate from the corporate ranges listed below</p>
+                  </div>
+                  <button type="button" onclick="toggleBtn('btn-sess-ip')" id="btn-sess-ip" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
+                    <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                  </button>
+                </div>
+
+                <!-- Allowlist ranges -->
+                <div>
+                  <label class="block mb-1 text-gray-500">Permitted CIDR Ranges (one per line)</label>
+                  <textarea id="sess-cidr" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono text-[11px] font-normal">203.0.113.0/24
+198.51.100.32/27</textarea>
+                </div>
+
+                <!-- Force logout -->
+                <div class="border-t border-gray-100 pt-4 flex justify-between items-center">
+                  <button type="button" onclick="forceLogoutAll()" class="h-10 px-4 border border-red-300 text-red-700 hover:bg-red-50 rounded transition-colors uppercase tracking-wider flex items-center gap-1.5">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Terminate All Active Sessions</span>
+                  </button>
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-session">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Save Session Rules</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- SECTION 4: NOTIFICATION RULES -->
+            <div id="section-rules" class="space-y-6 hidden">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Platform Notification Rules</h3>
+                <p class="text-xs text-[#737373] mt-0.5">Automated dispatch triggers for renewals, billing failures, and lapsed screening coverage</p>
+              </div>
+
+              <form onsubmit="saveRules(event)" class="space-y-5 text-xs font-semibold text-gray-700">
+
+                <!-- Renewal reminder lead time -->
+                <div class="max-w-xs">
+                  <label class="block mb-1 text-gray-500">Renewal Reminder Lead Time</label>
+                  <div class="relative">
+                    <select id="rule-renewal" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+                      <option value="14">14 Days Before Expiry</option>
+                      <option value="30" selected>30 Days Before Expiry</option>
+                      <option value="60">60 Days Before Expiry</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+                  </div>
+                </div>
+
+                <div class="space-y-4 border-t border-gray-100 pt-4">
+
+                  <!-- Rule 1: Renewal reminders -->
+                  <div class="flex items-center justify-between pb-3 border-b border-gray-50">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">Subscription Renewal Reminders</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Notify the assigned admin and client contact ahead of every plan expiry</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-rule-1')" id="btn-rule-1" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
+                      <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                    </button>
+                  </div>
+
+                  <!-- Rule 2: Failed payments -->
+                  <div class="flex items-center justify-between pb-3 border-b border-gray-50">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">Failed Payment Alerts</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Immediate escalation to billing when a subscription charge is declined</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-rule-2')" id="btn-rule-2" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
+                      <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                    </button>
+                  </div>
+
+                  <!-- Rule 3: Lapsed screening -->
+                  <div class="flex items-center justify-between pb-3 border-b border-gray-50">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">Lapsed Screening Coverage Warnings</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Flag tenants whose ongoing monitoring has not run within its scheduled cycle</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-rule-3')" id="btn-rule-3" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
+                      <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                    </button>
+                  </div>
+
+                  <!-- Rule 4: Watchlist sync failure -->
+                  <div class="flex items-center justify-between pb-3 border-b border-gray-50">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">Watchlist Sync Failure Notices</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Alert operations when an OFAC/EU/UN feed misses its scheduled refresh</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-rule-4')" id="btn-rule-4" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1">
+                      <i data-lucide="check" class="w-4 h-4"></i> Enabled
+                    </button>
+                  </div>
+
+                  <!-- Rule 5: Usage cap breach -->
+                  <div class="flex items-center justify-between pb-3">
+                    <div>
+                      <h4 class="text-xs text-gray-900 font-bold mb-0.5">Usage Cap Breach Warnings</h4>
+                      <p class="text-[11px] text-gray-500 font-normal">Dispatch when a tenant crosses 90% of its contracted monthly scan allowance</p>
+                    </div>
+                    <button type="button" onclick="toggleBtn('btn-rule-5')" id="btn-rule-5" class="h-9 px-4 rounded-lg font-semibold border transition-colors border-gray-300 bg-white text-gray-500 flex items-center gap-1">
+                      <i data-lucide="x" class="w-4 h-4"></i> Disabled
+                    </button>
+                  </div>
+
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex justify-end">
+                  <button type="submit" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] rounded transition-colors uppercase tracking-wider flex items-center gap-1.5" id="btn-save-rules">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Apply Notification Rules</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    // Tab switching engine
+    function switchSettingsTab(tabId) {
+      const tabs = ['system', 'auth', 'session', 'rules'];
+
+      tabs.forEach(t => {
+        const btn = document.getElementById(`subnav-${t}`);
+        const sect = document.getElementById(`section-${t}`);
+
+        if (t === tabId) {
+          btn.className = "w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 bg-teal-light text-navy transition-colors";
+          sect.classList.remove("hidden");
+        } else {
+          btn.className = "w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-2 text-gray-500 hover:text-navy hover:bg-gray-50 transition-colors";
+          sect.classList.add("hidden");
+        }
+      });
+    }
+
+    // Dynamic slider indicator
+    function updateValidity(val) {
+      document.getElementById("auth-validity-val").innerText = `${val} Seconds`;
+    }
+
+    // Dynamic button state toggling
+    function toggleBtn(btnId) {
+      const btn = document.getElementById(btnId);
+      const isEnabled = btn.textContent.trim().includes("Enabled");
+
+      if (isEnabled) {
+        btn.className = "h-9 px-4 rounded-lg font-semibold border transition-colors border-gray-300 bg-white text-gray-500 flex items-center gap-1";
+        btn.innerHTML = `<i data-lucide="x" class="w-4 h-4"></i> Disabled`;
+      } else {
+        btn.className = "h-9 px-4 rounded-lg font-semibold border transition-colors border-[#9df0cc] bg-[#ebfbf5] text-[#005f59] flex items-center gap-1";
+        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Enabled`;
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // Shared save handler with feedback spinner
+    function submitWithSpinner(e, btnId, pendingLabel, restoreLabel, toastMsg) {
+      e.preventDefault();
+      const btn = document.getElementById(btnId);
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> ${pendingLabel}`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> <span>${restoreLabel}</span>`;
+        btn.disabled = false;
+        if (window.lucide) window.lucide.createIcons();
+        showToast(toastMsg);
+      }, 1000);
+    }
+
+    function saveSystem(e) {
+      submitWithSpinner(e, "btn-save-system", "Saving...", "Save System Config", "Platform system configuration saved.");
+    }
+
+    function saveAuth(e) {
+      submitWithSpinner(e, "btn-save-auth", "Applying...", "Apply Auth Policy", "OTP and authorization policy applied to all tenants.");
+    }
+
+    function saveSession(e) {
+      submitWithSpinner(e, "btn-save-session", "Saving...", "Save Session Rules", "Session lifecycle rules updated.");
+    }
+
+    function saveRules(e) {
+      submitWithSpinner(e, "btn-save-rules", "Applying...", "Apply Notification Rules", "Notification dispatch rules synced.");
+    }
+
+    // Force logout of every active session
+    function forceLogoutAll() {
+      showToast("All active sessions terminated. Users must re-authenticate.");
+    }
+  </script>
+</body>
+</html>

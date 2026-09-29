@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Manager | X-Intelligence</title>
+  <!-- Core Tailwind, Fonts & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="head.js"></script>
+  <script src="shell.js" defer></script>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Active support-mode banner (hidden until impersonation starts) -->
+      <div id="support-banner" class="hidden bg-[#fef3c7] border-b border-[#f59e0b]/40 px-8 py-2.5 items-center justify-between shrink-0 select-none">
+        <div class="flex items-center gap-2 text-[#78350f]">
+          <i data-lucide="eye" class="w-4 h-4 shrink-0"></i>
+          <span class="text-xs font-semibold">
+            Support impersonation active — viewing the portal as
+            <span class="font-bold" id="support-who">—</span>
+            <span class="font-mono text-[11px]">(<span id="support-company">—</span>)</span>. All actions are attributed to your admin account in the audit log.
+          </span>
+        </div>
+        <button onclick="exitSupportMode()" class="h-7 px-3 bg-[#78350f] hover:bg-[#5a2709] text-white text-[11px] font-semibold rounded flex items-center gap-1 transition-colors shrink-0">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Exit Support Mode
+        </button>
+      </div>
+
+      <!-- Page Content Area -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+
+        <!-- Metrics Summary Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Total End Users</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-[#0a0a0a] block mt-0.5" id="val-total-users">— Users</span>
+          </div>
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Customer Companies</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-[#001741] block mt-0.5" id="val-companies">— Tenants</span>
+          </div>
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Locked / Suspended</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-rose-600 block mt-0.5" id="val-locked">— Accounts</span>
+          </div>
+          <div class="bg-white rounded-xl border border-[#e5e5e5] p-5">
+            <span class="text-[10px] font-semibold text-[#737373] uppercase tracking-wider block font-sans">Active Today</span>
+            <span class="text-xl font-semibold tracking-[-0.5px] text-gray-500 block mt-0.5" id="val-active-today">— Sessions</span>
+          </div>
+        </div>
+
+        <!-- Cross-Tenant User Directory -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] p-6">
+          <div class="flex items-center justify-between mb-4 select-none">
+            <div class="flex items-center gap-2">
+              <i data-lucide="users" class="w-4 h-4 text-[#007c74]"></i>
+              <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Cross-Tenant User Directory</h3>
+            </div>
+            <button onclick="showToast('Compiling cross-tenant user export...')" class="h-8 px-2.5 border border-gray-300 hover:bg-gray-100 text-gray-600 text-xs font-semibold rounded flex items-center gap-1 transition-colors">
+              <i data-lucide="download" class="w-4 h-4 text-gray-500"></i> Export Directory
+            </button>
+          </div>
+
+          <!-- Filter bar: search by name, email, company (spec 6.7) -->
+          <div class="flex flex-col sm:flex-row gap-2 mb-3">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="w-4 h-4 text-[#737373] absolute left-3 top-2.5 pointer-events-none"></i>
+              <input type="text" id="user-search" oninput="renderUsers()" placeholder="Search by name, email, or company..."
+                class="w-full h-9 pl-9 pr-3 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+            </div>
+            <div class="relative">
+              <select id="company-filter" onchange="renderUsers()" class="h-9 pl-3 pr-8 text-xs font-semibold border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none bg-white w-full sm:w-56">
+                <option value="all">All Customer Companies</option>
+              </select>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#737373] absolute right-2.5 top-3 pointer-events-none"></i>
+            </div>
+            <div class="relative">
+              <select id="status-filter" onchange="renderUsers()" class="h-9 pl-3 pr-8 text-xs font-semibold border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none bg-white w-full sm:w-40">
+                <option value="all">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Suspended">Suspended</option>
+                <option value="Locked">Locked</option>
+                <option value="Invited">Invited</option>
+              </select>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#737373] absolute right-2.5 top-3 pointer-events-none"></i>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto border border-[#e5e5e5] rounded-md text-xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-[#e5e5e5] text-gray-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <th class="py-2.5 px-3">End User</th>
+                  <th class="py-2.5 px-3 w-48">Customer Company</th>
+                  <th class="py-2.5 px-3 w-40">Portal Role</th>
+                  <th class="py-2.5 px-3 w-28 font-mono">Last Active</th>
+                  <th class="py-2.5 px-3 w-24 text-center">Status</th>
+                  <th class="py-2.5 px-3 w-44 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#e5e5e5] text-gray-700 font-medium" id="users-tbody"></tbody>
+            </table>
+          </div>
+          <p class="text-[11px] text-[#737373] mt-2 select-none" id="user-count-label"></p>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- USER DETAIL DRAWER -->
+  <div id="drawer-overlay" class="hidden fixed inset-0 z-40 bg-black/40"></div>
+  <aside id="user-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-[#e5e5e5] z-50 translate-x-full transition-transform duration-200 flex flex-col">
+    <div class="p-5 border-b border-gray-100 flex items-center justify-between shrink-0">
+      <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a] flex items-center gap-1.5">
+        <i data-lucide="user-cog" class="w-4 h-4 text-[#007c74]"></i>
+        Manage End User
+      </h3>
+      <button onclick="closeDrawer()" class="text-[#737373] hover:text-gray-900 transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-5 space-y-5 text-xs font-semibold text-gray-700">
+
+      <!-- Identity -->
+      <div class="flex items-center gap-3 border border-gray-200 rounded-lg p-3 bg-gray-50">
+        <div class="w-10 h-10 rounded-full bg-[#002b7a] border border-[#003b9c] flex items-center justify-center text-white font-semibold text-sm shrink-0" id="dw-avatar">--</div>
+        <div class="overflow-hidden">
+          <p class="text-xs font-bold text-gray-900 truncate leading-none mb-1" id="dw-name">--</p>
+          <p class="text-[10px] text-gray-500 truncate leading-none font-mono font-normal" id="dw-email">--</p>
+        </div>
+      </div>
+
+      <!-- Tenant (read-only) -->
+      <div>
+        <label class="block mb-1 text-[#737373]">Customer Company (Read-only)</label>
+        <input type="text" readonly id="dw-company" class="w-full h-10 px-3 border border-gray-200 bg-gray-50 text-[#737373] cursor-not-allowed rounded focus:outline-none font-mono">
+      </div>
+
+      <!-- Portal role -->
+      <div>
+        <label class="block mb-1 text-gray-500">Portal Role</label>
+        <div class="relative">
+          <select id="dw-role" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+            <option value="Account Admin">Account Admin — Manages their company's users</option>
+            <option value="Compliance Officer">Compliance Officer — Full screening &amp; disposal</option>
+            <option value="AML Analyst">AML Analyst — Screening &amp; case work</option>
+            <option value="Read-Only Viewer">Read-Only Viewer — Reports only</option>
+          </select>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+        </div>
+      </div>
+
+      <!-- Account status -->
+      <div>
+        <label class="block mb-1 text-gray-500">Account Status</label>
+        <div class="relative">
+          <select id="dw-status" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer appearance-none">
+            <option value="Active">Active</option>
+            <option value="Suspended">Suspended</option>
+            <option value="Locked">Locked (failed MFA attempts)</option>
+            <option value="Invited">Invited — awaiting enrollment</option>
+          </select>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-[#737373] absolute right-3 top-3 pointer-events-none"></i>
+        </div>
+      </div>
+
+      <!-- Usage snapshot -->
+      <div class="border border-gray-200 rounded-lg p-3 bg-gray-50 space-y-2 leading-relaxed">
+        <div class="flex justify-between border-b border-gray-200 pb-1.5">
+          <span class="text-[#737373] font-semibold uppercase text-[9px]">Screenings (30d)</span>
+          <span class="font-bold text-gray-900 font-mono" id="dw-scans">—</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-200 pb-1.5">
+          <span class="text-[#737373] font-semibold uppercase text-[9px]">Cases Disposed</span>
+          <span class="font-bold text-gray-900 font-mono" id="dw-cases">—</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#737373] font-semibold uppercase text-[9px]">MFA Enrollment</span>
+          <span class="font-bold font-mono" id="dw-mfa">—</span>
+        </div>
+      </div>
+
+      <!-- Support actions -->
+      <div class="border-t border-gray-100 pt-4 space-y-2">
+        <h4 class="text-[10px] text-[#737373] font-semibold uppercase tracking-wider mb-2">Support Actions</h4>
+        <button type="button" onclick="resetMfa()" class="w-full h-9 px-3 border border-gray-300 text-gray-600 rounded hover:bg-gray-50 transition-colors flex items-center gap-2">
+          <i data-lucide="key-round" class="w-4 h-4 text-[#737373]"></i> Reset MFA Enrollment
+        </button>
+        <button type="button" onclick="forcePasswordReset()" class="w-full h-9 px-3 border border-gray-300 text-gray-600 rounded hover:bg-gray-50 transition-colors flex items-center gap-2">
+          <i data-lucide="mail" class="w-4 h-4 text-[#737373]"></i> Send Password Reset Link
+        </button>
+        <button type="button" onclick="forceLogout()" class="w-full h-9 px-3 border border-gray-300 text-gray-600 rounded hover:bg-gray-50 transition-colors flex items-center gap-2">
+          <i data-lucide="log-out" class="w-4 h-4 text-[#737373]"></i> Terminate Active Sessions
+        </button>
+      </div>
+    </div>
+
+    <div class="p-5 border-t border-gray-100 flex gap-2 justify-end shrink-0">
+      <button type="button" onclick="closeDrawer()" class="h-10 px-4 border border-gray-300 text-gray-600 text-xs font-semibold rounded hover:bg-gray-50 transition-colors uppercase tracking-wider">
+        Cancel
+      </button>
+      <button type="button" onclick="saveUser()" id="btn-save-user" class="h-10 px-5 bg-teal hover:bg-[#00c47e] text-[#0a0a0a] text-xs font-semibold rounded transition-colors uppercase tracking-wider flex items-center gap-1.5">
+        <i data-lucide="save" class="w-4 h-4"></i>
+        <span>Save Changes</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- IMPERSONATION CONFIRM MODAL -->
+  <div id="impersonate-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 p-4">
+    <div class="bg-white rounded-xl border border-[#e5e5e5] w-full max-w-md shadow-xl">
+      <div class="p-5 border-b border-gray-100 flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-[#fef3c7] text-[#b45309] flex items-center justify-center border border-[#f59e0b]/30 shrink-0">
+          <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+        </div>
+        <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Confirm Support Impersonation</h3>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs text-gray-600 font-medium leading-relaxed">
+        <p>
+          You are about to enter the customer portal as
+          <span class="font-bold text-gray-900" id="imp-name">—</span>
+          of <span class="font-bold text-gray-900" id="imp-company">—</span>.
+        </p>
+
+        <ul class="space-y-1.5 border border-gray-200 rounded-lg p-3 bg-gray-50 text-[11px]">
+          <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-[#007c74] shrink-0 mt-0.5"></i> You will see exactly what this user sees, with their permissions.</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-[#007c74] shrink-0 mt-0.5"></i> Every action is recorded against your admin identity, not theirs.</li>
+          <li class="flex gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-[#007c74] shrink-0 mt-0.5"></i> The session ends automatically after 30 minutes.</li>
+        </ul>
+
+        <div>
+          <label class="block mb-1 text-gray-500 font-semibold">Support Ticket Reference <span class="text-[#b91c1c]">*</span></label>
+          <input type="text" id="imp-ticket" placeholder="e.g. SUP-48120" class="w-full h-10 px-3 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono font-semibold">
+          <p class="text-[10px] text-[#737373] font-normal mt-1">Required — impersonation cannot be started without a linked support ticket.</p>
+        </div>
+      </div>
+
+      <div class="p-5 border-t border-gray-100 flex gap-2 justify-end">
+        <button type="button" onclick="closeImpersonate()" class="h-10 px-4 border border-gray-300 text-gray-600 text-xs font-semibold rounded hover:bg-gray-50 transition-colors uppercase tracking-wider">
+          Cancel
+        </button>
+        <button type="button" onclick="confirmImpersonate()" class="h-10 px-5 bg-[#001741] hover:bg-[#00143a] text-white text-xs font-semibold rounded transition-colors uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="eye" class="w-4 h-4"></i>
+          <span>Enter Support Mode</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.lucide && window.lucide.createIcons();
+
+    const ROLE_BADGE = {
+      'Account Admin':      'bg-[#fef3c7] text-[#b45309] border-[#f59e0b]/20',
+      'Compliance Officer': 'bg-[#dcfce7] text-[#166534] border-[#22c55e]/20',
+      'AML Analyst':        'bg-blue-50 text-blue-700 border-blue-200',
+      'Read-Only Viewer':   'bg-gray-100 text-gray-600 border-gray-300'
+    };
+
+    const STATUS_BADGE = {
+      'Active':    'bg-[#dcfce7] text-[#166534] border-[#22c55e]/20',
+      'Invited':   'bg-blue-50 text-blue-700 border-blue-200',
+      'Locked':    'bg-[#fef3c7] text-[#b45309] border-[#f59e0b]/20',
+      'Suspended': 'bg-[#fee2e2] text-[#b91c1c] border-[#ef4444]/20'
+    };
+
+    // ── Seed data: end-users across every customer tenant ──
+    let usersData = [
+      { id: 1,  name: 'Helena Vargas',   email: 'h.vargas@xirni.com',            company: 'Xirni Ltd',              role: 'Account Admin',      last: '2026-09-18 08:55', status: 'Active',    scans: 1284, cases: 96, mfa: true },
+      { id: 2,  name: 'Tom Bradshaw',    email: 't.bradshaw@xirni.com',          company: 'Xirni Ltd',              role: 'AML Analyst',        last: '2026-09-18 08:12', status: 'Active',    scans: 842,  cases: 61, mfa: true },
+      { id: 3,  name: 'Aisha Rahman',    email: 'a.rahman@apexglobal.com',       company: 'Apex Global Partners',   role: 'Compliance Officer', last: '2026-09-18 07:40', status: 'Active',    scans: 2140, cases: 188, mfa: true },
+      { id: 4,  name: 'Marcus Lee',      email: 'm.lee@apexglobal.com',          company: 'Apex Global Partners',   role: 'AML Analyst',        last: '2026-09-17 16:22', status: 'Locked',    scans: 410,  cases: 24, mfa: false },
+      { id: 5,  name: 'Sandra Kohl',     email: 's.kohl@zenithbank.com',         company: 'Zenith Commercial Bank', role: 'Account Admin',      last: '2026-09-17 15:08', status: 'Active',    scans: 1755, cases: 142, mfa: true },
+      { id: 6,  name: 'Devan Pillai',    email: 'd.pillai@zenithbank.com',       company: 'Zenith Commercial Bank', role: 'Compliance Officer', last: '2026-09-17 12:31', status: 'Active',    scans: 1320, cases: 110, mfa: true },
+      { id: 7,  name: 'Grace Obi',       email: 'g.obi@zenithbank.com',          company: 'Zenith Commercial Bank', role: 'Read-Only Viewer',   last: '2026-09-12 09:47', status: 'Suspended', scans: 62,   cases: 0,  mfa: true },
+      { id: 8,  name: 'Peter Hallstrom', email: 'p.hallstrom@falcontrust.com',   company: 'Falcon Trust Corp',      role: 'Compliance Officer', last: '2026-09-18 06:59', status: 'Active',    scans: 690,  cases: 48, mfa: true },
+      { id: 9,  name: 'Nadia Farouk',    email: 'n.farouk@falcontrust.com',      company: 'Falcon Trust Corp',      role: 'AML Analyst',        last: '—',                status: 'Invited',   scans: 0,    cases: 0,  mfa: false },
+      { id: 10, name: 'Oliver Grant',    email: 'o.grant@lighthousecapital.com', company: 'Lighthouse Capital',     role: 'Account Admin',      last: '2026-09-17 11:14', status: 'Active',    scans: 980,  cases: 73, mfa: true },
+      { id: 11, name: 'Yuki Tanaka',     email: 'y.tanaka@lighthousecapital.com',company: 'Lighthouse Capital',     role: 'Read-Only Viewer',   last: '2026-09-16 14:02', status: 'Active',    scans: 145,  cases: 0,  mfa: true }
+    ];
+
+    let drawerId = null;
+    let impersonateId = null;
+
+    // Populate the company filter from the data itself
+    (function initCompanyFilter() {
+      const sel = document.getElementById('company-filter');
+      [...new Set(usersData.map(u => u.company))].sort().forEach(c => {
+        const o = document.createElement('option');
+        o.value = c; o.textContent = c;
+        sel.appendChild(o);
+      });
+    })();
+
+    // ── Directory ──
+    function renderUsers() {
+      const q = document.getElementById('user-search').value.trim().toLowerCase();
+      const company = document.getElementById('company-filter').value;
+      const status = document.getElementById('status-filter').value;
+
+      const rows = usersData.filter(u =>
+        (!q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.company.toLowerCase().includes(q)) &&
+        (company === 'all' || u.company === company) &&
+        (status === 'all' || u.status === status)
+      );
+
+      document.getElementById('users-tbody').innerHTML = rows.length ? rows.map(u => `
+        <tr class="hover:bg-[#fafafa] h-12">
+          <td class="px-3">
+            <p class="font-semibold text-gray-900 leading-none mb-1">${u.name}</p>
+            <p class="text-[10px] text-[#737373] font-mono font-normal leading-none">${u.email}</p>
+          </td>
+          <td class="px-3 font-semibold text-gray-700">${u.company}</td>
+          <td class="px-3">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${ROLE_BADGE[u.role]}">${u.role}</span>
+          </td>
+          <td class="px-3 font-mono text-[#737373] text-[11px]">${u.last}</td>
+          <td class="px-3 text-center">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${STATUS_BADGE[u.status]}">${u.status}</span>
+          </td>
+          <td class="px-3 text-right select-none font-sans whitespace-nowrap">
+            <button onclick="openDrawer(${u.id})" class="hover:underline font-semibold text-gray-600">Manage</button>
+            <span class="text-gray-300 mx-1.5">|</span>
+            <button onclick="openImpersonate(${u.id})" ${u.status !== 'Active' ? 'disabled' : ''}
+              class="hover:underline font-semibold ${u.status === 'Active' ? 'text-[#007c74]' : 'text-gray-300 cursor-not-allowed no-underline hover:no-underline'}">
+              Impersonate
+            </button>
+          </td>
+        </tr>
+      `).join('') : `
+        <tr><td colspan="6" class="px-3 py-8 text-center text-[#737373] font-normal">No end users match these filters.</td></tr>
+      `;
+
+      document.getElementById('user-count-label').innerText =
+        `Showing ${rows.length} of ${usersData.length} end users across ${new Set(usersData.map(u => u.company)).size} customer companies`;
+
+      // Metric cards derive from the data
+      document.getElementById('val-total-users').innerText = `${usersData.length} Users`;
+      document.getElementById('val-companies').innerText = `${new Set(usersData.map(u => u.company)).size} Tenants`;
+      document.getElementById('val-locked').innerText = `${usersData.filter(u => u.status === 'Locked' || u.status === 'Suspended').length} Accounts`;
+      document.getElementById('val-active-today').innerText = `${usersData.filter(u => u.last.startsWith('2026-09-18')).length} Sessions`;
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // ── Manage drawer ──
+    function openDrawer(id) {
+      drawerId = id;
+      const u = usersData.find(x => x.id === id);
+
+      document.getElementById('dw-avatar').innerText = u.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+      document.getElementById('dw-name').innerText = u.name;
+      document.getElementById('dw-email').innerText = u.email;
+      document.getElementById('dw-company').value = u.company;
+      document.getElementById('dw-role').value = u.role;
+      document.getElementById('dw-status').value = u.status;
+      document.getElementById('dw-scans').innerText = u.scans.toLocaleString();
+      document.getElementById('dw-cases').innerText = u.cases.toLocaleString();
+
+      const mfa = document.getElementById('dw-mfa');
+      mfa.innerText = u.mfa ? 'Enrolled' : 'Not enrolled';
+      mfa.className = 'font-bold font-mono ' + (u.mfa ? 'text-[#166534]' : 'text-[#b91c1c]');
+
+      document.getElementById('drawer-overlay').classList.remove('hidden');
+      document.getElementById('user-drawer').classList.remove('translate-x-full');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function closeDrawer() {
+      drawerId = null;
+      document.getElementById('drawer-overlay').classList.add('hidden');
+      document.getElementById('user-drawer').classList.add('translate-x-full');
+    }
+
+    function saveUser() {
+      const u = usersData.find(x => x.id === drawerId);
+      if (!u) return;
+
+      u.role = document.getElementById('dw-role').value;
+      u.status = document.getElementById('dw-status').value;
+
+      const btn = document.getElementById('btn-save-user');
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#0a0a0a]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> <span>Save Changes</span>`;
+        btn.disabled = false;
+        closeDrawer();
+        renderUsers();
+        showToast(`${u.name} updated — ${u.role}, ${u.status}.`);
+      }, 900);
+    }
+
+    // ── Support actions ──
+    function resetMfa() {
+      const u = usersData.find(x => x.id === drawerId);
+      u.mfa = false;
+      const mfa = document.getElementById('dw-mfa');
+      mfa.innerText = 'Not enrolled';
+      mfa.className = 'font-bold font-mono text-[#b91c1c]';
+      showToast(`MFA enrollment cleared for ${u.name} — re-enrollment required at next login.`);
+    }
+
+    function forcePasswordReset() {
+      const u = usersData.find(x => x.id === drawerId);
+      showToast(`Password reset link dispatched to ${u.email}.`);
+    }
+
+    function forceLogout() {
+      const u = usersData.find(x => x.id === drawerId);
+      showToast(`Active sessions terminated for ${u.name}.`);
+    }
+
+    // ── Impersonation / support mode ──
+    function openImpersonate(id) {
+      impersonateId = id;
+      const u = usersData.find(x => x.id === id);
+      document.getElementById('imp-name').innerText = u.name;
+      document.getElementById('imp-company').innerText = u.company;
+      document.getElementById('imp-ticket').value = '';
+
+      const m = document.getElementById('impersonate-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function closeImpersonate() {
+      const m = document.getElementById('impersonate-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function confirmImpersonate() {
+      const ticket = document.getElementById('imp-ticket').value.trim();
+      if (!ticket) {
+        showToast('A support ticket reference is required to start impersonation.');
+        document.getElementById('imp-ticket').focus();
+        return;
+      }
+
+      const u = usersData.find(x => x.id === impersonateId);
+      document.getElementById('support-who').innerText = u.name;
+      document.getElementById('support-company').innerText = u.company;
+
+      const banner = document.getElementById('support-banner');
+      banner.classList.remove('hidden');
+      banner.classList.add('flex');
+
+      closeImpersonate();
+      if (window.lucide) window.lucide.createIcons();
+      showToast(`Support mode active as ${u.name} — linked to ticket ${ticket}.`);
+    }
+
+    function exitSupportMode() {
+      const banner = document.getElementById('support-banner');
+      banner.classList.add('hidden');
+      banner.classList.remove('flex');
+      impersonateId = null;
+      showToast('Support mode ended — returned to your admin identity.');
+    }
+
+    // Dismiss overlays on backdrop click
+    document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
+    document.getElementById('impersonate-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'impersonate-modal') closeImpersonate();
+    });
+
+    renderUsers();
+  </script>
+</body>
+</html>

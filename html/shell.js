@@ -12,8 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const fallbackPage = isAdmin ? "admin-dashboard.html" : "dashboard.html";
   const activePage = pageName || fallbackPage;
 
-  const isGitHubPages = window.location.hostname.includes("github.io");
-  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
 
   // Navigation Items Definitions
   const customerNavItems = [
@@ -38,18 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Masters", 
       icon: "database",
       subItems: [
-        { name: "Product Master", url: "admin-masters.html?tab=products", icon: "package", disabled: !isLocal },
-        { name: "Country Master DB", url: "admin-masters.html?tab=countries", icon: "globe", disabled: !isLocal },
-        { name: "Country Risk Rating", url: "admin-masters.html?tab=risks", icon: "sliders", disabled: !isLocal },
-        { name: "Sanctions Registry", url: "admin-masters.html?tab=sanctions", icon: "shield-ban", disabled: !isLocal }
+        { name: "Product Master", url: "admin-masters.html?tab=products", icon: "package" },
+        { name: "Country Master DB", url: "admin-masters.html?tab=countries", icon: "globe" },
+        { name: "Country Risk Rating", url: "admin-masters.html?tab=risks", icon: "sliders" },
+        { name: "Sanctions Registry", url: "admin-masters.html?tab=sanctions", icon: "shield-ban" }
       ]
     },
-    { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card", disabled: !isLocal },
-    { name: "Package Manager", url: "admin-packages.html", icon: "package-plus", disabled: !isLocal },
-    { name: "Admin Settings", url: "admin-settings.html", icon: "settings", disabled: !isLocal },
-    { name: "Admin User Mgmt", url: "admin-user-mgmt.html", icon: "shield-check", disabled: !isLocal },
-    { name: "User Manager", url: "admin-user-manager.html", icon: "users", disabled: !isLocal },
-    { name: "Admin Reports", url: "admin-reports.html", icon: "bar-chart-3", disabled: !isLocal }
+    { name: "Subscription Manager", url: "admin-subscriptions.html", icon: "credit-card" },
+    { name: "Package Manager", url: "admin-packages.html", icon: "package-plus" },
+    { name: "Admin Settings", url: "admin-settings.html", icon: "settings" },
+    { name: "Admin User Mgmt", url: "admin-user-mgmt.html", icon: "shield-check" },
+    { name: "User Manager", url: "admin-user-manager.html", icon: "users" },
+    { name: "Admin Reports", url: "admin-reports.html", icon: "bar-chart-3" }
   ];
 
   const activeNavItems = isAdmin ? adminNavItems : customerNavItems;

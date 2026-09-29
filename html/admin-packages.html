@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Package Manager | X-Intelligence</title>
+  <!-- Core Tailwind, Fonts & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="head.js"></script>
+  <script src="shell.js" defer></script>
+  <style>
+    .drawer-transition {
+      transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="bg-[#fafafa] text-[#0a0a0a] overflow-hidden h-screen font-sans">
+
+  <div id="app" class="flex h-screen overflow-hidden">
+    <!-- Main content area where shell.js will prepend sidebar and topbar -->
+    <div id="main-content" class="flex-1 flex flex-col overflow-hidden relative">
+      
+      <!-- Page Content Area -->
+      <main class="flex-1 overflow-y-auto p-8 space-y-6">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center select-none">
+          <div>
+            <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Package Templates Builder</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Maintain system-wide subscription plan templates. Click a tier to edit parameters.</p>
+          </div>
+          
+          <button onclick="createNewPackage()" class="h-9 px-4 bg-teal hover:bg-teal-hover text-[#0a0a0a] text-xs font-semibold rounded flex items-center gap-1.5 transition-colors">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add Package Template
+          </button>
+        </div>
+
+        <!-- Plan Grid (3 columns matching active templates) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 select-none" id="plans-container">
+          
+          <!-- Card 1: Basic Plan -->
+          <div onclick="editPackage('Basic')" id="card-Basic" class="bg-white border border-[#e5e5e5] rounded-xl p-6 hover:border-teal cursor-pointer transition-all flex flex-col justify-between h-[360px]">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="text-sm font-bold text-gray-900 font-sans" id="title-Basic">Basic Plan</h4>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#ebfbf5] text-[#001741] font-mono">Tier 1</span>
+              </div>
+              
+              <div class="mb-4">
+                <span class="text-2xl font-bold tracking-tight text-navy" id="price-Basic">$1,200</span>
+                <span class="text-[10px] text-[#737373] font-semibold uppercase tracking-wider block">Per Client Month</span>
+              </div>
+
+              <!-- Feature bullet items -->
+              <ul class="space-y-2 text-xs text-[#525252] font-medium font-sans">
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="limit-Basic">5,000 scans / mo</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="api-Basic">API integration access</span>
+                </li>
+                <li class="flex items-center gap-2 text-[#737373]">
+                  <i data-lucide="x" class="w-4 h-4 text-gray-300 shrink-0"></i>
+                  <span id="bulk-Basic">Bulk file screening</span>
+                </li>
+                <li class="flex items-center gap-2 text-[#737373]">
+                  <i data-lucide="x" class="w-4 h-4 text-gray-300 shrink-0"></i>
+                  <span id="ongoing-Basic">Ongoing watchlist monitoring</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Footer support tier -->
+            <div class="pt-3 border-t border-gray-100 flex justify-between items-center text-[10px] text-[#737373] font-mono">
+              <span>SUPPORT: EMAIL ONLY</span>
+              <span class="text-[#007c74] font-semibold font-sans">Configure &gt;</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Growth Plan -->
+          <div onclick="editPackage('Growth')" id="card-Growth" class="bg-white border border-[#e5e5e5] rounded-xl p-6 hover:border-teal cursor-pointer transition-all flex flex-col justify-between h-[360px]">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="text-sm font-bold text-gray-900 font-sans" id="title-Growth">Growth Plan</h4>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#ebfbf5] text-[#001741] font-mono">Tier 2</span>
+              </div>
+              
+              <div class="mb-4">
+                <span class="text-2xl font-bold tracking-tight text-navy" id="price-Growth">$4,800</span>
+                <span class="text-[10px] text-[#737373] font-semibold uppercase tracking-wider block">Per Client Month</span>
+              </div>
+
+              <ul class="space-y-2 text-xs text-[#525252] font-medium font-sans">
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="limit-Growth">25,000 scans / mo</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="api-Growth">API integration access</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="bulk-Growth">Bulk file screening</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="ongoing-Growth">Ongoing monitoring [1k Limit]</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 flex justify-between items-center text-[10px] text-[#737373] font-mono">
+              <span>SUPPORT: PRIORITY CHAT</span>
+              <span class="text-[#007c74] font-semibold font-sans">Configure &gt;</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Enterprise Plan -->
+          <div onclick="editPackage('Enterprise')" id="card-Enterprise" class="bg-white border border-[#e5e5e5] rounded-xl p-6 hover:border-teal cursor-pointer transition-all flex flex-col justify-between h-[360px]">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="text-sm font-bold text-gray-900 font-sans" id="title-Enterprise">Enterprise Plan</h4>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#ebfbf5] text-[#001741] font-mono">Tier 3</span>
+              </div>
+              
+              <div class="mb-4">
+                <span class="text-2xl font-bold tracking-tight text-navy" id="price-Enterprise">$12,500</span>
+                <span class="text-[10px] text-[#737373] font-semibold uppercase tracking-wider block">Per Client Month</span>
+              </div>
+
+              <ul class="space-y-2 text-xs text-[#525252] font-medium font-sans">
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="limit-Enterprise">100,000 scans / mo</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="api-Enterprise">API integration access</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="bulk-Enterprise">Bulk file screening [Workers]</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i>
+                  <span id="ongoing-Enterprise">Ongoing monitoring [10k Limit]</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 flex justify-between items-center text-[10px] text-[#737373] font-mono">
+              <span>SUPPORT: DEDICATED 24/7</span>
+              <span class="text-[#007c74] font-semibold font-sans">Configure &gt;</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Template Usage Summary (spec 6.4 UI 1) -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] p-6">
+          <div class="flex items-center justify-between mb-4 select-none">
+            <div class="flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-[#007c74]"></i>
+              <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a]">Template Usage Summary</h3>
+            </div>
+            <span class="text-[10px] text-[#737373] font-mono font-semibold uppercase tracking-wider">Recently created &amp; edited</span>
+          </div>
+
+          <div class="overflow-x-auto border border-[#e5e5e5] rounded-md">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-[#e5e5e5] text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+                  <th class="py-2.5 px-3">Template</th>
+                  <th class="py-2.5 px-3 w-28 text-center">Tier</th>
+                  <th class="py-2.5 px-3 w-32 text-right">Clients Assigned</th>
+                  <th class="py-2.5 px-3 w-28 font-mono text-right">Created</th>
+                  <th class="py-2.5 px-3 w-32 font-mono text-right">Last Edited</th>
+                  <th class="py-2.5 px-3 w-28">Edited By</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#e5e5e5] text-xs text-gray-700 font-medium" id="template-usage-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Client-Specific Configurations (spec 6.4 UI 2) -->
+        <div class="bg-white rounded-xl border border-[#e5e5e5] p-6">
+          <div class="flex items-center justify-between mb-4 select-none">
+            <div>
+              <h3 class="text-sm font-semibold tracking-[-0.3px] uppercase text-[#0a0a0a] flex items-center gap-2">
+                <i data-lucide="settings-2" class="w-4 h-4 text-[#007c74]"></i>
+                Client-Specific Configurations
+              </h3>
+              <p class="text-xs text-gray-500 mt-0.5">Override a base template for an individual client — pricing model, feature grants, and screening cadence.</p>
+            </div>
+            <button onclick="openClientConfig()" class="h-9 px-4 bg-[#001741] hover:bg-[#00143a] text-white text-xs font-semibold rounded flex items-center gap-1.5 transition-colors shrink-0">
+              <i data-lucide="wand-2" class="w-4 h-4"></i> Generate Configuration
+            </button>
+          </div>
+
+          <div class="overflow-x-auto border border-[#e5e5e5] rounded-md">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-[#e5e5e5] text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+                  <th class="py-2.5 px-3">Client</th>
+                  <th class="py-2.5 px-3 w-36">Base Template</th>
+                  <th class="py-2.5 px-3 w-36">Pricing Model</th>
+                  <th class="py-2.5 px-3 w-32 text-center">Frequency</th>
+                  <th class="py-2.5 px-3 w-24 text-center">Coverage</th>
+                  <th class="py-2.5 px-3 w-32 font-mono text-right">Last Edited</th>
+                  <th class="py-2.5 px-3 w-20 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#e5e5e5] text-xs text-gray-700 font-medium" id="client-config-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- PACKAGE CONFIGURATION SLIDE OUT PANEL (Drawer, right 420px wide) -->
+      <section id="config-drawer" class="fixed inset-y-0 right-0 w-[420px] bg-white border-l border-[#e5e5e5] z-50 shadow-2xl transform translate-x-full drawer-transition flex flex-col justify-between" role="dialog" aria-labelledby="drawer-title">
+        
+        <!-- Drawer Header -->
+        <div class="h-14 border-b border-[#e5e5e5] bg-gray-50 px-5 flex items-center justify-between shrink-0 select-none">
+          <span class="text-xs font-bold text-navy uppercase tracking-wider" id="drawer-title">Configure Plan Template</span>
+          <button onclick="closeDrawer()" class="text-[#737373] hover:text-gray-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Drawer Content Form -->
+        <div class="flex-1 p-5 space-y-4 overflow-y-auto text-xs font-semibold">
+          
+          <!-- Plan Name -->
+          <div>
+            <label for="form-name" class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Package Name</label>
+            <input type="text" id="form-name" class="w-full h-9 px-3 bg-white border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+          </div>
+
+          <!-- Base price -->
+          <div>
+            <label for="form-price" class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Monthly Cost ($)</label>
+            <input type="number" id="form-price" class="w-full h-9 px-3 bg-white border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+          </div>
+
+          <!-- Base Scans Limit -->
+          <div>
+            <label for="form-limit" class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Monthly Scan Limit</label>
+            <input type="number" id="form-limit" class="w-full h-9 px-3 bg-white border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+          </div>
+
+          <!-- Checkbox nodes -->
+          <div class="space-y-3 pt-2">
+            <label class="flex items-center gap-2 cursor-pointer text-[#404040] font-semibold select-none">
+              <input type="checkbox" id="form-api" class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+              <span>API Integration access enabled</span>
+            </label>
+            
+            <label class="flex items-center gap-2 cursor-pointer text-[#404040] font-semibold select-none">
+              <input type="checkbox" id="form-bulk" class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+              <span>Bulk roster files uploading enabled</span>
+            </label>
+
+            <label class="flex items-center gap-2 cursor-pointer text-[#404040] font-semibold select-none">
+              <input type="checkbox" id="form-ongoing" onchange="toggleDrawerOngoingLimit(this.checked)" class="w-4 h-4 text-teal rounded border-gray-300 focus:ring-teal">
+              <span>Ongoing monitoring checks enabled</span>
+            </label>
+          </div>
+
+          <!-- Ongoing target limit field -->
+          <div id="form-ongoing-limit-container" class="hidden">
+            <label for="form-ongoing-limit" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Ongoing Targets Cap Limit</label>
+            <input type="number" id="form-ongoing-limit" placeholder="e.g. 1000" class="w-full h-9 px-3 bg-white border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+          </div>
+
+          <!-- Support tier dropdown -->
+          <div>
+            <label for="form-support" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Support Tier SLA</label>
+            <select id="form-support" class="w-full h-9 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer">
+              <option value="EMAIL">Standard Email Only</option>
+              <option value="CHAT">Priority Chat Support</option>
+              <option value="DEDICATED">Dedicated 24/7 Manager</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-[#e5e5e5] bg-gray-50 flex justify-end gap-2 shrink-0 select-none">
+          <button onclick="closeDrawer()" class="h-9 px-4 hover:bg-gray-150 text-gray-600 text-xs font-semibold rounded transition-colors">Cancel</button>
+          <button onclick="savePackage()" class="h-9 px-5 bg-teal hover:bg-teal-hover text-[#0a0a0a] text-xs font-semibold rounded transition-colors">Save & Apply Template</button>
+        </div>
+
+      </section>
+
+      <!-- CLIENT-SPECIFIC CONFIGURATION DRAWER (spec 6.4 UI 2, right 480px wide) -->
+      <div id="client-drawer-overlay" class="hidden fixed inset-0 bg-black/40 z-40"></div>
+      <section id="client-drawer" class="fixed inset-y-0 right-0 w-[480px] bg-white border-l border-[#e5e5e5] z-50 shadow-2xl transform translate-x-full drawer-transition flex flex-col justify-between" role="dialog" aria-labelledby="client-drawer-title">
+
+        <!-- Drawer Header -->
+        <div class="h-14 border-b border-[#e5e5e5] bg-gray-50 px-5 flex items-center justify-between shrink-0 select-none">
+          <span class="text-xs font-bold text-navy uppercase tracking-wider" id="client-drawer-title">Generate Client Configuration</span>
+          <button onclick="closeClientConfig()" class="text-[#737373] hover:text-gray-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Drawer Content -->
+        <div class="flex-1 p-5 space-y-5 overflow-y-auto text-xs font-semibold">
+
+          <!-- Client search (typeahead against existing clients) -->
+          <div>
+            <label for="cfg-client" class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Link To Client <span class="text-[#b91c1c]">*</span></label>
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-[#737373] absolute left-3 top-2.5 pointer-events-none"></i>
+              <input type="text" id="cfg-client" autocomplete="off" oninput="filterClients(this.value)" onfocus="filterClients(this.value)"
+                placeholder="Search existing clients e.g. Sterling Bank"
+                class="w-full h-9 pl-9 pr-3 bg-white border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none">
+              <!-- Typeahead results -->
+              <div id="cfg-client-results" class="hidden absolute left-0 right-0 top-10 bg-white border border-gray-200 rounded-md shadow-lg z-10 max-h-44 overflow-y-auto"></div>
+            </div>
+          </div>
+
+          <!-- Base template + its summary -->
+          <div>
+            <label for="cfg-template" class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Base Template</label>
+            <select id="cfg-template" onchange="renderTemplateSummary()" class="w-full h-9 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer">
+              <option value="Basic">Basic Plan</option>
+              <option value="Growth" selected>Growth Plan</option>
+              <option value="Enterprise">Enterprise Plan</option>
+            </select>
+
+            <!-- Template Summary -->
+            <div class="mt-2 border border-gray-200 rounded-lg bg-gray-50 p-3 space-y-1.5" id="cfg-template-summary"></div>
+          </div>
+
+          <!-- Pricing structure -->
+          <div>
+            <label class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Pricing Structure</label>
+            <div class="flex gap-2">
+              <button type="button" onclick="setPricingModel('scan')" id="cfg-price-scan"
+                class="flex-1 h-9 rounded border text-xs font-semibold transition-colors border-teal bg-teal-light text-navy">
+                Per Scan
+              </button>
+              <button type="button" onclick="setPricingModel('tiered')" id="cfg-price-tiered"
+                class="flex-1 h-9 rounded border text-xs font-semibold transition-colors border-gray-300 bg-white text-gray-500 hover:border-gray-400">
+                Tiered Volume
+              </button>
+            </div>
+
+            <!-- Per-scan rate -->
+            <div id="cfg-pricing-scan" class="mt-2">
+              <label for="cfg-rate" class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Rate Per Scan ($)</label>
+              <input type="number" step="0.01" id="cfg-rate" value="0.08" class="w-full h-9 px-3 bg-white border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none font-mono">
+            </div>
+
+            <!-- Tiered bands -->
+            <div id="cfg-pricing-tiered" class="mt-2 hidden">
+              <label class="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Volume Bands ($ per scan)</label>
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <table class="w-full text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200 text-[9px] font-semibold text-gray-500 uppercase">
+                      <th class="py-1.5 px-2">From</th>
+                      <th class="py-1.5 px-2">To</th>
+                      <th class="py-1.5 px-2 w-24 text-right">Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 font-mono" id="cfg-tier-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Granular feature grants -->
+          <div>
+            <label class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Feature &amp; API Grants</label>
+            <div class="space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50 max-h-52 overflow-y-auto" id="cfg-features"></div>
+          </div>
+
+          <!-- Screening frequency override -->
+          <div>
+            <label for="cfg-frequency" class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Screening Frequency Override</label>
+            <select id="cfg-frequency" class="w-full h-9 px-2 border border-gray-300 rounded focus:ring-2 focus:ring-teal/25 focus:border-teal focus:outline-none cursor-pointer">
+              <option value="inherit">Inherit From Template</option>
+              <option value="realtime">Real-Time (Continuous)</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+
+          <!-- Compliance Score Meter — STUBBED pending formula definition -->
+          <div>
+            <label class="block text-[10px] font-semibold text-[#737373] uppercase mb-1">Compliance Score Meter</label>
+            <div class="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50/60 text-center space-y-2">
+              <!-- Inert gauge placeholder -->
+              <svg viewBox="0 0 120 64" class="w-32 h-16 mx-auto" aria-hidden="true">
+                <path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="#e5e5e5" stroke-width="10" stroke-linecap="round"/>
+                <circle cx="60" cy="60" r="3.5" fill="#d4d4d4"/>
+                <line x1="60" y1="60" x2="60" y2="22" stroke="#d4d4d4" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+              <p class="text-lg font-bold text-gray-300 font-mono leading-none">— / 100</p>
+              <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fef3c7] text-[#b45309] border border-[#f59e0b]/20">
+                <i data-lucide="alert-triangle" class="w-3 h-3"></i>
+                Formula pending definition
+              </div>
+              <p class="text-[10px] text-[#737373] font-normal leading-snug px-2">
+                Awaiting confirmation from Xirni on whether this is calculated from selected modules or entered manually
+                (open question 7, design.md &sect;13). Gauge is inert until the scoring rule is defined.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-[#e5e5e5] bg-gray-50 flex justify-end gap-2 shrink-0 select-none">
+          <button onclick="closeClientConfig()" class="h-9 px-4 hover:bg-gray-150 text-gray-600 text-xs font-semibold rounded transition-colors">Cancel</button>
+          <button onclick="saveClientConfig()" id="btn-save-client-cfg" class="h-9 px-5 bg-teal hover:bg-teal-hover text-[#0a0a0a] text-xs font-semibold rounded transition-colors flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Save &amp; Apply
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  </div>
+
+
+
+  <script>
+    // Initialize Lucide Icons
+    window.lucide && window.lucide.createIcons();
+
+    // Active package database mock state
+    const packagesState = {
+      "Basic": {
+        name: "Basic Plan",
+        price: 1200,
+        limit: 5000,
+        api: true,
+        bulk: false,
+        ongoing: false,
+        ongoingLimit: 0,
+        support: "EMAIL"
+      },
+      "Growth": {
+        name: "Growth Plan",
+        price: 4800,
+        limit: 25000,
+        api: true,
+        bulk: true,
+        ongoing: true,
+        ongoingLimit: 1000,
+        support: "CHAT"
+      },
+      "Enterprise": {
+        name: "Enterprise Plan",
+        price: 12500,
+        limit: 100000,
+        api: true,
+        bulk: true,
+        ongoing: true,
+        ongoingLimit: 10000,
+        support: "DEDICATED"
+      }
+    };
+
+    let activeKey = "";
+
+    // Open Configurator Drawer
+    function editPackage(key) {
+      activeKey = key;
+      const data = packagesState[key];
+      if (!data) return;
+
+      // Populate form
+      document.getElementById("form-name").value = data.name;
+      document.getElementById("form-price").value = data.price;
+      document.getElementById("form-limit").value = data.limit;
+      document.getElementById("form-api").checked = data.api;
+      document.getElementById("form-bulk").checked = data.bulk;
+      
+      document.getElementById("form-ongoing").checked = data.ongoing;
+      document.getElementById("form-ongoing-limit").value = data.ongoingLimit;
+      toggleDrawerOngoingLimit(data.ongoing);
+
+      document.getElementById("form-support").value = data.support;
+
+      // Slide in drawer
+      const drawer = document.getElementById("config-drawer");
+      drawer.classList.remove("translate-x-full");
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById("config-drawer");
+      drawer.classList.add("translate-x-full");
+      activeKey = "";
+    }
+
+    function toggleDrawerOngoingLimit(show) {
+      const container = document.getElementById("form-ongoing-limit-container");
+      if (show) {
+        container.classList.remove("hidden");
+      } else {
+        container.classList.add("hidden");
+      }
+    }
+
+    // Save Package Template
+    function savePackage() {
+      const name = document.getElementById("form-name").value.trim();
+      const price = parseInt(document.getElementById("form-price").value) || 0;
+      const limit = parseInt(document.getElementById("form-limit").value) || 0;
+      const api = document.getElementById("form-api").checked;
+      const bulk = document.getElementById("form-bulk").checked;
+      const ongoing = document.getElementById("form-ongoing").checked;
+      const ongoingLimit = parseInt(document.getElementById("form-ongoing-limit").value) || 0;
+      const support = document.getElementById("form-support").value;
+
+      if (!name) {
+        alert("Package Configuration error: Plan name cannot be empty.");
+        return;
+      }
+
+      // Update mock database state
+      packagesState[activeKey] = {
+        name, price, limit, api, bulk, ongoing, ongoingLimit, support
+      };
+
+      // Dynamically update card markup
+      document.getElementById(`title-${activeKey}`).innerText = name;
+      document.getElementById(`price-${activeKey}`).innerText = `$${price.toLocaleString()}`;
+      document.getElementById(`limit-${activeKey}`).innerText = `${limit.toLocaleString()} scans / mo`;
+      
+      const apiLi = document.getElementById(`api-${activeKey}`);
+      if (api) {
+        apiLi.innerHTML = `API integration access`;
+        apiLi.closest("li").className = "flex items-center gap-2";
+      } else {
+        apiLi.innerHTML = `API integration access`;
+        apiLi.closest("li").className = "flex items-center gap-2 text-[#737373]";
+      }
+
+      const bulkLi = document.getElementById(`bulk-${activeKey}`);
+      if (bulk) {
+        bulkLi.innerHTML = `Bulk file screening`;
+        bulkLi.closest("li").className = "flex items-center gap-2";
+      } else {
+        bulkLi.innerHTML = `Bulk file screening`;
+        bulkLi.closest("li").className = "flex items-center gap-2 text-[#737373]";
+      }
+
+      const ongoingLi = document.getElementById(`ongoing-${activeKey}`);
+      if (ongoing) {
+        ongoingLi.innerHTML = `Ongoing monitoring [${ongoingLimit.toLocaleString()} Limit]`;
+        ongoingLi.closest("li").className = "flex items-center gap-2";
+      } else {
+        ongoingLi.innerHTML = `Ongoing watchlist monitoring`;
+        ongoingLi.closest("li").className = "flex items-center gap-2 text-[#737373]";
+      }
+
+      // Update support footer in card
+      const card = document.getElementById(`card-${activeKey}`);
+      const footerSpan = card.querySelector("div.pt-3 span");
+      const supportLabel = support === 'EMAIL' ? 'EMAIL ONLY' : (support === 'CHAT' ? 'PRIORITY CHAT' : 'DEDICATED 24/7');
+      footerSpan.innerText = `SUPPORT: ${supportLabel}`;
+
+      // Keep the usage summary in step with the edited template
+      if (templateUsage[activeKey]) {
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        templateUsage[activeKey].edited = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+        templateUsage[activeKey].by = 'Alok Desai';
+      }
+      renderTemplateUsage();
+
+      closeDrawer();
+      showToast("Plan template configurations updated and applied to registration endpoints.");
+    }
+
+    // Create a new package
+    function createNewPackage() {
+      // Create random key
+      const key = "Custom-" + Math.floor(Math.random() * 1000);
+      
+      // Inject standard template card
+      const container = document.getElementById("plans-container");
+      
+      const cardHtml = `
+        <div onclick="editPackage('${key}')" id="card-${key}" class="bg-white border border-[#e5e5e5] rounded-xl p-6 hover:border-teal cursor-pointer transition-all flex flex-col justify-between h-[360px] animate-pulse">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <h4 class="text-sm font-bold text-gray-900 font-sans" id="title-${key}">Custom Plan Template</h4>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#ebfbf5] text-[#001741] font-mono">Custom</span>
+            </div>
+            
+            <div class="mb-4">
+              <span class="text-2xl font-bold tracking-tight text-navy" id="price-${key}">$0</span>
+              <span class="text-[10px] text-[#737373] font-semibold uppercase tracking-wider block">Per Client Month</span>
+            </div>
+
+            <ul class="space-y-2 text-xs text-[#525252] font-medium font-sans">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i><span id="limit-${key}">0 scans / mo</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#007c74] shrink-0"></i><span id="api-${key}">API integration access</span></li>
+              <li class="flex items-center gap-2 text-[#737373]"><i data-lucide="x" class="w-4 h-4 text-gray-300 shrink-0"></i><span id="bulk-${key}">Bulk file screening</span></li>
+              <li class="flex items-center gap-2 text-[#737373]"><i data-lucide="x" class="w-4 h-4 text-gray-300 shrink-0"></i><span id="ongoing-${key}">Ongoing watchlist monitoring</span></li>
+            </ul>
+          </div>
+
+          <div class="pt-3 border-t border-gray-100 flex justify-between items-center text-[10px] text-[#737373] font-mono">
+            <span>SUPPORT: EMAIL ONLY</span>
+            <span class="text-[#007c74] font-semibold font-sans">Configure &gt;</span>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML("beforeend", cardHtml);
+      window.lucide && window.lucide.createIcons();
+
+      // Seed state
+      packagesState[key] = {
+        name: "Custom Plan Template",
+        price: 0,
+        limit: 0,
+        api: true,
+        bulk: false,
+        ongoing: false,
+        ongoingLimit: 0,
+        support: "EMAIL"
+      };
+
+      // Open immediately
+      editPackage(key);
+      
+      // Stop pulse after 1s
+      setTimeout(() => {
+        document.getElementById(`card-${key}`).classList.remove("animate-pulse");
+      }, 1000);
+
+      renderTemplateUsage();
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  UI 1 — Template Usage Summary
+    // ════════════════════════════════════════════════════════════
+
+    const templateUsage = {
+      Basic:      { created: '2026-02-11', edited: '2026-08-04', by: 'Meera Shah',      clients: 38 },
+      Growth:     { created: '2026-02-11', edited: '2026-09-02', by: 'Alok Desai',      clients: 64 },
+      Enterprise: { created: '2026-02-11', edited: '2026-09-14', by: 'Sophia Laurent',  clients: 40 }
+    };
+
+    const TIER_LABEL = { Basic: 'Tier 1', Growth: 'Tier 2', Enterprise: 'Tier 3' };
+
+    function renderTemplateUsage() {
+      const rows = Object.keys(packagesState).map(key => {
+        const p = packagesState[key];
+        const u = templateUsage[key] || { created: '—', edited: '—', by: '—', clients: 0 };
+        return `
+          <tr class="hover:bg-[#fafafa] h-11">
+            <td class="px-3">
+              <span class="font-semibold text-gray-900">${p.name}</span>
+              <span class="text-[10px] text-[#737373] font-mono block leading-none mt-0.5">${p.limit.toLocaleString()} scans · $${p.price.toLocaleString()}/mo</span>
+            </td>
+            <td class="px-3 text-center">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#ebfbf5] text-[#001741] font-mono">${TIER_LABEL[key] || 'Custom'}</span>
+            </td>
+            <td class="px-3 text-right font-mono font-semibold text-gray-800">${u.clients}</td>
+            <td class="px-3 text-right font-mono text-[#737373] text-[11px]">${u.created}</td>
+            <td class="px-3 text-right font-mono text-[#737373] text-[11px]">${u.edited}</td>
+            <td class="px-3 text-gray-600">${u.by}</td>
+          </tr>`;
+      }).join('');
+
+      document.getElementById('template-usage-tbody').innerHTML = rows;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  UI 2 — Client-Specific Configuration
+    // ════════════════════════════════════════════════════════════
+
+    // Clients available to link a configuration to
+    const CLIENTS = [
+      'Sterling Bank', 'Xirni Ltd', 'Apex Global Partners', 'Zenith Commercial Bank',
+      'Falcon Trust Corp', 'Lighthouse Capital', 'Northwind Fiduciary', 'Meridian Capital Group'
+    ];
+
+    // Granular feature and API grants
+    const FEATURES = [
+      { id: 'name-api',    label: 'Name Screening API' },
+      { id: 'bulk',        label: 'Bulk File Screening' },
+      { id: 'ongoing',     label: 'Ongoing Watchlist Monitoring' },
+      { id: 'adverse',     label: 'Adverse Media Search' },
+      { id: 'ubo',         label: 'UBO / Beneficial Owner Search' },
+      { id: 'vessel',      label: 'Vessel &amp; Maritime Screening' },
+      { id: 'pep',         label: 'PEP Database Access' },
+      { id: 'sanctions',   label: 'Sanctions Database Access' }
+    ];
+
+    // Which grants each base template turns on by default
+    const TEMPLATE_FEATURES = {
+      Basic:      ['name-api', 'pep', 'sanctions'],
+      Growth:     ['name-api', 'bulk', 'ongoing', 'pep', 'sanctions', 'adverse'],
+      Enterprise: FEATURES.map(f => f.id)
+    };
+
+    const TIER_BANDS = [
+      { from: '1',       to: '10,000',   rate: '0.10' },
+      { from: '10,001',  to: '50,000',   rate: '0.07' },
+      { from: '50,001',  to: 'Unlimited',rate: '0.04' }
+    ];
+
+    // Existing client configurations
+    let clientConfigs = [
+      { client: 'Sterling Bank',          template: 'Enterprise', model: 'Tiered Volume', frequency: 'Real-Time', grants: 8, edited: '2026-09-15' },
+      { client: 'Apex Global Partners',   template: 'Growth',     model: 'Per Scan',      frequency: 'Daily',     grants: 6, edited: '2026-09-09' },
+      { client: 'Falcon Trust Corp',      template: 'Basic',      model: 'Per Scan',      frequency: 'Weekly',    grants: 3, edited: '2026-08-27' }
+    ];
+
+    let pricingModel = 'scan';
+
+    function renderClientConfigs() {
+      document.getElementById('client-config-tbody').innerHTML = clientConfigs.length ? clientConfigs.map(c => `
+        <tr class="hover:bg-[#fafafa] h-11">
+          <td class="px-3 font-semibold text-gray-900">${c.client}</td>
+          <td class="px-3"><span class="px-1.5 py-0.5 rounded bg-teal-light text-navy text-[10px] font-mono">${c.template}</span></td>
+          <td class="px-3 text-gray-600">${c.model}</td>
+          <td class="px-3 text-center text-gray-600">${c.frequency}</td>
+          <td class="px-3 text-center font-mono text-gray-500">${c.grants} / ${FEATURES.length}</td>
+          <td class="px-3 text-right font-mono text-[#737373] text-[11px]">${c.edited}</td>
+          <td class="px-3 text-right select-none">
+            <button onclick="openClientConfig('${c.client}')" class="text-[#007c74] hover:underline font-semibold">Edit</button>
+          </td>
+        </tr>`).join('') : `
+        <tr><td colspan="7" class="px-3 py-8 text-center text-[#737373] font-normal">No client-specific configurations yet.</td></tr>`;
+    }
+
+    // ── Client typeahead ──
+    function filterClients(query) {
+      const box = document.getElementById('cfg-client-results');
+      const q = query.trim().toLowerCase();
+      const matches = CLIENTS.filter(c => c.toLowerCase().includes(q));
+
+      if (!matches.length) {
+        box.innerHTML = `<div class="px-3 py-2 text-[11px] text-[#737373] font-normal">No matching client</div>`;
+        box.classList.remove('hidden');
+        return;
+      }
+
+      box.innerHTML = matches.map(c => `
+        <button type="button" onclick="pickClient('${c.replace(/'/g, "\\'")}')" class="w-full text-left px-3 py-2 text-[11px] font-semibold text-gray-700 hover:bg-teal-light hover:text-navy transition-colors">${c}</button>
+      `).join('');
+      box.classList.remove('hidden');
+    }
+
+    function pickClient(name) {
+      document.getElementById('cfg-client').value = name;
+      document.getElementById('cfg-client-results').classList.add('hidden');
+    }
+
+    // ── Template summary ──
+    function renderTemplateSummary() {
+      const key = document.getElementById('cfg-template').value;
+      const p = packagesState[key];
+      const supportLabel = p.support === 'EMAIL' ? 'Email only' : (p.support === 'CHAT' ? 'Priority chat' : 'Dedicated 24/7');
+
+      document.getElementById('cfg-template-summary').innerHTML = `
+        <div class="flex justify-between"><span class="text-[#737373] font-semibold uppercase text-[9px]">Base Template</span><span class="font-bold text-gray-900">${p.name}</span></div>
+        <div class="flex justify-between"><span class="text-[#737373] font-semibold uppercase text-[9px]">Included Scans</span><span class="font-mono font-bold text-gray-900">${p.limit.toLocaleString()} / mo</span></div>
+        <div class="flex justify-between"><span class="text-[#737373] font-semibold uppercase text-[9px]">List Price</span><span class="font-mono font-bold text-gray-900">$${p.price.toLocaleString()}</span></div>
+        <div class="flex justify-between"><span class="text-[#737373] font-semibold uppercase text-[9px]">Support SLA</span><span class="font-bold text-gray-900">${supportLabel}</span></div>`;
+
+      // Reapply the template's default grants
+      renderFeatures(TEMPLATE_FEATURES[key] || TEMPLATE_FEATURES.Basic);
+    }
+
+    function renderFeatures(enabledIds) {
+      document.getElementById('cfg-features').innerHTML = FEATURES.map(f => `
+        <label class="flex items-center gap-2 font-medium cursor-pointer text-gray-700">
+          <input type="checkbox" value="${f.id}" ${enabledIds.includes(f.id) ? 'checked' : ''} class="rounded text-teal focus:ring-teal accent-teal shrink-0">
+          <span class="text-[11px]">${f.label}</span>
+        </label>`).join('');
+    }
+
+    // ── Pricing model ──
+    function setPricingModel(model) {
+      pricingModel = model;
+      const scanBtn = document.getElementById('cfg-price-scan');
+      const tierBtn = document.getElementById('cfg-price-tiered');
+      const on  = "flex-1 h-9 rounded border text-xs font-semibold transition-colors border-teal bg-teal-light text-navy";
+      const off = "flex-1 h-9 rounded border text-xs font-semibold transition-colors border-gray-300 bg-white text-gray-500 hover:border-gray-400";
+
+      scanBtn.className = model === 'scan' ? on : off;
+      tierBtn.className = model === 'tiered' ? on : off;
+      document.getElementById('cfg-pricing-scan').classList.toggle('hidden', model !== 'scan');
+      document.getElementById('cfg-pricing-tiered').classList.toggle('hidden', model !== 'tiered');
+    }
+
+    function renderTierBands() {
+      document.getElementById('cfg-tier-tbody').innerHTML = TIER_BANDS.map(b => `
+        <tr>
+          <td class="py-1.5 px-2 text-gray-600">${b.from}</td>
+          <td class="py-1.5 px-2 text-gray-600">${b.to}</td>
+          <td class="py-1.5 px-2 text-right font-semibold text-gray-900">$${b.rate}</td>
+        </tr>`).join('');
+    }
+
+    // ── Drawer open/close/save ──
+    function openClientConfig(client) {
+      const existing = client ? clientConfigs.find(c => c.client === client) : null;
+
+      document.getElementById('client-drawer-title').innerText = existing ? 'Edit Client Configuration' : 'Generate Client Configuration';
+      document.getElementById('cfg-client').value = client || '';
+      document.getElementById('cfg-client-results').classList.add('hidden');
+      document.getElementById('cfg-template').value = existing ? existing.template : 'Growth';
+      document.getElementById('cfg-frequency').value = existing
+        ? ({ 'Real-Time': 'realtime', 'Daily': 'daily', 'Weekly': 'weekly', 'Monthly': 'monthly' }[existing.frequency] || 'inherit')
+        : 'inherit';
+
+      renderTemplateSummary();
+      renderTierBands();
+      setPricingModel(existing && existing.model === 'Tiered Volume' ? 'tiered' : 'scan');
+
+      document.getElementById('client-drawer-overlay').classList.remove('hidden');
+      document.getElementById('client-drawer').classList.remove('translate-x-full');
+      window.lucide && window.lucide.createIcons();
+    }
+
+    function closeClientConfig() {
+      document.getElementById('client-drawer-overlay').classList.add('hidden');
+      document.getElementById('client-drawer').classList.add('translate-x-full');
+      document.getElementById('cfg-client-results').classList.add('hidden');
+    }
+
+    function saveClientConfig() {
+      const client = document.getElementById('cfg-client').value.trim();
+      if (!client) {
+        showToast('Select a client before generating a configuration.');
+        document.getElementById('cfg-client').focus();
+        return;
+      }
+
+      const template = document.getElementById('cfg-template').value;
+      const grants = document.querySelectorAll('#cfg-features input:checked').length;
+      const freqVal = document.getElementById('cfg-frequency').value;
+      const frequency = { realtime: 'Real-Time', daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', inherit: 'Template' }[freqVal];
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const edited = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+      const record = {
+        client, template,
+        model: pricingModel === 'tiered' ? 'Tiered Volume' : 'Per Scan',
+        frequency, grants, edited
+      };
+
+      const idx = clientConfigs.findIndex(c => c.client === client);
+      if (idx >= 0) clientConfigs[idx] = record; else clientConfigs.unshift(record);
+
+      renderClientConfigs();
+      closeClientConfig();
+      showToast(`Configuration ${idx >= 0 ? 'updated' : 'generated'} for ${client} — ${grants} of ${FEATURES.length} grants active.`);
+    }
+
+    // Dismiss typeahead / drawer on outside interaction
+    document.getElementById('client-drawer-overlay').addEventListener('click', closeClientConfig);
+    document.addEventListener('click', (e) => {
+      const box = document.getElementById('cfg-client-results');
+      if (box && !box.contains(e.target) && e.target.id !== 'cfg-client') box.classList.add('hidden');
+    });
+
+    renderTemplateUsage();
+    renderClientConfigs();
+  </script>
+</body>
+</html>
