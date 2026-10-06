@@ -152,12 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // 1. Sidebar HTML
-  // Both portals use the compact lockup (symbol + XIRNI). The full lockup's INTELLIGENCE rule
-  // and tagline fall below ~5px at sidebar scale, so the compact mark is used in app chrome.
-  // The admin console adds a caption underneath so it stays distinguishable at a glance.
+  // Both portals use the full X-Intelligence lockup. The admin console adds a caption
+  // underneath so it stays distinguishable from the customer portal at a glance.
   const sidebarHeaderHtml = `
-      <div class="flex flex-col items-center justify-center border-b border-[#00276e] px-4 ${isAdmin ? 'pt-6 pb-4' : 'py-6'}">
-        <img src="logo/x-logo-compact-white.svg" alt="X-Intelligence" class="h-[140px] w-auto">
+      <div class="flex flex-col items-center justify-center border-b border-[#00276e] px-4 ${isAdmin ? 'pt-8 pb-5' : 'py-8'}">
+        <img src="logo/x-logo-white.svg" alt="X-Intelligence" class="h-24 w-auto">
         ${isAdmin ? `
         <span class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#00276e] border border-[#00308a]">
           <span class="w-1.5 h-1.5 bg-teal rounded-full"></span>
